@@ -64,7 +64,9 @@ frontends/php/images/sysmaps/old/Router.png svneol=native#unset
 frontends/php/images/sysmaps/old/Server.png svneol=native#unset
 frontends/php/images/sysmaps/old/Workstation.png svneol=native#unset
 src/zabbix_agent_win32/Debug/ZabbixW32.exe -text
+src/zabbix_agent_win32/Debug_x64/ZabbixW64.exe -text
 src/zabbix_agent_win32/Release/ZabbixW32.exe -text
+src/zabbix_agent_win32/Release_x64/ZabbixW64.exe -text
 upgrades/dbpatches/1.0_to_1.1alpha1/mysql/Hub.png svneol=native#unset
 upgrades/dbpatches/1.0_to_1.1alpha1/mysql/Hub_small.png svneol=native#unset
 upgrades/dbpatches/1.0_to_1.1alpha1/mysql/Network.png svneol=native#unset
