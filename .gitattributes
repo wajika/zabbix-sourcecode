@@ -68,6 +68,7 @@ frontends/php/images/sysmaps/old/Workstation.png -text svneol=unset#unset
 frontends/php/include/locales/nl_nl.inc.php -text
 frontends/php/include/locales/pt_br.inc.php -text
 frontends/php/include/locales/sv_se.inc.php -text
+misc/clock/clock.fla -text
 src/zabbix_agent_win32/Debug/ZabbixW32.exe -text
 src/zabbix_agent_win32/Debug_x64/ZabbixW64.exe -text
 src/zabbix_agent_win32/Release/ZabbixW32.exe -text
