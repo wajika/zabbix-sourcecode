@@ -91,10 +91,12 @@ frontends/php/images/sysmaps/old/Printer.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Router.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Server.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Workstation.png -text svneol=unset#unset
+frontends/php/include/js.inc.php -text
 frontends/php/js/common.js -text
 frontends/php/js/cookies.js -text
 frontends/php/js/menu.js -text
 frontends/php/js/services.js -text
+frontends/php/js/showhint.js -text
 frontends/php/js/tree.js -text
 misc/clock/clock.fla -text
 misc/init.d/fedora/core5/zabbix_agentd -text
