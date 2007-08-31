@@ -105,6 +105,7 @@ frontends/php/js/showhint.js -text
 frontends/php/js/tree.js -text
 frontends/php/tr_logform.php -text
 misc/clock/clock.fla -text
+misc/control/agent.sh -text
 misc/init.d/fedora/core5/zabbix_agentd -text
 misc/init.d/freebsd/zabbix_agentd -text
 misc/init.d/freebsd/zabbix_server -text
