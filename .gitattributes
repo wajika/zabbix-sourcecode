@@ -108,3 +108,5 @@ misc/init.d/freebsd/zabbix_agentd -text
 misc/init.d/freebsd/zabbix_server -text
 misc/init.d/tru64/zabbix_server -text
 /splint -text
+src/libs/zbxsysinfo/freebsd/boottime.c -text
+src/libs/zbxsysinfo/openbsd/boottime.c -text
