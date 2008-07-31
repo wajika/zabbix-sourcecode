@@ -94,6 +94,7 @@ frontends/php/images/sysmaps/old/Server.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Workstation.png -text svneol=unset#unset
 frontends/php/include/js.inc.php -text
 frontends/php/include/locales/hu_hu.inc.php -text
+frontends/php/include/locales/ko_kr.inc.php -text
 frontends/php/include/locales/pt_br.inc.php -text
 frontends/php/js/blink.js -text
 frontends/php/js/common.js -text
