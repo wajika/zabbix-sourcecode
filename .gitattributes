@@ -38,6 +38,17 @@ frontends/php/audio/trigger_on_warning.wav -text
 frontends/php/images/flash/zbxclock.swf -text svneol=unset#unset
 frontends/php/images/general/arrowdown.gif -text
 frontends/php/images/general/arrowup.gif -text
+frontends/php/images/general/bar/cal.gif -text
+frontends/php/images/general/bttn/arrowdown.png -text
+frontends/php/images/general/bttn/arrowup.png -text
+frontends/php/images/general/bttn/fullscreen.png -text
+frontends/php/images/general/bttn/help.png -text
+frontends/php/images/general/bttn/menu.png -text
+frontends/php/images/general/bttn/minus.png -text
+frontends/php/images/general/bttn/mute.png -text
+frontends/php/images/general/bttn/plus.png -text
+frontends/php/images/general/bttn/reset.png -text
+frontends/php/images/general/bttn/sound.png -text
 frontends/php/images/general/closed.gif -text svneol=unset#unset
 frontends/php/images/general/error_small.gif -text
 frontends/php/images/general/help.gif -text svneol=unset#unset
@@ -95,20 +106,36 @@ frontends/php/images/sysmaps/old/Printer.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Router.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Server.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Workstation.png -text svneol=unset#unset
+frontends/php/include/classes/cscript.inc.php -text
+frontends/php/include/func.inc.php -text
 frontends/php/include/js.inc.php -text
 frontends/php/include/locales/hu_hu.inc.php -text
 frontends/php/include/locales/pt_br.inc.php -text
+frontends/php/include/maintenances.inc.php -text
 frontends/php/include/scripts.inc.php -text
+frontends/php/js/ajax_req.js -text
 frontends/php/js/blink.js -text
+frontends/php/js/calendar.js -text
 frontends/php/js/common.js -text
 frontends/php/js/cookies.js -text
 frontends/php/js/items.js -text
 frontends/php/js/menu.js -text
+frontends/php/js/prototype.js -text
 frontends/php/js/services.js -text
 frontends/php/js/showhint.js -text
 frontends/php/js/tree.js -text
+frontends/php/js/url.js -text
 frontends/php/scripts.php -text
 frontends/php/scripts_exec.php -text
+frontends/php/styles/calendar.css -text
+frontends/php/styles/default.css -text
+frontends/php/styles/div.css -text
+frontends/php/styles/form.css -text
+frontends/php/styles/link.css -text
+frontends/php/styles/p.css -text
+frontends/php/styles/popupmenu.css -text
+frontends/php/styles/table.css -text
+frontends/php/styles/ul.css -text
 frontends/php/tr_logform.php -text
 misc/clock/clock.fla -text
 misc/control/agent.sh -text
