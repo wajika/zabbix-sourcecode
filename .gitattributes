@@ -35,6 +35,7 @@ frontends/php/audio/trigger_on_average.wav -text
 frontends/php/audio/trigger_on_disaster.wav -text
 frontends/php/audio/trigger_on_high.wav -text
 frontends/php/audio/trigger_on_warning.wav -text
+frontends/php/conf/maintenance.inc.php -text
 frontends/php/images/flash/zbxclock.swf -text svneol=unset#unset
 frontends/php/images/general/arrowdown.gif -text
 frontends/php/images/general/arrowup.gif -text
@@ -71,6 +72,7 @@ frontends/php/images/general/tree/Xc.gif -text
 frontends/php/images/general/tree/Y.gif -text
 frontends/php/images/general/tree/Yc.gif -text
 frontends/php/images/general/tree/point.gif -text
+frontends/php/images/general/warning16r.gif -text
 frontends/php/images/general/warning_small.gif -text
 frontends/php/images/general/zabbix.png -text svneol=unset#unset
 frontends/php/images/general/zabicom.png -text
@@ -137,6 +139,7 @@ frontends/php/styles/popupmenu.css -text
 frontends/php/styles/table.css -text
 frontends/php/styles/ul.css -text
 frontends/php/tr_logform.php -text
+frontends/php/warning.php -text
 misc/clock/clock.fla -text
 misc/control/agent.sh -text
 misc/init.d/fedora/core5/zabbix_agentd -text
