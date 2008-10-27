@@ -141,6 +141,7 @@ frontends/php/styles/table.css -text
 frontends/php/styles/ul.css -text
 frontends/php/tr_logform.php -text
 frontends/php/warning.php -text
+include/zbxjson.h -text
 misc/clock/clock.fla -text
 misc/control/agent.sh -text
 misc/init.d/fedora/core5/zabbix_agentd -text
@@ -148,6 +149,8 @@ misc/init.d/freebsd/zabbix_agentd -text
 misc/init.d/freebsd/zabbix_server -text
 misc/init.d/tru64/zabbix_server -text
 /splint -text
+src/libs/zbxjson/Makefile.am -text
+src/libs/zbxjson/json.c -text
 src/libs/zbxsysinfo/freebsd/boottime.c -text
 src/libs/zbxsysinfo/openbsd/boottime.c -text
 src/zabbix_server/trapper/nodecommand.c -text
