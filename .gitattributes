@@ -153,6 +153,7 @@ frontends/php/styles/ul.css -text
 frontends/php/tr_logform.php -text
 frontends/php/warning.php -text
 include/zbxjson.h -text
+m4/iconv.m4 -text
 misc/clock/clock.fla -text
 misc/control/agent.sh -text
 misc/init.d/fedora/core5/zabbix_agentd -text
