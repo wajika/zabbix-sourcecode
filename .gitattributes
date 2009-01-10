@@ -165,5 +165,6 @@ src/libs/zbxjson/Makefile.am -text
 src/libs/zbxjson/json.c -text
 src/libs/zbxsysinfo/freebsd/boottime.c -text
 src/libs/zbxsysinfo/openbsd/boottime.c -text
+src/libs/zbxsysinfo/solaris/boottime.c -text
 src/zabbix_server/trapper/nodecommand.c -text
 src/zabbix_server/trapper/nodecommand.h -text
