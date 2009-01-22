@@ -3,6 +3,7 @@ bin/win32/libiconv2.dll -text
 bin/win32/zabbix_agentd.exe -text
 bin/win32/zabbix_get.exe -text
 bin/win32/zabbix_sender.exe -text
+bin/win64/libiconv.dll -text
 bin/win64/zabbix_agentd.exe -text
 build/win32/project/ZABBIX.sln -text
 build/win32/project/zabbix_agentd.vcproj -text
