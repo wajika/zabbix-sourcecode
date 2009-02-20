@@ -165,9 +165,7 @@ frontends/php/include/locales/pt_br.inc.php -text
 frontends/php/include/reports.inc.php -text
 frontends/php/include/scripts.inc.php -text
 frontends/php/js/ajax_req.js -text
-frontends/php/js/blink.js -text
 frontends/php/js/calendar.js -text
-frontends/php/js/chkbxrange.js -text
 frontends/php/js/common.js -text
 frontends/php/js/gmenu.js -text
 frontends/php/js/gpc.js -text
