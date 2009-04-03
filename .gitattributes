@@ -73,6 +73,10 @@ frontends/php/images/general/sortdown_off.gif -text svneol=unset#unset
 frontends/php/images/general/sortup.gif -text svneol=unset#unset
 frontends/php/images/general/sortup_off.gif -text svneol=unset#unset
 frontends/php/images/general/tick.png -text
+frontends/php/images/general/tr_space.gif -text
+frontends/php/images/general/tr_top_bottom.gif -text
+frontends/php/images/general/tr_top_right.gif -text
+frontends/php/images/general/tr_top_right_bottom.gif -text
 frontends/php/images/general/tree/I.gif -text
 frontends/php/images/general/tree/L.gif -text
 frontends/php/images/general/tree/O.gif -text
@@ -143,6 +147,7 @@ frontends/php/js/scriptaculous/scriptaculous.js -text
 frontends/php/js/services.js -text
 frontends/php/js/showhint.js -text
 frontends/php/js/tree.js -text
+frontends/php/js/triggers.js -text
 frontends/php/js/updater.js -text
 frontends/php/scripts.php -text
 frontends/php/scripts_exec.php -text
@@ -156,6 +161,7 @@ frontends/php/styles/popupmenu.css -text
 frontends/php/styles/table.css -text
 frontends/php/styles/ul.css -text
 frontends/php/tr_logform.php -text
+frontends/php/tr_testexpr.php -text
 frontends/php/warning.php -text
 include/dbcache.h -text
 include/zbxjson.h -text
