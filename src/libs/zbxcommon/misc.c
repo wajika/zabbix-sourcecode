@@ -1037,7 +1037,7 @@ int	cmp_double(double a,double b)
  *                                                                            *
  * Author: Alexei Vladishev                                                   *
  *                                                                            *
- * Comments: the functions supports prefixes K,M,G                            *
+ * Comments: the functions supports suffixes K,M,G                            *
  *                                                                            *
  ******************************************************************************/
 int	is_double_prefix(char *c)
@@ -1063,7 +1063,7 @@ int	is_double_prefix(char *c)
 			dot=i;
 			continue;
 		}
-		/* Last digit is prefix 'K', 'M', 'G' */
+		/* Last digit is suffix 'K', 'M', 'G' */
 		if( ((c[i]=='K')||(c[i]=='M')||(c[i]=='G')) && (i == (int)strlen(c)-1))
 		{
 			continue;
@@ -1147,6 +1147,44 @@ int	is_double(char *c)
 	if(len == 1 && dot!=-1) return FAIL;
 
 	return SUCCEED;
+}
+
+/******************************************************************************
+ *                                                                            *
+ * Function: is_uint_prefix                                                   *
+ *                                                                            *
+ * Purpose: check if the string is unsigned integer                           *
+ *                                                                            *
+ * Parameters: c - string to check                                            *
+ *                                                                            *
+ * Return value:  SUCCEED - the string is unsigned integer                    *
+ *                FAIL - otherwise                                            *
+ *                                                                            *
+ * Author: Aleksandrs Saveljevs                                               *
+ *                                                                            *
+ * Comments: the function supports suffixes 's', 'm', 'h', and 'd'            *
+ *                                                                            *
+ ******************************************************************************/
+int	is_uint_prefix(const char *c)
+{
+	int	i;
+
+	for (i=0; c[i]==' '; i++); /* trim left spaces */
+	
+	if (!isdigit(c[i]))
+		return FAIL;
+	else
+		do
+			i++;
+		while (isdigit(c[i]));
+
+	if (c[i]=='s' || c[i]=='m' || c[i]=='h' || c[i]=='d') /* check suffix */
+		i++;
+
+	while (c[i]==' ') /* trim right spaces */
+		i++;
+
+	return c[i]=='\0' ? SUCCEED : FAIL;
 }
 
 /******************************************************************************
@@ -1566,19 +1604,49 @@ void	uint64_array_rm(zbx_uint64_t *values, int *num, zbx_uint64_t *rm_values, in
 
 /******************************************************************************
  *                                                                            *
+ * Function: str2uint                                                         *
+ *                                                                            *
+ * Purpose: convert string to unsigned integer (currently 31bit uint)         *
+ *                                                                            *
+ * Parameters: str - string to convert                                        *
+ *                                                                            *
+ * Return value: converted unsigned integer                                   *
+ *                                                                            *
+ * Author: Aleksandrs Saveljevs                                               *
+ *                                                                            *
+ * Comments: the function automatically processes suffixes 's', 'm', 'h', 'd' *
+ *                                                                            *
+ ******************************************************************************/
+int	str2uint(const char *str)
+{
+	size_t	sz = strlen(str) - 1;
+	int	factor = 1;
+
+	switch (str[sz]) {
+		case 's': factor = 1;       break;
+		case 'm': factor = 60;      break;
+		case 'h': factor = 3600;    break;
+		case 'd': factor = 3600*24; break;
+	}
+
+	return atoi(str) * factor;
+}
+
+/******************************************************************************
+ *                                                                            *
  * Function: str2uint64                                                       *
  *                                                                            *
  * Purpose: convert string to 64bit unsigned integer                          *
  *                                                                            *
  * Parameters: str - string to convert                                        *
- *             value - pointer to retirned value                              *
+ *             value - pointer to returned value                              *
  *                                                                            *
  * Return value:  SUCCEED - the string is unsigned integer                    *
  *                FAIL - otherwise                                            *
  *                                                                            *
  * Author: Aleksander Vladishev                                               *
  *                                                                            *
- * Comments: the function automatically processes prefixes 'K','M','G'        *
+ * Comments: the function automatically processes suffixes 'K','M','G'        *
  *                                                                            *
  ******************************************************************************/
 int	str2uint64(char *str, zbx_uint64_t *value)
@@ -1615,6 +1683,41 @@ int	str2uint64(char *str, zbx_uint64_t *value)
 		str[sz] = c;
 
 	return ret;
+}
+
+/******************************************************************************
+ *                                                                            *
+ * Function: str2double                                                       *
+ *                                                                            *
+ * Purpose: convert string to double                                          *
+ *                                                                            *
+ * Parameters: str - string to convert                                        *
+ *                                                                            *
+ * Return value: converted double value                                       *
+ *                                                                            *
+ * Author: Alexei Vladishev                                                   *
+ *                                                                            *
+ * Comments: the function automatically processes suffixes 'K','M','G' and    *
+ *           's', 'm', 'h', 'd'                                               *
+ *                                                                            *
+ ******************************************************************************/
+double	str2double(const char *str)
+{
+	size_t	sz = strlen(str) - 1;
+	double	factor = 1;
+
+	switch (str[sz])
+	{
+		case 'K': factor = 1024;		break;
+		case 'M': factor = 1024*1024;		break;
+		case 'G': factor = 1024*1024*1024;	break;
+		case 's': factor = 1;			break;
+		case 'm': factor = 60;			break;
+		case 'h': factor = 3600;		break;
+		case 'd': factor = 3600*24;		break;
+	}
+
+	return atof(str) * factor;
 }
 
 /******************************************************************************
