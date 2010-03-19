@@ -302,6 +302,7 @@ frontends/php/include/classes/class.cvisibilitybox.php -text
 frontends/php/include/classes/class.cwidget.php -text
 frontends/php/include/debug.inc.php -text
 frontends/php/include/func.inc.php -text
+frontends/php/include/ident.inc.php -text
 frontends/php/include/js.inc.php -text
 frontends/php/include/locales/hu_hu.inc.php -text
 frontends/php/include/locales/ko_kr.inc.php -text
@@ -315,6 +316,7 @@ frontends/php/include/reports.inc.php -text
 frontends/php/include/requirements.inc.php -text
 frontends/php/include/scripts.inc.php -text
 frontends/php/js/class.calendar.js -text
+frontends/php/js/class.cdate.js -text
 frontends/php/js/class.cmap.js -text
 frontends/php/js/class.cookie.js -text
 frontends/php/js/class.cscreen.js -text
