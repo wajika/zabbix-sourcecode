@@ -115,6 +115,8 @@ frontends/php/images/general/bttn/arrowup.png -text
 frontends/php/images/general/bttn/arrowup_bb.png -text
 frontends/php/images/general/bttn/config.png -text
 frontends/php/images/general/bttn/config_bb.png -text
+frontends/php/images/general/bttn/config_hl.png -text
+frontends/php/images/general/bttn/config_hl_bb.png -text
 frontends/php/images/general/bttn/down.png -text
 frontends/php/images/general/bttn/down_bb.png -text
 frontends/php/images/general/bttn/fullscreen.png -text
