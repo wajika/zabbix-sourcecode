@@ -54,6 +54,7 @@ frontends/php/api/classes/class.cgraph.php -text
 frontends/php/api/classes/class.cgraphitem.php -text
 frontends/php/api/classes/class.chost.php -text
 frontends/php/api/classes/class.chostgroup.php -text
+frontends/php/api/classes/class.cimage.php -text
 frontends/php/api/classes/class.citem.php -text
 frontends/php/api/classes/class.cmaintenance.php -text
 frontends/php/api/classes/class.cmap.php -text
@@ -86,6 +87,7 @@ frontends/php/conf/.htaccess -text
 frontends/php/conf/maintenance.inc.php -text
 frontends/php/conf/zabbix.conf.php.example -text
 frontends/php/dashboard.php -text
+frontends/php/dashconf.php -text
 frontends/php/export.php -text
 frontends/php/fonts/DejaVuSans.ttf -text
 frontends/php/hostgroups.php -text
@@ -111,6 +113,10 @@ frontends/php/images/general/bttn/arrowright.png -text
 frontends/php/images/general/bttn/arrowright_bb.png -text
 frontends/php/images/general/bttn/arrowup.png -text
 frontends/php/images/general/bttn/arrowup_bb.png -text
+frontends/php/images/general/bttn/config.png -text
+frontends/php/images/general/bttn/config_bb.png -text
+frontends/php/images/general/bttn/config_hl.png -text
+frontends/php/images/general/bttn/config_hl_bb.png -text
 frontends/php/images/general/bttn/down.png -text
 frontends/php/images/general/bttn/down_bb.png -text
 frontends/php/images/general/bttn/fullscreen.png -text
@@ -299,12 +305,15 @@ frontends/php/include/classes/class.cvar.php -text
 frontends/php/include/classes/class.cvartag.php -text
 frontends/php/include/classes/class.cvisibilitybox.php -text
 frontends/php/include/classes/class.cwidget.php -text
+frontends/php/include/debug.inc.php -text
 frontends/php/include/func.inc.php -text
+frontends/php/include/ident.inc.php -text
 frontends/php/include/js.inc.php -text
 frontends/php/include/locales/hu_hu.inc.php -text
 frontends/php/include/locales/ko_kr.inc.php -text
 frontends/php/include/locales/pl_pl.inc.php -text
 frontends/php/include/locales/pt_br.inc.php -text
+frontends/php/include/locales/ua_ua.inc.php -text
 frontends/php/include/maintenances.inc.php -text
 frontends/php/include/menu.inc.php -text
 frontends/php/include/regexp.inc.php -text
@@ -312,6 +321,7 @@ frontends/php/include/reports.inc.php -text
 frontends/php/include/requirements.inc.php -text
 frontends/php/include/scripts.inc.php -text
 frontends/php/js/class.calendar.js -text
+frontends/php/js/class.cdate.js -text
 frontends/php/js/class.cmap.js -text
 frontends/php/js/class.cookie.js -text
 frontends/php/js/class.cscreen.js -text
@@ -650,7 +660,9 @@ upgrades/dbpatches/1.8/oracle/patch/help_items.sql -text
 upgrades/dbpatches/1.8/oracle/patch/history_log.sql -text
 upgrades/dbpatches/1.8/oracle/patch/history_str.sql -text
 upgrades/dbpatches/1.8/oracle/patch/history_str_sync.sql -text
+upgrades/dbpatches/1.8/oracle/patch/history_sync.sql -text
 upgrades/dbpatches/1.8/oracle/patch/history_text.sql -text
+upgrades/dbpatches/1.8/oracle/patch/history_uint_sync.sql -text
 upgrades/dbpatches/1.8/oracle/patch/hostmacro.sql -text
 upgrades/dbpatches/1.8/oracle/patch/hosts.sql -text
 upgrades/dbpatches/1.8/oracle/patch/hosts_groups.sql -text
