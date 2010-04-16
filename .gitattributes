@@ -21,6 +21,9 @@ build/win32/project/zabbix_get.vcproj -text
 build/win32/project/zabbix_get_win32.cmd -text
 build/win32/project/zabbix_sender.vcproj -text
 build/win32/project/zabbix_sender_win32.cmd -text
+create/data/create_data_sql/create_data_sql.sh -text
+create/data/create_data_sql/data_sql_blacklist.txt -text
+create/data/create_data_sql/data_sql_filter.txt -text
 create/data/images/Hub.png -text svneol=unset#unset
 create/data/images/Hub_small.png -text svneol=unset#unset
 create/data/images/Network.png -text svneol=unset#unset
@@ -335,13 +338,13 @@ frontends/php/js/gtlc.js -text
 frontends/php/js/main.js -text
 frontends/php/js/menu.js -text
 frontends/php/js/prototype.js -text
-frontends/php/js/scriptaculous.js -text
 frontends/php/js/scriptaculous/builder.js -text
 frontends/php/js/scriptaculous/controls.js -text
 frontends/php/js/scriptaculous/dragdrop.js -text
 frontends/php/js/scriptaculous/effects.js -text
 frontends/php/js/scriptaculous/slider.js -text
 frontends/php/js/scriptaculous/sound.js -text
+frontends/php/jsLoader.php -text
 frontends/php/locales.php -text
 frontends/php/maintenance.php -text
 frontends/php/popup_bitem.php -text
@@ -410,6 +413,8 @@ src/libs/zbxicmpping/Makefile.am -text
 src/libs/zbxicmpping/icmpping.c -text
 src/libs/zbxjson/Makefile.am -text
 src/libs/zbxjson/json.c -text
+src/libs/zbxnix/fatal.c -text
+src/libs/zbxnix/fatal.h -text
 src/libs/zbxnix/ipc.c -text
 src/libs/zbxserver/Makefile.am -text
 src/libs/zbxsysinfo/aix/vmstats.c -text
