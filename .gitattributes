@@ -333,6 +333,7 @@ frontends/php/js/class.cdate.js -text
 frontends/php/js/class.cmap.js -text
 frontends/php/js/class.cookie.js -text
 frontends/php/js/class.cscreen.js -text
+frontends/php/js/class.csuggest.js -text
 frontends/php/js/class.cswitcher.js -text
 frontends/php/js/class.ctree.js -text
 frontends/php/js/class.curl.js -text
