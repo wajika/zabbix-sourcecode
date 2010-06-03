@@ -59,6 +59,7 @@ frontends/php/api/classes/class.cdservice.php -text
 frontends/php/api/classes/class.cevent.php -text
 frontends/php/api/classes/class.cgraph.php -text
 frontends/php/api/classes/class.cgraphitem.php -text
+frontends/php/api/classes/class.chistory.php -text
 frontends/php/api/classes/class.chost.php -text
 frontends/php/api/classes/class.chostgroup.php -text
 frontends/php/api/classes/class.cimage.php -text
@@ -95,7 +96,6 @@ frontends/php/conf/maintenance.inc.php -text
 frontends/php/conf/zabbix.conf.php.example -text
 frontends/php/dashboard.php -text
 frontends/php/dashconf.php -text
-frontends/php/export.php -text
 frontends/php/fonts/DejaVuSans.ttf -text
 frontends/php/hostgroups.php -text
 frontends/php/images/flash/zbxclock.swf -text svneol=unset#unset
@@ -250,7 +250,6 @@ frontends/php/images/sysmaps/old/Router.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Server.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Workstation.png -text svneol=unset#unset
 frontends/php/imgstore.php -text
-frontends/php/import.php -text
 frontends/php/include/apicalls.inc.php -text
 frontends/php/include/blocks.inc.php -text
 frontends/php/include/classes/class.carea.php -text
@@ -292,6 +291,7 @@ frontends/php/include/classes/class.clistbox.php -text
 frontends/php/include/classes/class.clistitem.php -text
 frontends/php/include/classes/class.cnumericbox.php -text
 frontends/php/include/classes/class.cobject.php -text
+frontends/php/include/classes/class.cpagefilter.php -text
 frontends/php/include/classes/class.cparam.php -text
 frontends/php/include/classes/class.cpassbox.php -text
 frontends/php/include/classes/class.cpie.php -text
@@ -299,6 +299,7 @@ frontends/php/include/classes/class.cpumenu.php -text
 frontends/php/include/classes/class.crow.php -text
 frontends/php/include/classes/class.cserverinfo.php -text
 frontends/php/include/classes/class.cspan.php -text
+frontends/php/include/classes/class.cstringparser.php -text
 frontends/php/include/classes/class.ctable.php -text
 frontends/php/include/classes/class.ctableinfo.php -text
 frontends/php/include/classes/class.ctag.php -text
@@ -332,10 +333,13 @@ frontends/php/js/class.cdate.js -text
 frontends/php/js/class.cmap.js -text
 frontends/php/js/class.cookie.js -text
 frontends/php/js/class.cscreen.js -text
+frontends/php/js/class.csuggest.js -text
 frontends/php/js/class.cswitcher.js -text
 frontends/php/js/class.ctree.js -text
 frontends/php/js/class.curl.js -text
+frontends/php/js/class.cviewswitcher.js -text
 frontends/php/js/class.pmaster.js -text
+frontends/php/js/class.rpc.js -text
 frontends/php/js/common.js -text
 frontends/php/js/functions.js -text
 frontends/php/js/gtlc.js -text
@@ -359,6 +363,7 @@ frontends/php/report6.php -text
 frontends/php/scripts.php -text
 frontends/php/scripts_exec.php -text
 frontends/php/search.php -text
+frontends/php/slideconf.php -text
 frontends/php/slides.php -text
 frontends/php/styles/blocks.css -text
 frontends/php/styles/calendar.css -text
@@ -411,7 +416,10 @@ misc/init.d/tru64/zabbix_server -text
 /splint -text
 src/libs/zbxalgo/Makefile.am -text
 src/libs/zbxalgo/algodefs.c -text
+src/libs/zbxalgo/binaryheap.c -text
+src/libs/zbxalgo/hashmap.c -text
 src/libs/zbxalgo/hashset.c -text
+src/libs/zbxalgo/vector.c -text
 src/libs/zbxcommon/file.c -text
 src/libs/zbxcommon/time.c -text
 src/libs/zbxdbcache/Makefile.am -text
