@@ -330,6 +330,7 @@ frontends/php/include/schema.inc.php -text
 frontends/php/include/scripts.inc.php -text
 frontends/php/js/class.calendar.js -text
 frontends/php/js/class.cdate.js -text
+frontends/php/js/class.cdebug.js -text
 frontends/php/js/class.cmap.js -text
 frontends/php/js/class.cookie.js -text
 frontends/php/js/class.cscreen.js -text
@@ -353,6 +354,7 @@ frontends/php/js/scriptaculous/effects.js -text
 frontends/php/js/scriptaculous/slider.js -text
 frontends/php/js/scriptaculous/sound.js -text
 frontends/php/jsLoader.php -text
+frontends/php/jsrpc.php -text
 frontends/php/locales.php -text
 frontends/php/maintenance.php -text
 frontends/php/popup_bitem.php -text
