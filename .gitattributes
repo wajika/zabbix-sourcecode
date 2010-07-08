@@ -336,6 +336,7 @@ frontends/php/js/class.calendar.js -text
 frontends/php/js/class.cdate.js -text
 frontends/php/js/class.cdebug.js -text
 frontends/php/js/class.cmap.js -text
+frontends/php/js/class.cmessages.js -text
 frontends/php/js/class.cookie.js -text
 frontends/php/js/class.cscreen.js -text
 frontends/php/js/class.csuggest.js -text
