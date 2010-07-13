@@ -334,6 +334,7 @@ frontends/php/include/requirements.inc.php -text
 frontends/php/include/schema.inc.php -text
 frontends/php/include/scripts.inc.php -text
 frontends/php/include/valuemap.inc.php -text
+frontends/php/include/xmlschemas/screens.rng -text
 frontends/php/js/class.calendar.js -text
 frontends/php/js/class.cdate.js -text
 frontends/php/js/class.cdebug.js -text
