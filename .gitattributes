@@ -122,6 +122,8 @@ frontends/php/images/general/bttn/arrowright.png -text
 frontends/php/images/general/bttn/arrowright_bb.png -text
 frontends/php/images/general/bttn/arrowup.png -text
 frontends/php/images/general/bttn/arrowup_bb.png -text
+frontends/php/images/general/bttn/close.png -text
+frontends/php/images/general/bttn/close_bb.png -text
 frontends/php/images/general/bttn/config.png -text
 frontends/php/images/general/bttn/config_bb.png -text
 frontends/php/images/general/bttn/config_hl.png -text
@@ -142,6 +144,8 @@ frontends/php/images/general/bttn/plus.png -text
 frontends/php/images/general/bttn/plus_bb.png -text
 frontends/php/images/general/bttn/reset.png -text
 frontends/php/images/general/bttn/reset_bb.png -text
+frontends/php/images/general/bttn/snooze.png -text
+frontends/php/images/general/bttn/snooze_bb.png -text
 frontends/php/images/general/bttn/sound.png -text
 frontends/php/images/general/bttn/sound_bb.png -text
 frontends/php/images/general/bttn/up.png -text
