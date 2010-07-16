@@ -202,6 +202,7 @@ frontends/php/images/general/tree/zero.gif -text
 frontends/php/images/general/up_icon.png -text
 frontends/php/images/general/warning16r.gif -text
 frontends/php/images/general/warning_small.gif -text
+frontends/php/images/general/x.gif -text
 frontends/php/images/general/zabbix.ico -text
 frontends/php/images/general/zabbix.png -text svneol=unset#unset
 frontends/php/images/general/zabbix_available.png -text
@@ -354,6 +355,7 @@ frontends/php/js/class.rpc.js -text
 frontends/php/js/common.js -text
 frontends/php/js/functions.js -text
 frontends/php/js/gtlc.js -text
+frontends/php/js/ie6fix.js -text
 frontends/php/js/main.js -text
 frontends/php/js/menu.js -text
 frontends/php/js/prototype.js -text
