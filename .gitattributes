@@ -194,6 +194,7 @@ frontends/php/images/general/zabbix_available_bb.png -text
 frontends/php/images/general/zabbix_bb.ico -text
 frontends/php/images/general/zabbix_bb.png -text
 frontends/php/images/general/zabbix_ob.ico -text
+frontends/php/images/general/zabbix_od.png -text
 frontends/php/images/general/zabbix_unavailable.png -text
 frontends/php/images/general/zabbix_unknown.png -text
 frontends/php/images/general/zero.gif -text
@@ -370,6 +371,7 @@ frontends/php/styles/blocks.css -text
 frontends/php/styles/calendar.css -text
 frontends/php/styles/css_bb.css -text
 frontends/php/styles/css_ob.css -text
+frontends/php/styles/css_od.css -text
 frontends/php/styles/default.css -text
 frontends/php/styles/div.css -text
 frontends/php/styles/form.css -text
