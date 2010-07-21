@@ -13,14 +13,6 @@ build/win32/project/Makefile_get -text
 build/win32/project/Makefile_get_x64 -text
 build/win32/project/Makefile_sender -text
 build/win32/project/Makefile_sender_x64 -text
-build/win32/project/ZABBIX.sln -text
-build/win32/project/zabbix_agentd.vcproj -text
-build/win32/project/zabbix_agentd_win32.cmd -text
-build/win32/project/zabbix_agentd_win64.cmd -text
-build/win32/project/zabbix_get.vcproj -text
-build/win32/project/zabbix_get_win32.cmd -text
-build/win32/project/zabbix_sender.vcproj -text
-build/win32/project/zabbix_sender_win32.cmd -text
 create/data/create_data_sql/create_data_sql.sh svneol=native#text/x-sh
 create/data/create_data_sql/data_sql_blacklist.txt svneol=native#text/plain
 create/data/create_data_sql/data_sql_filter.txt svneol=native#text/plain
@@ -45,7 +37,7 @@ create/data/images/UPS.png -text svneol=unset#unset
 create/data/images/UPS_small.png -text svneol=unset#unset
 create/data/images/Workstation.png -text svneol=unset#unset
 create/data/images/Workstation_small.png -text svneol=unset#unset
-create/data/recreate.sh -text
+create/schema/gen_php.php -text
 docs/README -text
 frontends/php/api/.htaccess -text
 frontends/php/api/classes/class.apiexception.php -text
@@ -319,6 +311,7 @@ frontends/php/include/debug.inc.php -text
 frontends/php/include/func.inc.php -text
 frontends/php/include/ident.inc.php -text
 frontends/php/include/js.inc.php -text
+frontends/php/include/locales/cs_cz.inc.php -text
 frontends/php/include/locales/hu_hu.inc.php -text
 frontends/php/include/locales/ko_kr.inc.php -text
 frontends/php/include/locales/pl_pl.inc.php -text
