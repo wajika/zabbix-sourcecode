@@ -362,6 +362,8 @@ frontends/php/styles/default.css -text
 frontends/php/styles/div.css -text
 frontends/php/styles/form.css -text
 frontends/php/styles/ie.css -text
+frontends/php/styles/ie_css_bb.css -text
+frontends/php/styles/ie_css_ob.css -text
 frontends/php/styles/ie_css_od.css -text
 frontends/php/styles/link.css -text
 frontends/php/styles/p.css -text
@@ -399,8 +401,6 @@ man/zabbix_proxy.man -text
 man/zabbix_sender.man -text
 man/zabbix_server.man -text
 misc/clock/clock.fla -text
-misc/conf/zabbix_agentd.win.conf -text
-misc/conf/zabbix_proxy.conf -text
 misc/init.d/aix/zabbix_agentd svneol=native#text/x-sh
 misc/init.d/fedora/core5/zabbix_agentd -text
 misc/init.d/freebsd/zabbix_agentd -text
