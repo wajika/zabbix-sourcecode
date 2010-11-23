@@ -37,6 +37,7 @@ create/data/images/UPS.png -text svneol=unset#unset
 create/data/images/UPS_small.png -text svneol=unset#unset
 create/data/images/Workstation.png -text svneol=unset#unset
 create/data/images/Workstation_small.png -text svneol=unset#unset
+create/data/images_ibm_db2.sql -text
 create/schema/gen_php.php -text
 frontends/php/api/.htaccess -text
 frontends/php/api/classes/class.apiexception.php -text
@@ -301,7 +302,7 @@ frontends/php/include/locales/hu_hu.inc.php -text
 frontends/php/include/locales/ko_kr.inc.php -text
 frontends/php/include/locales/pl_pl.inc.php -text
 frontends/php/include/locales/pt_br.inc.php -text
-frontends/php/include/locales/ua_ua.inc.php -text
+frontends/php/include/locales/uk_ua.inc.php -text
 frontends/php/include/maintenances.inc.php -text
 frontends/php/include/menu.inc.php -text
 frontends/php/include/regexp.inc.php -text
@@ -390,6 +391,7 @@ include/zbxjson.h -text
 include/zbxmacros.h -text
 include/zbxmedia.h -text
 include/zbxodbc.h -text
+m4/ax_lib_ibm_db2.m4 -text
 m4/ax_lib_oracle_oci.m4 -text
 m4/iconv.m4 -text
 m4/libiodbc.m4 -text
