@@ -313,6 +313,7 @@ frontends/php/include/scripts.inc.php -text
 frontends/php/include/sounds.inc.php -text
 frontends/php/include/valuemap.inc.php -text
 frontends/php/include/xmlschemas/screens.rng -text
+frontends/php/item_key_check_test.php -text
 frontends/php/js/class.bbcode.js -text
 frontends/php/js/class.calendar.js -text
 frontends/php/js/class.cdate.js -text
