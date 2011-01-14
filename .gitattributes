@@ -795,6 +795,7 @@
 1.8.3.patched/upgrades/dbpatches/2.0/postgresql/optional/history_uint_sync.sql -text
 1.8.3.patched/upgrades/dbpatches/2.0/postgresql/patch/proxy_history.sql -text
 /nanoseconds-1.8.3.patch -text
+/nanoseconds-1.8.4.patch -text
 zabbix-1.8.3/bin/win32/zabbix_agentd.exe -text
 zabbix-1.8.3/bin/win32/zabbix_get.exe -text
 zabbix-1.8.3/bin/win32/zabbix_sender.exe -text
