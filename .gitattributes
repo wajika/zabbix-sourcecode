@@ -202,4 +202,3 @@ misc/init.d/freebsd/zabbix_server -text
 misc/init.d/tru64/zabbix_server -text
 misc/init.d/ubuntu/zabbix-agent.conf -text
 misc/init.d/ubuntu/zabbix-server.conf -text
-src/libs/zbxexec/Makefile.am -text
