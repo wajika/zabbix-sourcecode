@@ -211,9 +211,6 @@ src/zabbix_server/poller/Makefile.in
 src/zabbix_server/proxypoller/.deps
 src/zabbix_server/proxypoller/Makefile
 src/zabbix_server/proxypoller/Makefile.in
-src/zabbix_server/selfstats/.deps
-src/zabbix_server/selfstats/Makefile
-src/zabbix_server/selfstats/Makefile.in
 src/zabbix_server/timer/.deps
 src/zabbix_server/timer/Makefile
 src/zabbix_server/timer/Makefile.in
