@@ -1,3 +1,4 @@
+/.buildpath
 /.project
 /.settings
 /Makefile
@@ -73,6 +74,9 @@ src/libs/zbxdbhigh/.deps
 src/libs/zbxdbhigh/Makefile
 src/libs/zbxdbhigh/Makefile.in
 src/libs/zbxdbhigh/dbschema.c
+src/libs/zbxexec/.deps
+src/libs/zbxexec/Makefile
+src/libs/zbxexec/Makefile.in
 src/libs/zbxicmpping/.deps
 src/libs/zbxicmpping/Makefile
 src/libs/zbxicmpping/Makefile.in
@@ -91,9 +95,6 @@ src/libs/zbxmemory/Makefile.in
 src/libs/zbxnix/.deps
 src/libs/zbxnix/Makefile
 src/libs/zbxnix/Makefile.in
-src/libs/zbxplugin/.deps
-src/libs/zbxplugin/Makefile
-src/libs/zbxplugin/Makefile.in
 src/libs/zbxserver/.deps
 src/libs/zbxserver/Makefile
 src/libs/zbxserver/Makefile.in

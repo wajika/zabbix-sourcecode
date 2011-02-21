@@ -179,6 +179,7 @@ frontends/php/images/sysmaps/old/Printer.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Router.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Server.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Workstation.png -text svneol=unset#unset
+frontends/php/include/locales/sk_sk.inc.php -text
 m4/ax_lib_ibm_db2.m4 -text
 m4/ax_lib_oracle_oci.m4 -text
 m4/iconv.m4 -text
@@ -199,3 +200,25 @@ misc/init.d/fedora/core5/zabbix_agentd -text
 misc/init.d/freebsd/zabbix_agentd -text
 misc/init.d/freebsd/zabbix_server -text
 misc/init.d/tru64/zabbix_server -text
+misc/init.d/ubuntu/zabbix-agent.conf -text
+misc/init.d/ubuntu/zabbix-server.conf -text
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Hub.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Hub_small.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Network.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Network_small.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Notebook.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Notebook_small.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Phone.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Phone_small.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Printer.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Printer_small.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Router.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Router_small.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Satellite.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Satellite_small.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Server.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Server_small.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/UPS.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/UPS_small.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Workstation.png -text svneol=unset#image/png
+upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Workstation_small.png -text svneol=unset#image/png
