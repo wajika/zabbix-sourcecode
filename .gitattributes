@@ -1221,3 +1221,4 @@
 1.8.5rc1.patched/upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Workstation_small.png -text svneol=unset#image/png
 /nanoseconds-1.8.3.patch -text
 /nanoseconds-1.8.4.patch -text
+/nanoseconds-1.8.5rc1.patch -text
