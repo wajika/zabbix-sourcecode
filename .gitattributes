@@ -180,6 +180,7 @@ misc/init.d/tru64/zabbix_server -text
 /splint -text
 src/libs/zbxdbcache/Makefile.am -text
 src/libs/zbxdbcache/dbcache.c -text
+src/libs/zbxexec/Makefile.am -text
 src/libs/zbxjson/Makefile.am -text
 src/libs/zbxjson/json.c -text
 src/libs/zbxsysinfo/freebsd/boottime.c -text
