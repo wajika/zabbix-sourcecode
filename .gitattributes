@@ -180,7 +180,37 @@ frontends/php/images/sysmaps/old/Printer.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Router.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Server.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Workstation.png -text svneol=unset#unset
+frontends/php/include/classes/class.cassandrahistory.php -text
 frontends/php/include/locales/sk_sk.inc.php -text
+frontends/php/vendors/phpcassa/LICENSE -text
+frontends/php/vendors/phpcassa/columnfamily.php -text
+frontends/php/vendors/phpcassa/connection.php -text
+frontends/php/vendors/phpcassa/sysmanager.php -text
+frontends/php/vendors/phpcassa/thrift/Thrift.php -text
+frontends/php/vendors/phpcassa/thrift/ext/thrift_protocol/config.m4 -text
+frontends/php/vendors/phpcassa/thrift/ext/thrift_protocol/php_thrift_protocol.cpp -text
+frontends/php/vendors/phpcassa/thrift/ext/thrift_protocol/php_thrift_protocol.h -text
+frontends/php/vendors/phpcassa/thrift/packages/cassandra/Cassandra.php -text
+frontends/php/vendors/phpcassa/thrift/packages/cassandra/cassandra_constants.php -text
+frontends/php/vendors/phpcassa/thrift/packages/cassandra/cassandra_types.php -text
+frontends/php/vendors/phpcassa/thrift/protocol/TBinaryProtocol.php -text
+frontends/php/vendors/phpcassa/thrift/protocol/TBinarySerializer.php -text
+frontends/php/vendors/phpcassa/thrift/protocol/TProtocol.php -text
+frontends/php/vendors/phpcassa/thrift/transport/TBufferedTransport.php -text
+frontends/php/vendors/phpcassa/thrift/transport/TFramedTransport.php -text
+frontends/php/vendors/phpcassa/thrift/transport/THttpClient.php -text
+frontends/php/vendors/phpcassa/thrift/transport/TMemoryBuffer.php -text
+frontends/php/vendors/phpcassa/thrift/transport/TNullTransport.php -text
+frontends/php/vendors/phpcassa/thrift/transport/TPhpStream.php -text
+frontends/php/vendors/phpcassa/thrift/transport/TServerSocket.php -text
+frontends/php/vendors/phpcassa/thrift/transport/TServerTransport.php -text
+frontends/php/vendors/phpcassa/thrift/transport/TSocket.php -text
+frontends/php/vendors/phpcassa/thrift/transport/TSocketPool.php -text
+frontends/php/vendors/phpcassa/thrift/transport/TTransport.php -text
+frontends/php/vendors/phpcassa/thrift/transport/TTransportFactory.php -text
+frontends/php/vendors/phpcassa/uuid.php -text
+include/zbxcassa.h -text
+m4/ax_lib_cassandra.m4 -text
 m4/ax_lib_ibm_db2.m4 -text
 m4/ax_lib_oracle_oci.m4 -text
 m4/iconv.m4 -text
@@ -203,6 +233,13 @@ misc/init.d/freebsd/zabbix_server -text
 misc/init.d/tru64/zabbix_server -text
 misc/init.d/ubuntu/zabbix-agent.conf -text
 misc/init.d/ubuntu/zabbix-server.conf -text
+src/libs/zbxcassa/Makefile.am -text
+src/libs/zbxcassa/Makefile.in -text
+src/libs/zbxcassa/api.c -text
+src/libs/zbxcassa/cassandra.c -text
+src/libs/zbxcassa/cassandra.h -text
+src/libs/zbxcassa/cassandra_types.c -text
+src/libs/zbxcassa/cassandra_types.h -text
 src/libs/zbxself/Makefile.am -text
 src/zabbix_server/selfmon/Makefile.am -text
 upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Hub.png -text svneol=unset#image/png
