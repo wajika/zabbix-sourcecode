@@ -177,6 +177,9 @@ frontends/php/images/sysmaps/old/Printer.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Router.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Server.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Workstation.png -text svneol=unset#unset
+frontends/php/include/classes/helpers/trigger/CDescription.php -text
+frontends/php/include/classes/helpers/trigger/CEventDescription.php -text
+frontends/php/include/classes/helpers/trigger/CTriggerDescription.php -text
 frontends/php/include/classes/import/importers/CHostImporter.php -text
 frontends/php/include/classes/tree/CServiceTree.php -text
 frontends/php/include/views/configuration.action.list.php -text
