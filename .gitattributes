@@ -177,9 +177,10 @@ frontends/php/images/sysmaps/old/Printer.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Router.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Server.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Workstation.png -text svneol=unset#unset
-frontends/php/include/classes/helpers/trigger/CDescription.php -text
 frontends/php/include/classes/helpers/trigger/CEventDescription.php -text
+frontends/php/include/classes/helpers/trigger/CEventHelper.php -text
 frontends/php/include/classes/helpers/trigger/CTriggerDescription.php -text
+frontends/php/include/classes/helpers/trigger/CTriggerHelper.php -text
 frontends/php/js/servercheck.js -text
 frontends/php/locale/cs/LC_MESSAGES/frontend.po -text
 frontends/php/locale/de/LC_MESSAGES/frontend.po -text
