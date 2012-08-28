@@ -107,6 +107,7 @@ frontends/php/images/general/tree/zero.gif -text
 frontends/php/images/general/unknown_icon.png -text
 frontends/php/images/general/warning.png -text
 frontends/php/images/general/warning2.png -text
+frontends/php/images/general/wrench12transp.png -text
 frontends/php/images/general/zabbix.ico -text
 frontends/php/images/general/zabbix.png -text svneol=unset#unset
 frontends/php/images/general/zabbix_available.png -text
@@ -189,12 +190,14 @@ frontends/php/include/views/js/monitoring.history.js.php -text
 frontends/php/include/views/monitoring.charts.php -text
 frontends/php/include/views/monitoring.history.php -text
 frontends/php/include/views/monitoring.hostscreen.php -text
+frontends/php/include/views/monitoring.maps.php -text
+frontends/php/include/views/monitoring.overview.php -text
 frontends/php/js/flickerfreescreen.js -text svneol=unset#text/plain
 frontends/php/js/servercheck.js -text
 frontends/php/locale/cs/LC_MESSAGES/frontend.po -text
 frontends/php/locale/de/LC_MESSAGES/frontend.po -text
 frontends/php/locale/el/LC_MESSAGES/frontend.po -text
-frontends/php/locale/en/LC_MESSAGES/frontend.po -text
+frontends/php/locale/en_US/LC_MESSAGES/frontend.po -text
 frontends/php/locale/es/LC_MESSAGES/frontend.po -text
 frontends/php/locale/fr/LC_MESSAGES/frontend.po -text
 frontends/php/locale/hu/LC_MESSAGES/frontend.po -text
