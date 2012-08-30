@@ -33,6 +33,7 @@ database/postgresql/schema.sql
 database/sqlite3/data.sql
 database/sqlite3/schema.sql
 /depcomp
+frontends/php/.htpasswd
 frontends/php/.idea
 frontends/php/conf/zabbix.conf.php
 frontends/php/conf/zabbix.conf.php.bckp
@@ -48,6 +49,7 @@ frontends/php/locale/POTFILES.in
 frontends/php/locale/cs/LC_MESSAGES/frontend.mo
 frontends/php/locale/de/LC_MESSAGES/frontend.mo
 frontends/php/locale/el/LC_MESSAGES/frontend.mo
+frontends/php/locale/en_US/LC_MESSAGES/frontend.mo
 frontends/php/locale/es/LC_MESSAGES/frontend.mo
 frontends/php/locale/fr/LC_MESSAGES/frontend.mo
 frontends/php/locale/frontend.pot
