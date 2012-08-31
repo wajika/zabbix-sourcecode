@@ -2874,6 +2874,7 @@
 1.8.9.patched/upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Workstation.png -text svneol=unset#image/png
 1.8.9.patched/upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Workstation_small.png -text svneol=unset#image/png
 /nanoseconds-1.8.10.patch -text
+/nanoseconds-1.8.11.patch -text
 /nanoseconds-1.8.3.patch -text
 /nanoseconds-1.8.4.patch -text
 /nanoseconds-1.8.5.patch -text
