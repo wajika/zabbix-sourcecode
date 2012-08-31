@@ -489,6 +489,45 @@
 1.8.11.patched/upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/UPS_small.png -text svneol=unset#image/png
 1.8.11.patched/upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Workstation.png -text svneol=unset#image/png
 1.8.11.patched/upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Workstation_small.png -text svneol=unset#image/png
+1.8.11.patched/upgrades/dbpatches/2.0/mysql/optional/config.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/mysql/optional/history.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/mysql/optional/history_log.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/mysql/optional/history_str.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/mysql/optional/history_str_sync.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/mysql/optional/history_sync.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/mysql/optional/history_text.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/mysql/optional/history_uint.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/mysql/optional/history_uint_sync.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/mysql/patch/config.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/mysql/patch/events.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/mysql/patch/items.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/mysql/patch/proxy_history.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/oracle/optional/config.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/oracle/optional/history.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/oracle/optional/history_log.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/oracle/optional/history_str.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/oracle/optional/history_str_sync.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/oracle/optional/history_sync.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/oracle/optional/history_text.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/oracle/optional/history_uint.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/oracle/optional/history_uint_sync.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/oracle/patch/config.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/oracle/patch/events.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/oracle/patch/items.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/oracle/patch/proxy_history.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/postgresql/optional/config.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/postgresql/optional/history.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/postgresql/optional/history_log.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/postgresql/optional/history_str.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/postgresql/optional/history_str_sync.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/postgresql/optional/history_sync.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/postgresql/optional/history_text.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/postgresql/optional/history_uint.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/postgresql/optional/history_uint_sync.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/postgresql/patch/config.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/postgresql/patch/events.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/postgresql/patch/items.sql -text
+1.8.11.patched/upgrades/dbpatches/2.0/postgresql/patch/proxy_history.sql -text
 1.8.3.patched/CREDITS -text
 1.8.3.patched/bin/win32/zabbix_agentd.exe -text
 1.8.3.patched/bin/win32/zabbix_get.exe -text
