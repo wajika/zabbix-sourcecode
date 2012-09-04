@@ -231,8 +231,6 @@ misc/init.d/fedora/core5/zabbix_agentd -text
 misc/init.d/freebsd/zabbix_agentd -text
 misc/init.d/freebsd/zabbix_server -text
 misc/init.d/tru64/zabbix_server -text
-misc/init.d/ubuntu/zabbix-agent.conf -text
-misc/init.d/ubuntu/zabbix-server.conf -text
 src/libs/zbxcassa/Makefile.am -text
 src/libs/zbxcassa/Makefile.in -text
 src/libs/zbxcassa/api.c -text
@@ -241,6 +239,9 @@ src/libs/zbxcassa/cassandra.h -text
 src/libs/zbxcassa/cassandra_types.c -text
 src/libs/zbxcassa/cassandra_types.h -text
 src/libs/zbxself/Makefile.am -text
+src/libs/zbxsysinfo/agent/Makefile.am -text
+src/libs/zbxsysinfo/agent/agent.c -text
+src/libs/zbxsysinfo/agent/agent.h -text
 src/zabbix_server/selfmon/Makefile.am -text
 upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Hub.png -text svneol=unset#image/png
 upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Hub_small.png -text svneol=unset#image/png
