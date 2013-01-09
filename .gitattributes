@@ -14,6 +14,7 @@ frontends/php/audio/alarm_information.wav -text
 frontends/php/audio/alarm_ok.wav -text
 frontends/php/audio/alarm_warning.wav -text
 frontends/php/audio/no_sound.wav -text
+frontends/php/debug.txt -text
 frontends/php/fonts/DejaVuSans.ttf -text
 frontends/php/images/flash/zbxclock.swf -text svneol=unset#unset
 frontends/php/images/general/arrow_down.png -text
