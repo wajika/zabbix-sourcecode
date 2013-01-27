@@ -181,8 +181,6 @@ frontends/php/images/sysmaps/old/Router.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Server.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Workstation.png -text svneol=unset#unset
 frontends/php/include/classes/class.cassandrahistory.php -text
-frontends/php/include/classes/class.ctriggerfunctionvalidator.php -text
-frontends/php/include/classes/class.cvalidator.php -text
 frontends/php/include/locales/sk_sk.inc.php -text
 frontends/php/vendors/phpcassa/LICENSE -text
 frontends/php/vendors/phpcassa/columnfamily.php -text
