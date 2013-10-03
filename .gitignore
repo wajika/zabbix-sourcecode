@@ -107,6 +107,9 @@ src/libs/zbxsys/Makefile.in
 src/libs/zbxsysinfo/.deps
 src/libs/zbxsysinfo/Makefile
 src/libs/zbxsysinfo/Makefile.in
+src/libs/zbxsysinfo/agent/.deps
+src/libs/zbxsysinfo/agent/Makefile
+src/libs/zbxsysinfo/agent/Makefile.in
 src/libs/zbxsysinfo/aix/.deps
 src/libs/zbxsysinfo/aix/Makefile
 src/libs/zbxsysinfo/aix/Makefile.in
