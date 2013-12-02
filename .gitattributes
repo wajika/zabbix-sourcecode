@@ -14,6 +14,13 @@ frontends/php/audio/alarm_information.wav -text
 frontends/php/audio/alarm_ok.wav -text
 frontends/php/audio/alarm_warning.wav -text
 frontends/php/audio/no_sound.wav -text
+frontends/php/dnstest.incidentdetails.php -text
+frontends/php/dnstest.incidents.php -text
+frontends/php/dnstest.monthlyreports.php -text
+frontends/php/dnstest.particularproxys.php -text
+frontends/php/dnstest.particulartests.php -text
+frontends/php/dnstest.rollingweekstatus.php -text
+frontends/php/dnstest.tests.php -text
 frontends/php/fonts/DejaVuSans.ttf -text
 frontends/php/images/flash/zbxclock.swf -text svneol=unset#unset
 frontends/php/images/general/arrow_down.png -text
@@ -166,6 +173,18 @@ frontends/php/images/sysmaps/old/Printer.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Router.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Server.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Workstation.png -text svneol=unset#unset
+frontends/php/include/incidentdetails.inc.php -text
+frontends/php/include/incidents.inc.php -text
+frontends/php/include/views/dnstest.incidentdetails.list.php -text
+frontends/php/include/views/dnstest.incidents.list.php -text
+frontends/php/include/views/dnstest.monthlyreports.list.php -text
+frontends/php/include/views/dnstest.particularproxys.list.php -text
+frontends/php/include/views/dnstest.particulartests.list.php -text
+frontends/php/include/views/dnstest.rollingweekstatus.list.php -text
+frontends/php/include/views/dnstest.tests.list.php -text
+frontends/php/include/views/js/dnstest.incidents.list.js.php -text
+frontends/php/include/views/js/dnstest.monthlyreports.list.js.php -text
+frontends/php/include/views/js/dnstest.rollingweekstatus.list.js.php -text
 frontends/php/js/flickerfreescreen.js -text svneol=unset#text/plain
 frontends/php/js/servercheck.js -text
 frontends/php/js/vendors/activity-indicator.js -text svneol=unset#text/plain
@@ -538,6 +557,8 @@ src/zabbix_java/lib/logback-core-0.9.27.jar -text
 src/zabbix_java/lib/org-json-2010-12-28.jar -text
 src/zabbix_java/lib/slf4j-api-1.6.1.jar -text
 src/zabbix_java/tests/junit-4.8.2.jar -text
+src/zabbix_server/poller/checks_simple_dnstest.c -text
+src/zabbix_server/poller/checks_simple_dnstest.h -text
 tests/data/README -text
 tests/templates/sqlite3.init -text
 upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Hub.png -text svneol=unset#image/png
