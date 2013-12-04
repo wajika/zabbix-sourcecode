@@ -89,6 +89,9 @@ frontends/php/images/general/ok_bb.png -text
 frontends/php/images/general/ok_icon.png -text
 frontends/php/images/general/ok_icon_bb.png -text
 frontends/php/images/general/plus.png -text
+frontends/php/images/general/rolling_week_disabled.png -text
+frontends/php/images/general/rolling_week_fail.png -text
+frontends/php/images/general/rolling_week_ok.png -text
 frontends/php/images/general/setup/background.png -text
 frontends/php/images/general/setup/logo.png -text
 frontends/php/images/general/setup/welcome_screen.png -text
