@@ -178,6 +178,7 @@ frontends/php/images/sysmaps/old/Server.png -text svneol=unset#unset
 frontends/php/images/sysmaps/old/Workstation.png -text svneol=unset#unset
 frontends/php/include/incidentdetails.inc.php -text
 frontends/php/include/incidents.inc.php -text
+frontends/php/include/rollingweekstatus.inc.php -text
 frontends/php/include/views/dnstest.incidentdetails.list.php -text
 frontends/php/include/views/dnstest.incidents.list.php -text
 frontends/php/include/views/dnstest.monthlyreports.list.php -text
