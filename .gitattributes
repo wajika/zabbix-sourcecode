@@ -572,6 +572,9 @@ opt/zabbix/docs/server_install -text
 opt/zabbix/docs/web_interface_install -text
 opt/zabbix/scripts/slv/dnstest.slv.epp.avail.pl -text
 opt/zabbix/scripts/slv/dnstest.slv.epp.rollweek.pl -text
+opt/zabbix/scripts/slv/dnstest.slv.epp.rtt.info.month.pl -text
+opt/zabbix/scripts/slv/dnstest.slv.epp.rtt.login.month.pl -text
+opt/zabbix/scripts/slv/dnstest.slv.epp.rtt.update.month.pl -text
 src/zabbix_java/lib/logback-classic-0.9.27.jar -text
 src/zabbix_java/lib/logback-core-0.9.27.jar -text
 src/zabbix_java/lib/org-json-2010-12-28.jar -text
