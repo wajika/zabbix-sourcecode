@@ -279,6 +279,7 @@ frontends/php/styles/themes/originalblue/images/icons_d40000.png -text
 frontends/php/styles/themes/originalblue/images/icons_ffffff.png -text
 frontends/php/styles/themes/originalblue/images/preloader.gif -text
 frontends/php/tests/bootstrap.php.template -text
+include/rsm.h -text
 man/zabbix_agentd.man -text
 man/zabbix_get.man -text
 man/zabbix_proxy.man -text
@@ -578,11 +579,17 @@ opt/zabbix/scripts/slv/dnstest.slv.epp.rollweek.pl -text
 opt/zabbix/scripts/slv/dnstest.slv.epp.rtt.info.month.pl -text
 opt/zabbix/scripts/slv/dnstest.slv.epp.rtt.login.month.pl -text
 opt/zabbix/scripts/slv/dnstest.slv.epp.rtt.update.month.pl -text
+src/libs/zbxrsm/Makefile.am -text
+src/libs/zbxrsm/rsm.c -text
 src/zabbix_java/lib/logback-classic-0.9.27.jar -text
 src/zabbix_java/lib/logback-core-0.9.27.jar -text
 src/zabbix_java/lib/org-json-2010-12-28.jar -text
 src/zabbix_java/lib/slf4j-api-1.6.1.jar -text
 src/zabbix_java/tests/junit-4.8.2.jar -text
+src/zabbix_rsm/Makefile.am -text
+src/zabbix_rsm/dec.c -text
+src/zabbix_rsm/enc.c -text
+src/zabbix_rsm/gen.c -text
 src/zabbix_server/poller/checks_simple_dnstest.c -text
 src/zabbix_server/poller/checks_simple_dnstest.h -text
 tests/data/README -text
