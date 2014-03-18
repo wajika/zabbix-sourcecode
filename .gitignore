@@ -143,6 +143,9 @@ src/libs/zbxmemory/Makefile.in
 src/libs/zbxnix/.deps
 src/libs/zbxnix/Makefile
 src/libs/zbxnix/Makefile.in
+src/libs/zbxrsm/.deps
+src/libs/zbxrsm/Makefile
+src/libs/zbxrsm/Makefile.in
 src/libs/zbxself/.deps
 src/libs/zbxself/Makefile
 src/libs/zbxself/Makefile.in
@@ -224,6 +227,12 @@ src/zabbix_proxy/proxyconfig/.deps
 src/zabbix_proxy/proxyconfig/Makefile
 src/zabbix_proxy/proxyconfig/Makefile.in
 src/zabbix_proxy/zabbix_proxy
+src/zabbix_rsm/.deps
+src/zabbix_rsm/Makefile
+src/zabbix_rsm/Makefile.in
+src/zabbix_rsm/rsm_epp_dec
+src/zabbix_rsm/rsm_epp_enc
+src/zabbix_rsm/rsm_epp_gen
 src/zabbix_sender/.deps
 src/zabbix_sender/Makefile
 src/zabbix_sender/Makefile.in

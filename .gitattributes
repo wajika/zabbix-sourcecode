@@ -14,13 +14,6 @@ frontends/php/audio/alarm_information.wav -text
 frontends/php/audio/alarm_ok.wav -text
 frontends/php/audio/alarm_warning.wav -text
 frontends/php/audio/no_sound.wav -text
-frontends/php/dnstest.incidentdetails.php -text
-frontends/php/dnstest.incidents.php -text
-frontends/php/dnstest.monthlyreports.php -text
-frontends/php/dnstest.particularproxys.php -text
-frontends/php/dnstest.particulartests.php -text
-frontends/php/dnstest.rollingweekstatus.php -text
-frontends/php/dnstest.tests.php -text
 frontends/php/fonts/DejaVuSans.ttf -text
 frontends/php/images/flash/zbxclock.swf -text svneol=unset#unset
 frontends/php/images/general/arrow_down.png -text
@@ -179,16 +172,16 @@ frontends/php/images/sysmaps/old/Workstation.png -text svneol=unset#unset
 frontends/php/include/incidentdetails.inc.php -text
 frontends/php/include/incidents.inc.php -text
 frontends/php/include/rollingweekstatus.inc.php -text
-frontends/php/include/views/dnstest.incidentdetails.list.php -text
-frontends/php/include/views/dnstest.incidents.list.php -text
-frontends/php/include/views/dnstest.monthlyreports.list.php -text
-frontends/php/include/views/dnstest.particularproxys.list.php -text
-frontends/php/include/views/dnstest.particulartests.list.php -text
-frontends/php/include/views/dnstest.rollingweekstatus.list.php -text
-frontends/php/include/views/dnstest.tests.list.php -text
-frontends/php/include/views/js/dnstest.incidents.list.js.php -text
-frontends/php/include/views/js/dnstest.monthlyreports.list.js.php -text
-frontends/php/include/views/js/dnstest.rollingweekstatus.list.js.php -text
+frontends/php/include/views/js/rsm.incidents.list.js.php -text
+frontends/php/include/views/js/rsm.monthlyreports.list.js.php -text
+frontends/php/include/views/js/rsm.rollingweekstatus.list.js.php -text
+frontends/php/include/views/rsm.incidentdetails.list.php -text
+frontends/php/include/views/rsm.incidents.list.php -text
+frontends/php/include/views/rsm.monthlyreports.list.php -text
+frontends/php/include/views/rsm.particularproxys.list.php -text
+frontends/php/include/views/rsm.particulartests.list.php -text
+frontends/php/include/views/rsm.rollingweekstatus.list.php -text
+frontends/php/include/views/rsm.tests.list.php -text
 frontends/php/js/flickerfreescreen.js -text svneol=unset#text/plain
 frontends/php/js/servercheck.js -text
 frontends/php/js/vendors/activity-indicator.js -text svneol=unset#text/plain
@@ -220,6 +213,13 @@ frontends/php/locale/tr/LC_MESSAGES/frontend.po -text
 frontends/php/locale/uk/LC_MESSAGES/frontend.po -text
 frontends/php/locale/zh_CN/LC_MESSAGES/frontend.po -text
 frontends/php/locale/zh_TW/LC_MESSAGES/frontend.po -text
+frontends/php/rsm.incidentdetails.php -text
+frontends/php/rsm.incidents.php -text
+frontends/php/rsm.monthlyreports.php -text
+frontends/php/rsm.particularproxys.php -text
+frontends/php/rsm.particulartests.php -text
+frontends/php/rsm.rollingweekstatus.php -text
+frontends/php/rsm.tests.php -text
 frontends/php/styles/themes/classic/images/bg_flat_0_999999.png -text
 frontends/php/styles/themes/classic/images/bg_flat_0_c9c9c9.png -text
 frontends/php/styles/themes/classic/images/bg_flat_100_fef1ec.png -text
@@ -571,14 +571,14 @@ opt/zabbix/docs/init.d/zabbix-server -text
 opt/zabbix/docs/proxy_install -text
 opt/zabbix/docs/server_install -text
 opt/zabbix/docs/web_interface_install -text
-opt/zabbix/scripts/DNSTestSLV.pm -text
+opt/zabbix/scripts/RSMSLV.pm -text
 opt/zabbix/scripts/Sender.pm -text
 opt/zabbix/scripts/change-delay.pl -text
-opt/zabbix/scripts/slv/dnstest.slv.epp.avail.pl -text
-opt/zabbix/scripts/slv/dnstest.slv.epp.rollweek.pl -text
-opt/zabbix/scripts/slv/dnstest.slv.epp.rtt.info.month.pl -text
-opt/zabbix/scripts/slv/dnstest.slv.epp.rtt.login.month.pl -text
-opt/zabbix/scripts/slv/dnstest.slv.epp.rtt.update.month.pl -text
+opt/zabbix/scripts/slv/rsm.slv.epp.avail.pl -text
+opt/zabbix/scripts/slv/rsm.slv.epp.rollweek.pl -text
+opt/zabbix/scripts/slv/rsm.slv.epp.rtt.info.month.pl -text
+opt/zabbix/scripts/slv/rsm.slv.epp.rtt.login.month.pl -text
+opt/zabbix/scripts/slv/rsm.slv.epp.rtt.update.month.pl -text
 src/libs/zbxrsm/Makefile.am -text
 src/libs/zbxrsm/rsm.c -text
 src/zabbix_java/lib/logback-classic-0.9.27.jar -text
@@ -590,8 +590,8 @@ src/zabbix_rsm/Makefile.am -text
 src/zabbix_rsm/dec.c -text
 src/zabbix_rsm/enc.c -text
 src/zabbix_rsm/gen.c -text
-src/zabbix_server/poller/checks_simple_dnstest.c -text
-src/zabbix_server/poller/checks_simple_dnstest.h -text
+src/zabbix_server/poller/checks_simple_rsm.c -text
+src/zabbix_server/poller/checks_simple_rsm.h -text
 tests/data/README -text
 tests/templates/sqlite3.init -text
 upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Hub.png -text svneol=unset#image/png
