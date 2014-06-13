@@ -592,6 +592,9 @@ src/zabbix_rsm/enc.c -text
 src/zabbix_rsm/gen.c -text
 src/zabbix_server/poller/checks_simple_rsm.c -text
 src/zabbix_server/poller/checks_simple_rsm.h -text
+src/zabbix_server/tests/Makefile -text
+src/zabbix_server/tests/t_rsm.c -text
+src/zabbix_server/tests/t_rsm.h -text
 tests/data/README -text
 tests/templates/sqlite3.init -text
 upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Hub.png -text svneol=unset#image/png
