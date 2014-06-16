@@ -581,6 +581,9 @@ opt/zabbix/scripts/slv/rsm.slv.epp.rtt.login.month.pl -text
 opt/zabbix/scripts/slv/rsm.slv.epp.rtt.update.month.pl -text
 src/libs/zbxrsm/Makefile.am -text
 src/libs/zbxrsm/rsm.c -text
+src/tests/Makefile.am -text
+src/tests/t_rsm.c -text
+src/tests/t_rsm.h -text
 src/zabbix_java/lib/logback-classic-0.9.27.jar -text
 src/zabbix_java/lib/logback-core-0.9.27.jar -text
 src/zabbix_java/lib/org-json-2010-12-28.jar -text
