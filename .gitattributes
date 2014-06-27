@@ -575,6 +575,7 @@ opt/zabbix/scripts/RSMSLV.pm -text
 opt/zabbix/scripts/Sender.pm -text
 opt/zabbix/scripts/change-delay.pl -text
 opt/zabbix/scripts/get-downtime.pl -text
+opt/zabbix/scripts/get-results.pl -text
 opt/zabbix/scripts/slv/rsm.slv.epp.avail.pl -text
 opt/zabbix/scripts/slv/rsm.slv.epp.rollweek.pl -text
 opt/zabbix/scripts/slv/rsm.slv.epp.rtt.info.month.pl -text
