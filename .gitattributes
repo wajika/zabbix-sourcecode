@@ -571,7 +571,6 @@ opt/zabbix/docs/init.d/zabbix-server -text
 opt/zabbix/docs/proxy_install -text
 opt/zabbix/docs/server_install -text
 opt/zabbix/docs/web_interface_install -text
-opt/zabbix/scripts/Alerts.pm -text
 opt/zabbix/scripts/RSMSLV.pm -text
 opt/zabbix/scripts/Sender.pm -text
 opt/zabbix/scripts/TLD_constants.pm -text
@@ -580,11 +579,6 @@ opt/zabbix/scripts/change-delay.pl -text
 opt/zabbix/scripts/get-downtime.pl -text
 opt/zabbix/scripts/get-results.pl -text
 opt/zabbix/scripts/probes.pl svneol=native#text/x-perl
-opt/zabbix/scripts/slv/rsm.slv.epp.avail.pl -text
-opt/zabbix/scripts/slv/rsm.slv.epp.rollweek.pl -text
-opt/zabbix/scripts/slv/rsm.slv.epp.rtt.info.month.pl -text
-opt/zabbix/scripts/slv/rsm.slv.epp.rtt.login.month.pl -text
-opt/zabbix/scripts/slv/rsm.slv.epp.rtt.update.month.pl -text
 opt/zabbix/scripts/tld.pl svneol=native#text/x-perl
 src/libs/zbxrsm/Makefile.am -text
 src/libs/zbxrsm/rsm.c -text
