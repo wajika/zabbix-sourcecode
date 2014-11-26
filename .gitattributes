@@ -520,6 +520,8 @@ src/zabbix_server/api/api.c -text
 src/zabbix_server/api/api.h -text
 src/zabbix_server/api/objects/mediatype.c -text
 src/zabbix_server/api/objects/mediatype.h -text
+src/zabbix_server/api/objects/user.c -text
+src/zabbix_server/api/objects/user.h -text
 tests/data/README -text
 tests/templates/sqlite3.init -text
 upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Hub.png -text svneol=unset#image/png
