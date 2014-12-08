@@ -518,6 +518,8 @@ src/zabbix_java/tests/junit-4.8.2.jar -text
 src/zabbix_server/api/Makefile.am -text
 src/zabbix_server/api/api.c -text
 src/zabbix_server/api/api.h -text
+src/zabbix_server/api/apiserver.c -text
+src/zabbix_server/api/apiserver.h -text
 src/zabbix_server/api/objects/mediatype.c -text
 src/zabbix_server/api/objects/mediatype.h -text
 src/zabbix_server/api/objects/user.c -text
