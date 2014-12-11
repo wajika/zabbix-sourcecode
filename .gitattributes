@@ -215,6 +215,7 @@ frontends/php/locale/zh_CN/LC_MESSAGES/frontend.po -text
 frontends/php/locale/zh_TW/LC_MESSAGES/frontend.po -text
 frontends/php/rsm.incidentdetails.php -text
 frontends/php/rsm.incidents.php -text
+frontends/php/rsm.incidentsexport.php -text
 frontends/php/rsm.monthlyreports.php -text
 frontends/php/rsm.particularproxys.php -text
 frontends/php/rsm.particulartests.php -text
