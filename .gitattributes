@@ -572,6 +572,7 @@ opt/zabbix/docs/init.d/zabbix-server -text
 opt/zabbix/docs/proxy_install -text
 opt/zabbix/docs/server_install -text
 opt/zabbix/docs/web_interface_install -text
+opt/zabbix/scripts/ApiHelper.pm -text
 opt/zabbix/scripts/RSMSLV.pm -text
 opt/zabbix/scripts/Sender.pm -text
 opt/zabbix/scripts/TLD_constants.pm -text
