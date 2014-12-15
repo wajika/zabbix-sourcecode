@@ -583,6 +583,7 @@ opt/zabbix/scripts/get-incidents.pl -text
 opt/zabbix/scripts/get-results.pl -text
 opt/zabbix/scripts/probes.pl svneol=native#text/x-perl
 opt/zabbix/scripts/tld.pl svneol=native#text/x-perl
+opt/zabbix/scripts/update-api-data.pl -text
 src/libs/zbxrsm/Makefile.am -text
 src/libs/zbxrsm/rsm.c -text
 src/tests/Makefile.am -text
