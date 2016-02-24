@@ -578,6 +578,9 @@ opt/zabbix/scripts/Sender.pm -text
 opt/zabbix/scripts/TLD_constants.pm -text
 opt/zabbix/scripts/TLDs.pm -text
 opt/zabbix/scripts/change-delay.pl -text
+opt/zabbix/scripts/export/export.pl svneol=native#text/x-perl
+opt/zabbix/scripts/export/export_test.pl svneol=native#text/x-perl
+opt/zabbix/scripts/export/translate.pl svneol=native#text/x-perl
 opt/zabbix/scripts/get-downtime.pl -text
 opt/zabbix/scripts/get-incidents.pl -text
 opt/zabbix/scripts/get-results.pl -text
