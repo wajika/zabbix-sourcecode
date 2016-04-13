@@ -1,5 +1,4 @@
 * text=auto !eol
-/ChangeLog.legend -text
 bin/win32/dev/zabbix_sender.dll -text svneol=unset#application/x-dosexec
 bin/win32/dev/zabbix_sender.lib -text svneol=unset#application/x-archive
 bin/win32/zabbix_agentd.exe -text svneol=unset#application/x-dosexec
@@ -12,7 +11,6 @@ bin/win64/zabbix_get.exe -text svneol=unset#application/x-dosexec
 bin/win64/zabbix_sender.exe -text svneol=unset#application/x-dosexec
 build/win32/project/Makefile_sender_dll -text
 build/win32/project/Makefile_sender_dll_x64 -text
-create/src/data.tmpl -text
 frontends/php/audio/alarm_average.wav -text svneol=unset#audio/x-wav
 frontends/php/audio/alarm_disaster.wav -text svneol=unset#audio/x-wav
 frontends/php/audio/alarm_high.wav -text svneol=unset#audio/x-wav
@@ -144,40 +142,6 @@ frontends/php/images/gradients/sla_red.png -text svneol=unset#image/png
 frontends/php/images/gradients/sla_red15.png -text svneol=unset#image/png
 frontends/php/images/gradients/table_head2_bb.gif -text svneol=unset#image/gif
 frontends/php/images/gradients/table_head_bb.gif -text svneol=unset#image/gif
-frontends/php/js/flickerfreescreen.js -text
-frontends/php/js/menupopup.js -text
-frontends/php/js/multiselect.js -text
-frontends/php/js/servercheck.js -text
-frontends/php/js/vendors/activity-indicator.js -text
-frontends/php/locale/bg/LC_MESSAGES/frontend.po -text
-frontends/php/locale/cs/LC_MESSAGES/frontend.po -text
-frontends/php/locale/de/LC_MESSAGES/frontend.po -text
-frontends/php/locale/el/LC_MESSAGES/frontend.po -text
-frontends/php/locale/en_US/LC_MESSAGES/frontend.po -text
-frontends/php/locale/es/LC_MESSAGES/frontend.po -text
-frontends/php/locale/fa/LC_MESSAGES/frontend.po -text
-frontends/php/locale/fi/LC_MESSAGES/frontend.po -text
-frontends/php/locale/fr/LC_MESSAGES/frontend.po -text
-frontends/php/locale/hu/LC_MESSAGES/frontend.po -text
-frontends/php/locale/id/LC_MESSAGES/frontend.po -text
-frontends/php/locale/it/LC_MESSAGES/frontend.po -text
-frontends/php/locale/ja/LC_MESSAGES/frontend.po -text
-frontends/php/locale/ko/LC_MESSAGES/frontend.po -text
-frontends/php/locale/lt/LC_MESSAGES/frontend.po -text
-frontends/php/locale/lv/LC_MESSAGES/frontend.po -text
-frontends/php/locale/nl/LC_MESSAGES/frontend.po -text
-frontends/php/locale/pl/LC_MESSAGES/frontend.po -text
-frontends/php/locale/pt_BR/LC_MESSAGES/frontend.po -text
-frontends/php/locale/pt_PT/LC_MESSAGES/frontend.po -text
-frontends/php/locale/ro/LC_MESSAGES/frontend.po -text
-frontends/php/locale/ru/LC_MESSAGES/frontend.po -text
-frontends/php/locale/sk/LC_MESSAGES/frontend.po -text
-frontends/php/locale/sv/LC_MESSAGES/frontend.po -text
-frontends/php/locale/tr/LC_MESSAGES/frontend.po -text
-frontends/php/locale/uk/LC_MESSAGES/frontend.po -text
-frontends/php/locale/vi/LC_MESSAGES/frontend.po -text
-frontends/php/locale/zh_CN/LC_MESSAGES/frontend.po -text
-frontends/php/locale/zh_TW/LC_MESSAGES/frontend.po -text
 frontends/php/styles/themes/classic/images/bg_flat_0_999999.png -text svneol=unset#image/png
 frontends/php/styles/themes/classic/images/bg_flat_0_c9c9c9.png -text svneol=unset#image/png
 frontends/php/styles/themes/classic/images/bg_flat_100_fef1ec.png -text svneol=unset#image/png
@@ -195,8 +159,6 @@ frontends/php/styles/themes/classic/images/icons_ffffff.png -text svneol=unset#i
 frontends/php/styles/themes/classic/images/menu_not_active2.gif -text svneol=unset#image/gif
 frontends/php/styles/themes/classic/images/preloader.gif -text svneol=unset#image/gif
 frontends/php/styles/themes/classic/images/widget_header.gif -text svneol=unset#image/gif
-frontends/php/styles/themes/classic/jquery-ui.css -text
-frontends/php/styles/themes/classic/main.css -text
 frontends/php/styles/themes/darkblue/images/bg_flat_0.png -text svneol=unset#image/png
 frontends/php/styles/themes/darkblue/images/bg_flat_10.png -text svneol=unset#image/png
 frontends/php/styles/themes/darkblue/images/bg_flat_100.png -text svneol=unset#image/png
@@ -236,15 +198,7 @@ frontends/php/styles/themes/originalblue/images/icons_5481ab.png -text svneol=un
 frontends/php/styles/themes/originalblue/images/icons_d40000.png -text svneol=unset#image/png
 frontends/php/styles/themes/originalblue/images/icons_ffffff.png -text svneol=unset#image/png
 frontends/php/styles/themes/originalblue/images/preloader.gif -text svneol=unset#image/gif
-frontends/php/tests/bootstrap.php.template -text
-man/zabbix_agentd.man -text
-man/zabbix_get.man -text
-man/zabbix_proxy.man -text
-man/zabbix_sender.man -text
-man/zabbix_server.man -text
 misc/clock/clock.fla -text svneol=unset#unset
-misc/images/README -text
-misc/images/README.dev -text
 misc/images/png_classic/Hub.png -text svneol=unset#image/png
 misc/images/png_classic/Hub_small.png -text svneol=unset#image/png
 misc/images/png_classic/Network.png -text svneol=unset#image/png
@@ -255,7 +209,6 @@ misc/images/png_classic/Phone.png -text svneol=unset#image/png
 misc/images/png_classic/Phone_small.png -text svneol=unset#image/png
 misc/images/png_classic/Printer.png -text svneol=unset#image/png
 misc/images/png_classic/Printer_small.png -text svneol=unset#image/png
-misc/images/png_classic/README -text
 misc/images/png_classic/Router.png -text svneol=unset#image/png
 misc/images/png_classic/Router_small.png -text svneol=unset#image/png
 misc/images/png_classic/Satellite.png -text svneol=unset#image/png
@@ -496,19 +449,15 @@ misc/images/svg/elements/Zabbix_server_2D.svg -text svneol=native#image/svg%2Bxm
 misc/images/svg/elements/Zabbix_server_3D.svg -text svneol=native#image/svg%2Bxml
 misc/images/svg/equipment_rack/Rack_42.svg -text svneol=native#image/svg%2Bxml
 misc/images/svg/equipment_rack/Rack_42_with_door.svg -text svneol=native#image/svg%2Bxml
-misc/init.d/README -text
 misc/init.d/fedora/core5/zabbix_agentd -text
 misc/init.d/freebsd/zabbix_agentd -text
 misc/init.d/freebsd/zabbix_server -text
 misc/init.d/tru64/zabbix_server -text
-src/libs/zbxsysinfo/win32/wmi.cpp -text
 src/zabbix_java/lib/android-json-4.3_r3.1.jar -text svneol=unset#application/java-archive
 src/zabbix_java/lib/logback-classic-0.9.27.jar -text svneol=unset#application/java-archive
 src/zabbix_java/lib/logback-core-0.9.27.jar -text svneol=unset#application/java-archive
 src/zabbix_java/lib/slf4j-api-1.6.1.jar -text svneol=unset#application/java-archive
 src/zabbix_java/tests/junit-4.8.2.jar -text svneol=unset#application/java-archive
-tests/data/README -text
-tests/templates/sqlite3.init -text
 upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Hub.png -text svneol=unset#image/png
 upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Hub_small.png -text svneol=unset#image/png
 upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Network.png -text svneol=unset#image/png
@@ -529,4 +478,3 @@ upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/UPS.png -text svneol=unset#image/p
 upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/UPS_small.png -text svneol=unset#image/png
 upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Workstation.png -text svneol=unset#image/png
 upgrades/dbpatches/1.1/1.0_to_1.1alpha1/mysql/Workstation_small.png -text svneol=unset#image/png
-upgrades/dbpatches/2.2/README -text
