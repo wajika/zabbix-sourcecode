@@ -58,6 +58,7 @@ frontends/php/locale/fa/LC_MESSAGES/frontend.mo
 frontends/php/locale/fi/LC_MESSAGES/frontend.mo
 frontends/php/locale/fr/LC_MESSAGES/frontend.mo
 frontends/php/locale/frontend.pot
+frontends/php/locale/he/LC_MESSAGES/frontend.mo
 frontends/php/locale/hu/LC_MESSAGES/frontend.mo
 frontends/php/locale/id/LC_MESSAGES/frontend.mo
 frontends/php/locale/it/LC_MESSAGES/frontend.mo
@@ -235,6 +236,9 @@ src/libs/zbxsysinfo/unknown/.deps
 src/libs/zbxsysinfo/unknown/.dirstamp
 src/libs/zbxsysinfo/unknown/Makefile
 src/libs/zbxsysinfo/unknown/Makefile.in
+src/libs/zbxtasks/.deps
+src/libs/zbxtasks/Makefile
+src/libs/zbxtasks/Makefile.in
 src/zabbix_agent/.deps
 src/zabbix_agent/Makefile
 src/zabbix_agent/Makefile.in
@@ -264,6 +268,9 @@ src/zabbix_proxy/housekeeper/Makefile.in
 src/zabbix_proxy/proxyconfig/.deps
 src/zabbix_proxy/proxyconfig/Makefile
 src/zabbix_proxy/proxyconfig/Makefile.in
+src/zabbix_proxy/taskmanager/.deps
+src/zabbix_proxy/taskmanager/Makefile
+src/zabbix_proxy/taskmanager/Makefile.in
 src/zabbix_proxy/zabbix_proxy
 src/zabbix_sender/.deps
 src/zabbix_sender/Makefile
@@ -293,6 +300,9 @@ src/zabbix_server/housekeeper/Makefile.in
 src/zabbix_server/httppoller/.deps
 src/zabbix_server/httppoller/Makefile
 src/zabbix_server/httppoller/Makefile.in
+src/zabbix_server/ipmi/.deps
+src/zabbix_server/ipmi/Makefile
+src/zabbix_server/ipmi/Makefile.in
 src/zabbix_server/pinger/.deps
 src/zabbix_server/pinger/Makefile
 src/zabbix_server/pinger/Makefile.in
@@ -302,6 +312,9 @@ src/zabbix_server/poller/Makefile.in
 src/zabbix_server/proxypoller/.deps
 src/zabbix_server/proxypoller/Makefile
 src/zabbix_server/proxypoller/Makefile.in
+src/zabbix_server/scripts/.deps
+src/zabbix_server/scripts/Makefile
+src/zabbix_server/scripts/Makefile.in
 src/zabbix_server/selfmon/.deps
 src/zabbix_server/selfmon/Makefile
 src/zabbix_server/selfmon/Makefile.in
