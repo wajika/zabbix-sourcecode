@@ -165,6 +165,8 @@ src/libs/zbxicmpping/Makefile.in
 src/libs/zbxjson/.deps
 src/libs/zbxjson/Makefile
 src/libs/zbxjson/Makefile.in
+src/libs/zbxldap/.deps
+src/libs/zbxldap/Makefile
 src/libs/zbxlog/.deps
 src/libs/zbxlog/Makefile
 src/libs/zbxlog/Makefile.in
