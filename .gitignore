@@ -263,6 +263,8 @@ src/libs/zbxsysinfo/unknown/Makefile.in
 src/libs/zbxtasks/.deps
 src/libs/zbxtasks/Makefile
 src/libs/zbxtasks/Makefile.in
+src/modules/ldap_check/.deps
+src/modules/ldap_check/ldap_check.so
 src/zabbix_agent/.deps
 src/zabbix_agent/.dirstamp
 src/zabbix_agent/Makefile
