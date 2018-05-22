@@ -395,16 +395,14 @@ tests/libs/zbxcommshigh/.deps
 tests/libs/zbxcommshigh/Makefile
 tests/libs/zbxcommshigh/Makefile.in
 tests/libs/zbxcommshigh/zbx_tcp_recv_ext
+tests/libs/zbxcommshigh/zbx_tcp_recv_ext_zlib
 tests/libs/zbxcommshigh/zbx_tcp_recv_raw_ext
 tests/libs/zbxconf/.deps
 tests/libs/zbxconf/Makefile
 tests/libs/zbxconf/Makefile.in
 tests/libs/zbxconf/parse_cfg_file
-tests/libs/zbxdbcache/..........[!!-~][DEV-845]
-tests/libs/zbxdbcache/..........[!!-~][ZBX-12390]
 tests/libs/zbxdbcache/.deps
 tests/libs/zbxdbcache/.dirstamp
-tests/libs/zbxdbcache/ADFGIJLPST
 tests/libs/zbxdbcache/Makefile
 tests/libs/zbxdbcache/Makefile.in
 tests/libs/zbxdbcache/zbx_vc_add_values
@@ -447,6 +445,4 @@ tests/libs/zbxsysinfo/linux/SYSTEM_CPU_SWITCHES
 tests/libs/zbxsysinfo/linux/VFS_FS_DISCOVERY
 tests/libs/zbxsysinfo/parse_item_key
 tests/libs/zbxsysinfo/process
-upgrades/Makefile
-upgrades/Makefile.in
 /zabbix-*.tar.gz
