@@ -68,6 +68,7 @@ frontends/php/locale/ka/LC_MESSAGES/frontend.mo
 frontends/php/locale/ko/LC_MESSAGES/frontend.mo
 frontends/php/locale/lt/LC_MESSAGES/frontend.mo
 frontends/php/locale/lv/LC_MESSAGES/frontend.mo
+frontends/php/locale/nb/LC_MESSAGES/frontend.mo
 frontends/php/locale/nl/LC_MESSAGES/frontend.mo
 frontends/php/locale/pl/LC_MESSAGES/frontend.mo
 frontends/php/locale/pt_BR/LC_MESSAGES/frontend.mo
@@ -156,6 +157,9 @@ src/libs/zbxdbupgrade/Makefile.in
 src/libs/zbxexec/.deps
 src/libs/zbxexec/Makefile
 src/libs/zbxexec/Makefile.in
+src/libs/zbxhistory/.deps
+src/libs/zbxhistory/Makefile
+src/libs/zbxhistory/Makefile.in
 src/libs/zbxhttp/.deps
 src/libs/zbxhttp/Makefile
 src/libs/zbxhttp/Makefile.in
