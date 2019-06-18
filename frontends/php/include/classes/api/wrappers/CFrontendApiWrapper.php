@@ -61,6 +61,10 @@ class CFrontendApiWrapper extends CApiWrapper {
 	protected function callMethod($method, $params) {
 		API::setWrapper();
 		$response = parent::callMethod($method, $params);
+
+		// Clear last value of API call stack after method execution and resetting wrapper.
+		array_pop(API::$stack);
+
 		API::setWrapper($this);
 
 		// call profiling
