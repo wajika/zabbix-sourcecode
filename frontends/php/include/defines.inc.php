@@ -1354,6 +1354,7 @@ define('WIDGET_SYSTEM_INFO',	'systeminfo');
 define('WIDGET_TRIG_OVER',		'trigover');
 define('WIDGET_URL',			'url');
 define('WIDGET_WEB',			'web');
+define('WIDGET_3D_CANVAS',		'3dcanvas');
 
 // sysmap widget source types
 define('WIDGET_SYSMAP_SOURCETYPE_MAP',	1);

@@ -49,7 +49,8 @@ class CWidgetConfig {
 			WIDGET_SYSTEM_INFO			=> _('System information'),
 			WIDGET_TRIG_OVER			=> _('Trigger overview'),
 			WIDGET_URL					=> _('URL'),
-			WIDGET_WEB					=> _('Web monitoring')
+			WIDGET_WEB					=> _('Web monitoring'),
+			WIDGET_3D_CANVAS			=> _('3D Canvas'),
 		];
 	}
 
@@ -81,7 +82,8 @@ class CWidgetConfig {
 			WIDGET_SYSTEM_INFO			=> ['width' => 6, 'height' => 5],
 			WIDGET_TRIG_OVER			=> ['width' => 6, 'height' => 5],
 			WIDGET_URL					=> ['width' => 6, 'height' => 5],
-			WIDGET_WEB					=> ['width' => 3, 'height' => 3]
+			WIDGET_WEB					=> ['width' => 3, 'height' => 3],
+			WIDGET_3D_CANVAS			=> ['width' => 6, 'height' => 6],
 		];
 	}
 
@@ -141,6 +143,7 @@ class CWidgetConfig {
 				return 15 * SEC_PER_MIN;
 
 			case WIDGET_URL:
+			case WIDGET_3D_CANVAS:
 				return 0;
 		}
 	}
@@ -199,6 +202,7 @@ class CWidgetConfig {
 		switch ($type) {
 			case WIDGET_GRAPH:
 			case WIDGET_SVG_GRAPH:
+			case WIDGET_3D_CANVAS:
 				return false;
 
 			default:
@@ -219,6 +223,7 @@ class CWidgetConfig {
 	{
 		switch ($type) {
 			case WIDGET_HOST_AVAIL:
+			case WIDGET_3D_CANVAS:
 				return false;
 
 			default:
