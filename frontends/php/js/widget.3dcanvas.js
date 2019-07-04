@@ -20,6 +20,8 @@
 
 ;(function ($) {
 
+var __log = console['log'];
+
 var widgets_canvas = {},
 	geometry = {
 		sphere: new THREE.SphereGeometry(1, 70, 70, 0, Math.PI * 2, 0, Math.PI * 2)
@@ -33,7 +35,7 @@ $.subscribe('init.widget.3dcanvas', initWidget3dCanvasHandler);
 animate();
 
 function initWidget3dCanvasHandler(ev) {
-	console.log('init.widget.3dcanvas', arguments);
+	__log('init.widget.3dcanvas', arguments);
 	// find by unique id passed in ev.widgetid field
 	var container = $('[data-3d-canvas]').first();
 	var widgetid = '1234';
@@ -44,7 +46,7 @@ function initWidget3dCanvasHandler(ev) {
 
 /**
  * Initialize three.js scene.
- * 
+ *
  * @param {Object} container   Dom element, 3d canvas container.
  */
 function init(container) {
@@ -60,7 +62,7 @@ function init(container) {
 	light_directional.position.set(-3000, 1000, -1000);
 	scene.add(light_directional);
 
-	
+
 	camera.position.set(15, 20, 100);
 	controls.update();
 
@@ -75,7 +77,7 @@ function init(container) {
 }
 
 /**
- * 
+ *
  * @param {Object} scene    Threejs objects returned by init function.
  * @param {Object} data     Data for elements, connections.
  */
@@ -91,55 +93,55 @@ function fillScene(scene, data, points) {
 		{
 			var mesh = new THREE.Mesh(geometry.sphere, material.green);
 			var distance = 3;
-	
+
 			x = processed[elm.id].pos[0];
 			y = processed[elm.id].pos[1];
 			z = processed[elm.id].pos[2];
-	
+
 			mesh.position.set(x,y,z);
 			scene.scene.add(mesh);
-			console.log(`old parent ${elm.id}`, processed[elm.id]);
+			__log(`old parent ${elm.id}`, processed[elm.id]);
 		}
 		else
 		{
 			var mesh = new THREE.Mesh(geometry.sphere, material.red);
 			var distance = 1;
-	
+
 			mesh.position.set(x,y,z);
 			scene.scene.add(mesh);
-		
+
 			// how element should be positioned when have more than one parent?!
 			processed[elm.id] = {
 				pos: [x, y, z],
 				meshid: mesh.id
 			};
-			console.log(`new parent ${elm.id}`, processed[elm.id]);
+			__log(`new parent ${elm.id}`, processed[elm.id]);
 		}
-		
+
 		var children = data.connections.filter(connection => {
 			return connection.parent === elm.id;
 		});
-	
-		console.log(`found ${children.length} children`, children);
-	
+
+		__log(`found ${children.length} children`, children);
+
 		if (!children.length)
 		{
 			return;
 		}
-	
+
 		distance *= children.length;
-	
+
 		points(children.length, distance).forEach((pos, i) => {
 			var mesh = new THREE.Mesh(geometry.sphere, material.green);
-	
+
 			mesh.position.set(x + pos[0], y + pos[1], z + pos[2]);
 			scene.scene.add(mesh);
-	
+
 			processed[children[i].child] = {
 				pos: pos,
 				meshid: mesh.id
 			};
-			console.log(`	adding ${i} child ${children[i].child}`, children[i], processed[children[i].child]);
+			__log(`	adding ${i} child ${children[i].child}`, children[i], processed[children[i].child]);
 		});
 	});
 }
@@ -157,7 +159,7 @@ function animate() {
 
 /**
  * Generate ${count} coordinates distributing over sphere.
- * 
+ *
  * @param {number} count    Desired points count to generate.
  *
  * @return {Array}
