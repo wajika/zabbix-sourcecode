@@ -24,11 +24,14 @@ var __log = console['log'];
 
 var widgets_canvas = {},
 	geometry = {
-		sphere: new THREE.SphereGeometry(1, 70, 70, 0, Math.PI * 2, 0, Math.PI * 2)
+		sphere: new THREE.SphereGeometry(1, 70, 70, 0, Math.PI * 2, 0, Math.PI * 2),
+		icosahedron: new THREE.IcosahedronGeometry(1, 5)
 	},
 	material = {
 		red: new THREE.MeshStandardMaterial({color: 0xee0808, flatShading: true}),
-		green: new THREE.MeshStandardMaterial({color: 0x08ee08, flatShading: true})
+		green: new THREE.MeshStandardMaterial({color: 0x08ee08, flatShading: true}),
+		blue: new THREE.MeshStandardMaterial({color: 0x0000ff, flatShading: true}),
+		inner_sphere: new THREE.MeshStandardMaterial({color: 0x2020ff, transparent: true, opacity: 0.1})
 	};
 
 $.subscribe('init.widget.3dcanvas', initWidget3dCanvasHandler);
@@ -50,10 +53,13 @@ function initWidget3dCanvasHandler(ev) {
  * @param {Object} container   Dom element, 3d canvas container.
  */
 function init(container) {
-	var scene = new THREE.Scene();
 	var camera = new THREE.PerspectiveCamera(50, container.width() / container.height(), 0.1, 1000);
+	// var camera = new THREE.OrthographicCamera(container.width() / -2, container.width() / 2, container.height() / 2,
+	// 	container.height() / -2, 1, 1000
+	// );
 	var renderer = new THREE.WebGLRenderer({ alpha: true });
 	var controls = new THREE.OrbitControls(camera, renderer.domElement);
+	var scene = new THREE.Scene();
 
 	var light_hemisphere = new THREE.HemisphereLight(0xffffff, 0x444444);
 	light_hemisphere.position.set(0, 1000, 0);
@@ -69,10 +75,20 @@ function init(container) {
 	renderer.setSize(container.width(), container.height() - 10);
 	container.append(renderer.domElement);
 
+	var sprite_glow_material = new THREE.SpriteMaterial({
+		map: new THREE.ImageUtils.loadTexture('assets/img/glow.png' ),
+		useScreenCoordinates: false, alignment: new THREE.Vector2(0, 0),
+		color: 0x0000ff, transparent: true, blending: THREE.AdditiveBlending
+	});
+	var sprite_glow = new THREE.Sprite(sprite_glow_material);
+	sprite_glow.scale.set(7, 7, 1.0);
+
 	return {
 		scene: scene,
 		camera: camera,
-		renderer: renderer
+		renderer: renderer,
+		// glow_material: glow,
+		sprite_glow: sprite_glow
 	}
 }
 
@@ -89,25 +105,27 @@ function fillScene(scene, data, points) {
 
 	data.elements.forEach(elm => {
 
-		if (elm.id in processed)
-		{
-			var mesh = new THREE.Mesh(geometry.sphere, material.green);
-			var distance = 3;
+		var distance,
+			children = data.connections.filter(connection => {
+				return connection.parent === elm.id;
+			});
 
+		if (elm.id in processed) {
+			if (!children.length) {
+				return;
+			}
+
+			distance = 3;
 			x = processed[elm.id].pos[0];
 			y = processed[elm.id].pos[1];
 			z = processed[elm.id].pos[2];
-
-			mesh.position.set(x,y,z);
-			scene.scene.add(mesh);
 			__log(`old parent ${elm.id}`, processed[elm.id]);
 		}
-		else
-		{
-			var mesh = new THREE.Mesh(geometry.sphere, material.red);
-			var distance = 1;
-
+		else {
+			var mesh = new THREE.Mesh(geometry[elm.geometry], material.blue);
+			distance = 8;
 			mesh.position.set(x,y,z);
+			mesh.add(scene.sprite_glow.clone());
 			scene.scene.add(mesh);
 
 			// how element should be positioned when have more than one parent?!
@@ -118,30 +136,46 @@ function fillScene(scene, data, points) {
 			__log(`new parent ${elm.id}`, processed[elm.id]);
 		}
 
-		var children = data.connections.filter(connection => {
-			return connection.parent === elm.id;
-		});
-
 		__log(`found ${children.length} children`, children);
 
-		if (!children.length)
-		{
+		if (!children.length) {
 			return;
 		}
 
 		distance *= children.length;
 
-		points(children.length, distance).forEach((pos, i) => {
-			var mesh = new THREE.Mesh(geometry.sphere, material.green);
+		// DEBUG: inner sphere where all children will be distributed by pointsDistributionSphere.
+		var inner_sphere = new THREE.Mesh(
+			new THREE.SphereGeometry(distance, 70, 70, 0, Math.PI * 2, 0, Math.PI * 2),
+			material.inner_sphere
+		);
+		inner_sphere.position.set(x,y,z);
+		//scene.scene.add(inner_sphere);
 
+		points(children.length, distance).forEach((pos, i) => {
+			var elm = data.elements.filter(elm => {
+				return elm.id === children[i].child;
+			}).pop();
+			var mesh = new THREE.Mesh(geometry[elm.geometry], material.blue);
 			mesh.position.set(x + pos[0], y + pos[1], z + pos[2]);
+			mesh.add(scene.sprite_glow.clone());
 			scene.scene.add(mesh);
 
-			processed[children[i].child] = {
+			var line_geometry = new THREE.Geometry();
+			line_geometry.vertices.push(
+				new THREE.Vector3(x, y, z),
+				new THREE.Vector3(x + pos[0], y + pos[1], z + pos[2])
+			);
+			var line = new THREE.Line(line_geometry, new THREE.LineBasicMaterial({color: 0x0000ff, transparent: true,
+				opacity: 0.3
+			}));
+			scene.scene.add(line);
+
+			processed[elm.id] = {
 				pos: pos,
 				meshid: mesh.id
 			};
-			__log(`	adding ${i} child ${children[i].child}`, children[i], processed[children[i].child]);
+			__log(`	adding ${i} child ${elm.id}`, children[i], processed[elm.id]);
 		});
 	});
 }
@@ -152,8 +186,15 @@ function fillScene(scene, data, points) {
 function animate() {
 	requestAnimationFrame(animate);
 
+	var speed = Date.now() * 0.0002;
+
 	Object.values(widgets_canvas).each(scene => {
 		scene.renderer.render(scene.scene, scene.camera);
+
+		// scene.camera.position.x = Math.cos(speed) * 5;
+		// scene.camera.position.z = Math.sin(speed) * 5;
+
+		// scene.camera.lookAt(scene.scene.position);
 	});
 };
 
@@ -171,8 +212,7 @@ function pointsDistributionSphere(count, distance) {
 		increment = Math.PI * (3 - Math.sqrt(5)),
 		phi, x, y, z, r;
 
-	for (i = 0; i < count; i++)
-	{
+	for (i = 0; i < count; i++) {
 		phi = (i % count) * increment;
 		y = ((i * offset) - 1) + (offset / 2);
 		r = Math.sqrt(1 - Math.pow(y, 2));

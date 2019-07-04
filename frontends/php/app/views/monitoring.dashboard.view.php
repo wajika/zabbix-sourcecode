@@ -43,6 +43,7 @@ else {
 
 	$this->addJsFile('three.min.js');
 	$this->addJsFile('three.orbitcontrols.js');
+	$this->addJsFile('three.additiveblendshader.js');
 	$this->addJsFile('widget.3dcanvas.js');
 
 	$this->includeJSfile('app/views/monitoring.dashboard.view.js.php');

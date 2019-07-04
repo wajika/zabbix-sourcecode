@@ -25,7 +25,7 @@ $output = [
 	'id' => 'THATAHTA',
 	'header' => $data['name'],
 	'body' => (new CDiv)
-		->addStyle('width: 100%; height: 100%')
+		->addStyle('width: 100%; height: 100%; background-color: black')
 		->setAttribute('data-3d-canvas', '')
 		->toString(),
 	'script_inline' => $init_script
