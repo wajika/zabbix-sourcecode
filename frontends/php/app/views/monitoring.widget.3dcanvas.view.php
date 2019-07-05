@@ -33,8 +33,11 @@ $css = "<style>
 .label-3dcanvas {
 	position: absolute;
 	pointer-events:none;
+	color: #8080ff;
+	font-weight: bold;
 	top: -1000px;
 	left: -1000px;
+	transform: translate(0, -100%);
 }
 </style>";
 

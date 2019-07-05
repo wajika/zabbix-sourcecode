@@ -232,35 +232,6 @@ function fillScene(scene, data, points) {
 	});
 }
 
-function TextLabelNode() {
-	// var div = document.createElement('div');
-	// div.className = 'label-3dcanvas';
-	// div.style.width = 100;
-	// div.style.height = 100;
-	// div.innerHTML = "hi there!";
-
-	return {
-		element: $('<div class="label-3dcanvas"/>')[0],
-		parent: false,
-		position: new THREE.Vector3(0,0,0),
-		setHTML: function(html) {
-			this.element.innerHTML = html||'';
-		},
-		updatePosition: function(camera, width, height) {
-			if(parent) {
-				this.position.copy(this.parent.position);
-			}
-
-			var vector = this.position.project(camera);
-			vector.x = (vector.x + 1)/2 * width;
-			vector.y = -(vector.y - 1)/2 * height;
-			//var coords2d = this.get2DCoords(this.position, camera);
-			this.element.style.left = vector.x + 'px';
-			this.element.style.top = vector.y + 'px';
-		}
-	}
-}
-
 function updateLabelsPositions(scene) {
 	var width = scene.container.width(),
 		height = scene.container.height();
@@ -345,5 +316,30 @@ function pointsDistributionSphere(count, distance) {
 	}
 
 	return points;
+}
+
+function TextLabelNode() {
+	this.parent = false;
+	this.position = new THREE.Vector3(0,0,0);
+	this.element = $('<div class="label-3dcanvas"/>')[0];
+
+	this.setHTML = function (html) {
+		this.element.innerHTML = html||'';
+	}
+
+	this.updatePosition = function(camera, width, height) {
+		if(parent) {
+			this.position.copy(this.parent.position);
+		}
+
+		var vector = this.position.project(camera);
+		vector.x = (vector.x + 1)/2 * width;
+		vector.y = -(vector.y - 1)/2 * height;
+
+		this.element.style.left = vector.x + 'px';
+		this.element.style.top = vector.y + 'px';
+	};
+
+	return this;
 }
 })(jQuery);
