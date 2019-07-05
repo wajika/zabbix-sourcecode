@@ -191,10 +191,11 @@ function animate() {
 	Object.values(widgets_canvas).each(scene => {
 		scene.renderer.render(scene.scene, scene.camera);
 
-		// scene.camera.position.x = Math.cos(speed) * 5;
-		// scene.camera.position.z = Math.sin(speed) * 5;
+		scene.camera.position.x = Math.cos(speed) * 10;
+		scene.camera.position.z = Math.sin(speed) * 10;
+		scene.camera.position.y = 120 + Math.sin(speed) * 20;
 
-		// scene.camera.lookAt(scene.scene.position);
+		scene.camera.lookAt(scene.scene.position);
 	});
 };
 
