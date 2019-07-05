@@ -75,7 +75,8 @@ function containerMouseMoveHandler(ev) {
 
 	widgets_canvas[widgetid].mouse = {
 		x: ((ev.clientX - rect.left) / container.width()) * 2 - 1,
-		y: - ((ev.clientY - rect.top) / container.height()) * 2 + 1
+		y: - ((ev.clientY - rect.top) / container.height()) * 2 + 1,
+		clock: (new Date()).getTime()
 	}
 }
 
@@ -86,9 +87,6 @@ function containerMouseMoveHandler(ev) {
  */
 function init(container) {
 	var camera = new THREE.PerspectiveCamera(70, container.width() / container.height(), 0.1, 1000);
-	// var camera = new THREE.OrthographicCamera(container.width() / -2, container.width() / 2, container.height() / 2,
-	// 	container.height() / -2, 1, 1000
-	// );
 	var renderer = new THREE.WebGLRenderer({ alpha: true });
 	var controls = new THREE.OrbitControls(camera, renderer.domElement);
 	var scene = new THREE.Scene();
@@ -116,7 +114,7 @@ function init(container) {
 	sprite_glow.scale.set(7, 7, 1.0);
 
 
-	// Camera auto rotation
+	// Enable camera auto rotation
 	controls.target = new THREE.Vector3(3, 7, 0);
 	controls.update();
 	controls.autoRotate = true;
@@ -242,14 +240,13 @@ function animate() {
  */
 function markMouseIntersection(scene)
 {
-	var tick = Date.now() * 0.0002;
 	var intersects = raycaster.intersectObjects(scene.scene.children);
 
 	if (intersects.length > 0) {
-		scene.controls.autoRotate = false;
-
-		__log('intersected', intersects);
+		// __log('intersected', intersects);
 		if ( INTERSECTED != intersects[ 0 ].object ) {
+			scene.controls.autoRotate = (new Date()).getTime() > scene.mouse.clock + 1000;
+
 			if ( INTERSECTED ) INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
 			INTERSECTED = intersects[ 0 ].object;
 			INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
