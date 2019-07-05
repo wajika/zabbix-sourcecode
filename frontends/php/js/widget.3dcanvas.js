@@ -77,7 +77,7 @@ function containerMouseMoveHandler(ev) {
 		x: ((ev.clientX - rect.left) / container.width()) * 2 - 1,
 		y: - ((ev.clientY - rect.top) / container.height()) * 2 + 1
 	}
-  }
+}
 
 /**
  * Initialize three.js scene.
@@ -253,7 +253,7 @@ function markMouseIntersection(scene)
 			if ( INTERSECTED ) INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
 			INTERSECTED = intersects[ 0 ].object;
 			INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
-			
+
 			if (INTERSECTED.children) {
 				INTERSECTED.material.color.setHex(0xffffff);
 			}
