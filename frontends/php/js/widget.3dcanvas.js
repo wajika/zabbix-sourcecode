@@ -77,10 +77,6 @@ function containerMouseMoveHandler(ev) {
 		x: ((ev.clientX - rect.left) / container.width()) * 2 - 1,
 		y: - ((ev.clientY - rect.top) / container.height()) * 2 + 1
 	}
-	
-	//console.log(widgets_canvas[widgetid].mouse, [ev.clientX - rect.left, ev.clientY - rect.top, container]);
-	// console.log('camera', widgets_canvas[widgetid].renderer.getSize());
-	// console.log('container', [container.width(), container.height()]);
   }
 
 /**
