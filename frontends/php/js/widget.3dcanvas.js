@@ -51,7 +51,9 @@ function initWidget3dCanvasHandler(ev) {
 	var widgetid = '1234';
 
 	widgets_canvas[widgetid] = init(container);
-	widgets_canvas[widgetid].mouse = {x: 0, y:0};
+	widgets_canvas[widgetid].mouse = {x: 0, y:0, clock: 0};
+	widgets_canvas[widgetid].labels = [];
+
 	fillScene(widgets_canvas[widgetid], ev.scene, pointsDistributionSphere);
 
 	container.on('mousemove', {widgetid: widgetid}, containerMouseMoveHandler);
@@ -122,6 +124,7 @@ function init(container) {
 
 	return {
 		controls: controls,
+		container: container,
 		scene: scene,
 		camera: camera,
 		renderer: renderer,
@@ -164,6 +167,12 @@ function fillScene(scene, data, points) {
 			mesh.position.set(x,y,z);
 			mesh.add(scene.sprite_glow.clone());
 			scene.scene.add(mesh);
+
+			var text = new TextLabelNode();
+			text.setHTML(elm.deails);
+			text.parent = mesh;
+			scene.labels.push(text);
+			scene.container.append(text.element);
 
 			// how element should be positioned when have more than one parent?!
 			processed[elm.id] = {
@@ -208,12 +217,56 @@ function fillScene(scene, data, points) {
 			}));
 			scene.scene.add(line);
 
+			var text = new TextLabelNode();
+			text.setHTML(elm.deails);
+			text.parent = mesh;
+			scene.labels.push(text);
+			scene.container.append(text.element);
+
 			processed[elm.id] = {
 				pos: pos,
 				meshid: mesh.id
 			};
 			__log(`	adding ${i} child ${elm.id}`, children[i], processed[elm.id]);
 		});
+	});
+}
+
+function TextLabelNode() {
+	// var div = document.createElement('div');
+	// div.className = 'label-3dcanvas';
+	// div.style.width = 100;
+	// div.style.height = 100;
+	// div.innerHTML = "hi there!";
+
+	return {
+		element: $('<div class="label-3dcanvas"/>')[0],
+		parent: false,
+		position: new THREE.Vector3(0,0,0),
+		setHTML: function(html) {
+			this.element.innerHTML = html||'';
+		},
+		updatePosition: function(camera, width, height) {
+			if(parent) {
+				this.position.copy(this.parent.position);
+			}
+
+			var vector = this.position.project(camera);
+			vector.x = (vector.x + 1)/2 * width;
+			vector.y = -(vector.y - 1)/2 * height;
+			//var coords2d = this.get2DCoords(this.position, camera);
+			this.element.style.left = vector.x + 'px';
+			this.element.style.top = vector.y + 'px';
+		}
+	}
+}
+
+function updateLabelsPositions(scene) {
+	var width = scene.container.width(),
+		height = scene.container.height();
+
+	scene.labels.each(label => {
+		label.updatePosition(scene.camera, width, height);
 	});
 }
 
@@ -227,6 +280,7 @@ function animate() {
 		scene.controls.update();
 		scene.renderer.render(scene.scene, scene.camera);
 		scene.camera.updateMatrixWorld();
+		updateLabelsPositions(scene);
 
 		raycaster.setFromCamera(scene.mouse, scene.camera);
 		markMouseIntersection(scene);

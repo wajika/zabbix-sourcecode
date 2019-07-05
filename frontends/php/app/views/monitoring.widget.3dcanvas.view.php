@@ -21,13 +21,30 @@
 
 $init_script = 'jQuery.publish(' . CJs::encodeJson($data['event_data']) . ')';
 
+$css = "<style>
+/* TODO: Move to screens.scss */
+.container-3dcanvas {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	background-color: black;
+	overflow: hidden;
+}
+.label-3dcanvas {
+	position: absolute;
+	pointer-events:none;
+	top: -1000px;
+	left: -1000px;
+}
+</style>";
+
 $output = [
 	'id' => 'THATAHTA',
 	'header' => $data['name'],
 	'body' => (new CDiv)
-		->addStyle('width: 100%; height: 100%; background-color: black')
+		->addClass('container-3dcanvas')
 		->setAttribute('data-3d-canvas', '')
-		->toString(),
+		->toString() . $css,
 	'script_inline' => $init_script
 ];
 
