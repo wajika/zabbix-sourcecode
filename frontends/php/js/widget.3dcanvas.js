@@ -322,24 +322,24 @@ function TextLabelNode() {
 	this.parent = false;
 	this.position = new THREE.Vector3(0,0,0);
 	this.element = $('<div class="label-3dcanvas"/>')[0];
-
-	this.setHTML = function (html) {
-		this.element.innerHTML = html||'';
-	}
-
-	this.updatePosition = function(camera, width, height) {
-		if(parent) {
-			this.position.copy(this.parent.position);
-		}
-
-		var vector = this.position.project(camera);
-		vector.x = (vector.x + 1)/2 * width;
-		vector.y = -(vector.y - 1)/2 * height;
-
-		this.element.style.left = vector.x + 'px';
-		this.element.style.top = vector.y + 'px';
-	};
-
 	return this;
 }
+
+TextLabelNode.prototype.setHTML = function (html) {
+	this.element.innerHTML = html||'';
+};
+
+TextLabelNode.prototype.updatePosition = function(camera, width, height) {
+	if(parent) {
+		this.position.copy(this.parent.position);
+	}
+
+	var vector = this.position.project(camera);
+	vector.x = (vector.x + 1)/2 * width;
+	vector.y = -(vector.y - 1)/2 * height;
+
+	this.element.style.left = vector.x + 'px';
+	this.element.style.top = vector.y + 'px';
+};
+
 })(jQuery);
