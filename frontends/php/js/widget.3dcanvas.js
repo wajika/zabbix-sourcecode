@@ -118,9 +118,9 @@ function init(container) {
 
 	// Camera auto rotation
 	controls.target = new THREE.Vector3(3, 7, 0);
-    controls.update();
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 3.0;
+	controls.update();
+	controls.autoRotate = true;
+	controls.autoRotateSpeed = 3.0;
 
 	return {
 		controls: controls,
