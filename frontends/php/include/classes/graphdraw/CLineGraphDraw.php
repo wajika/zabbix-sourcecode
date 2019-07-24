@@ -290,7 +290,7 @@ class CLineGraphDraw extends CGraphDraw {
 				foreach ($result['data'] as $row) {
 					$idx = $row['i'] - 1;
 					if ($idx < 0) {
-						continue;
+						$idx = 0;
 					}
 
 					/* --------------------------------------------------
