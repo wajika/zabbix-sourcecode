@@ -24,6 +24,7 @@ var __log = console['log'];
 
 var widgets_canvas = {},
 	raycaster = new THREE.Raycaster(),
+	clock = new THREE.Clock(),
 	geometry = {
 		sphere: new THREE.SphereGeometry(1, 70, 70, 0, Math.PI * 2, 0, Math.PI * 2),
 		icosahedron: new THREE.IcosahedronGeometry(1, 5)
@@ -32,6 +33,7 @@ var widgets_canvas = {},
 		red: new THREE.MeshStandardMaterial({color: 0xee0808, flatShading: true}),
 		green: new THREE.MeshStandardMaterial({color: 0x08ee08, flatShading: true}),
 		blue: new THREE.MeshStandardMaterial({color: 0x0000ff, flatShading: true}),
+		white: new THREE.MeshStandardMaterial({color: 0xffffff, flatShading: true}),
 		inner_sphere: new THREE.MeshStandardMaterial({color: 0x2020ff, transparent: true, opacity: 0.1})
 	},
 	INTERSECTED;// TODO: move to widgets_canvas object
@@ -128,7 +130,8 @@ function init(container) {
 		scene: scene,
 		camera: camera,
 		renderer: renderer,
-		sprite_glow: sprite_glow
+		sprite_glow: sprite_glow,
+		animations: []
 	}
 }
 
@@ -217,6 +220,18 @@ function fillScene(scene, data, points) {
 			}));
 			scene.scene.add(line);
 
+			// Add data-flow-animation
+			var flow_mesh = scene.sprite_glow.clone();
+			var frames = new THREE.VectorKeyframeTrack( '.position', [ 0, 1 ], [ x + pos[0], y + pos[1], z + pos[2], x, y, z ] );
+			var clip = new THREE.AnimationClip( 'Action', 1, [ frames ] );
+			var mixer = new THREE.AnimationMixer( flow_mesh );
+			//mixer.timeScale = 0.5;
+			var clipAction = mixer.clipAction( clip );
+			clipAction.play();
+			scene.animations.push(mixer);
+			scene.scene.add(flow_mesh);
+
+
 			var text = new TextLabelNode();
 			text.setHTML(elm.deails);
 			text.parent = mesh;
@@ -245,6 +260,7 @@ function updateLabelsPositions(scene) {
  * Animation frame handler for all 3d canvas objects.
  */
 function animate() {
+	var delta = clock.getDelta();
 	requestAnimationFrame(animate);
 
 	Object.values(widgets_canvas).each(scene => {
@@ -255,6 +271,11 @@ function animate() {
 
 		raycaster.setFromCamera(scene.mouse, scene.camera);
 		markMouseIntersection(scene);
+		if ( scene.animations ) {
+			scene.animations.each(mixer => {
+				mixer.update( delta );
+			})
+		}
 	});
 };
 
