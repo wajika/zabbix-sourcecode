@@ -222,10 +222,29 @@ function fillScene(scene, data, points) {
 
 			// Add data-flow-animation
 			var flow_mesh = scene.sprite_glow.clone();
-			var frames = new THREE.VectorKeyframeTrack( '.position', [ 0, 1 ], [ x + pos[0], y + pos[1], z + pos[2], x, y, z ] );
-			var clip = new THREE.AnimationClip( 'Action', 1, [ frames ] );
+
+			// https://github.com/mrdoob/three.js/blob/2136a132055c579bb140f5198992c7eb21256e83/examples/jsm/animation/AnimationClipCreator.js#L69
+			var duration = 1, pulseScale = 30;
+			var times = [], values = [], tmp = new THREE.Vector3();
+
+			for ( var i = 0; i < duration * 10; i ++ ) {
+
+				times.push( i / 10 );
+
+				//var scaleFactor = Math.random() * pulseScale;
+				var scaleFactor = ((i%4) + 1)/10 * pulseScale;
+				tmp.set( scaleFactor, scaleFactor, scaleFactor ).
+					toArray( values, values.length );
+
+			}
+			var pulse = new THREE.VectorKeyframeTrack( '.scale', times, values );
+
+			var direction = Math.random() >= 0.5
+				? [ x + pos[0], y + pos[1], z + pos[2], x, y, z ]
+				: [ x, y, z, x + pos[0], y + pos[1], z + pos[2] ];
+			var positions = new THREE.VectorKeyframeTrack( '.position', [ 0, 1 ], direction, THREE.LoopPingPong );
+			var clip = new THREE.AnimationClip( 'Action', 1, [ positions, pulse ] );
 			var mixer = new THREE.AnimationMixer( flow_mesh );
-			//mixer.timeScale = 0.5;
 			var clipAction = mixer.clipAction( clip );
 			clipAction.play();
 			scene.animations.push(mixer);
