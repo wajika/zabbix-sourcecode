@@ -156,7 +156,50 @@ class testPageItemPrototypesMassUpdate extends CWebTest{
 						'Prototype for mass update 8 (JMX)'
 					],
 					'change' => [
-						'JMX endpoint' => ['service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi_new']
+						'JMX endpoint' => 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi_new'
+					]
+				]
+			],
+			[
+				[
+					'names'=> [
+						'Prototype for mass update 9 (DB monitor)',
+						'Prototype for mass update 10 (DB monitor)'
+					],
+					'change' => [
+						'User name' => 'test_username',
+						'Password' => 'test_password'
+					]
+				]
+			],
+			[
+				[
+					'names'=> [
+						'Prototype for mass update 11 (HTTP agent)',
+						'Prototype for mass update 12 (HTTP agent)'
+					],
+					'change' => [
+						'URL' => 'https://www.zabbix.com/network_monitoring',
+						'Request body type' => 'JSON data',
+						'Request body' => '{"html":"<body>1</body>"}',
+						'Headers' => [
+							['name' => 'name1', 'value' => 'value1'],
+							['name' => 'name2', 'value' => 'value2']
+						],
+						'Enable trapping' => true
+					]
+				]
+			],
+			[
+				[
+					'names'=> [
+						'Prototype for mass update 13 (SSH)',
+						'Prototype for mass update 14 (SSH)'
+					],
+					'change' => [
+						'Authentication method' => 'Public key',
+						'Public key file' => '/tmp/path/public_file.fl',
+						'Private key file' => 'tmp/path/private_file.fl'
 					]
 				]
 			]
@@ -206,7 +249,7 @@ class testPageItemPrototypesMassUpdate extends CWebTest{
 								'name' => 'Period',
 								'selector' => 'xpath:./input',
 								'class' => 'CElement'
-							],
+							]
 						]
 					])->one();
 				$intervals_table->fill([
@@ -215,12 +258,12 @@ class testPageItemPrototypesMassUpdate extends CWebTest{
 						'index' => 0,
 						'Type' => $value['Custom intervals'][0]['type'],
 						'Interval' => $value['Custom intervals'][0]['interval'],
-						'Period' => $value['Custom intervals'][0]['period'],
+						'Period' => $value['Custom intervals'][0]['period']
 					],
 					[
 						'Type' => $value['Custom intervals'][1]['type'],
-						'Interval' => $value['Custom intervals'][1]['interval'],
-					],
+						'Interval' => $value['Custom intervals'][1]['interval']
+					]
 				]);
 			}
 			elseif ($field === 'History storage period'|| $field === 'Trend storage period'){
@@ -245,6 +288,34 @@ class testPageItemPrototypesMassUpdate extends CWebTest{
 				$container->query('button:'.$value['button'])->one()->click();
 				$dialog = COverlayDialogElement::find()->one();
 				$dialog->query('link:'.$value['item'])->waitUntilVisible()->one()->click();
+			}
+			elseif ($field === 'Headers'){
+				$headers_table = $form->query('id:headers_pairs')->asMultifieldTable([
+						'mapping' => [
+							[
+								'name' => 'Name',
+								'selector' => 'xpath:./input',
+								'class' => 'CElement'
+							],
+							[
+								'name' => 'Value',
+								'selector' => 'xpath:./input',
+								'class' => 'CElement'
+							]
+						]
+					])->one();
+				$headers_table->fill([
+					[
+						'action' => USER_ACTION_UPDATE,
+						'index' => 0,
+						'Name' => $value[0]['name'],
+						'Value' => $value[0]['value']
+					],
+					[
+						'Name' => $value[1]['name'],
+						'Value' => $value[1]['value']
+					]
+				]);
 			}
 			else{
 				$form->getField($field)->fill($value);
