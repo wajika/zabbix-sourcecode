@@ -337,6 +337,32 @@ class CElementCollection implements Iterator {
 	}
 
 	/**
+	 * Filter element collection based on a specified condition and params.
+	 *
+	 * @param string $condition    condition to be filtered by
+	 * @param array  $params       condition params
+	 *
+	 * @return CElement|null
+	 */
+	public function find($condition, $params = []) {
+		$method = CElementQuery::getConditionCallable($condition);
+
+		foreach ($this->elements as $element) {
+			$callable = call_user_func_array([$element, $method], $params);
+
+			try {
+				if (call_user_func($callable) === true) {
+					return $element;
+				}
+			} catch (Exception $e) {
+				// Code is not missing here.
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Call methods specific for custom element types.
 	 *
 	 * @param string $name         method name
