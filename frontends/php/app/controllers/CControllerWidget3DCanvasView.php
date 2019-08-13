@@ -43,33 +43,67 @@ class CControllerWidget3DCanvasView extends CControllerWidget {
 		$error = null;
 		$dynamic_hostid = $this->getInput('dynamic_hostid', '0');
 
+		// Test data generation
+		$max_childs_count = 25;
+		$tree_levels = ['Proxy ', 'Node '];
+
+		$elements = [
+			['id' => 'h100', 'geometry' => 'sphere', 'deails' => 'Zabbix Server']
+		];
+		$connections = [];
+
+		$id = 200;
+		$parents = ['h100'];
+		while ($tree_levels) {
+			$label = array_shift($tree_levels);
+			$new_parents = [];
+
+			foreach ($parents as $parentid) {
+				for ($i = rand(1, $max_childs_count); $i > 0; $i--) {
+					$elements[] = [
+						'id' => 'h'.$id, 'geometry' => 'icosahedron', 'deails' => $label.$id
+					];
+					$connections[] = [
+						'parent' => $parentid, 'child' => 'h'.$id
+					];
+					$new_parents[] = 'h'.$id;
+
+					++$id;
+				}
+			}
+
+			$parents = $new_parents;
+		}
+
 		$event_data = [
 			'type' => 'init.widget.3dcanvas',
 			'widgetid' => 'TODO-widget-container-uniqueid',
 			'scene' => [
-				'elements' => [
-					['id' => 'h100', 'geometry' => 'sphere', 'deails' => 'Zabbix Server'],
-					['id' => 'h200', 'geometry' => 'sphere', 'deails' => 'Proxy alpha'],
-					['id' => 'h201', 'geometry' => 'sphere', 'deails' => 'Proxy beta'],
-					['id' => 'h202', 'geometry' => 'sphere', 'deails' => 'Proxy gamma'],
-					['id' => 'h203', 'geometry' => 'icosahedron', 'deails' => 'node №1'],
-					['id' => 'h204', 'geometry' => 'icosahedron', 'deails' => 'node №2'],
-					['id' => 'h205', 'geometry' => 'icosahedron', 'deails' => 'node №3'],
-					['id' => 'h206', 'geometry' => 'icosahedron', 'deails' => 'node №4'],
-					['id' => 'h207', 'geometry' => 'icosahedron', 'deails' => 'node №5'],
-					['id' => 'h208', 'geometry' => 'icosahedron', 'deails' => 'node №6'],
-				],
-				'connections' => [
-					['parent' => 'h100', 'child' => 'h200'],
-					['parent' => 'h100', 'child' => 'h201'],
-					['parent' => 'h100', 'child' => 'h202'],
-					['parent' => 'h100', 'child' => 'h203'],
-					['parent' => 'h100', 'child' => 'h204'],
-					['parent' => 'h204', 'child' => 'h205'],
-					['parent' => 'h204', 'child' => 'h206'],
-					['parent' => 'h204', 'child' => 'h207'],
-					['parent' => 'h204', 'child' => 'h208'],
-				]
+				'elements' => $elements,
+				'connections' => $connections
+				// 'elements' => [
+				// 	['id' => 'h100', 'geometry' => 'sphere', 'deails' => 'Zabbix Server'],
+				// 	['id' => 'h200', 'geometry' => 'sphere', 'deails' => 'Proxy alpha'],
+				// 	['id' => 'h201', 'geometry' => 'sphere', 'deails' => 'Proxy beta'],
+				// 	['id' => 'h202', 'geometry' => 'sphere', 'deails' => 'Proxy gamma'],
+				// 	['id' => 'h203', 'geometry' => 'icosahedron', 'deails' => 'node №1'],
+				// 	['id' => 'h204', 'geometry' => 'icosahedron', 'deails' => 'node №2'],
+				// 	['id' => 'h205', 'geometry' => 'icosahedron', 'deails' => 'node №3'],
+				// 	['id' => 'h206', 'geometry' => 'icosahedron', 'deails' => 'node №4'],
+				// 	['id' => 'h207', 'geometry' => 'icosahedron', 'deails' => 'node №5'],
+				// 	['id' => 'h208', 'geometry' => 'icosahedron', 'deails' => 'node №6'],
+				// ],
+				// 'connections' => [
+				// 	['parent' => 'h100', 'child' => 'h200'],
+				// 	['parent' => 'h100', 'child' => 'h201'],
+				// 	['parent' => 'h100', 'child' => 'h202'],
+				// 	['parent' => 'h100', 'child' => 'h203'],
+				// 	['parent' => 'h100', 'child' => 'h204'],
+				// 	['parent' => 'h204', 'child' => 'h205'],
+				// 	['parent' => 'h204', 'child' => 'h206'],
+				// 	['parent' => 'h204', 'child' => 'h207'],
+				// 	['parent' => 'h204', 'child' => 'h208'],
+				// ]
 			],
 			'fields' => $fields
 		];

@@ -112,11 +112,16 @@ function init(container) {
 	var sprite_glow_material = new THREE.SpriteMaterial({
 		map: new THREE.ImageUtils.loadTexture('assets/img/glow.png' ),
 		useScreenCoordinates: false, alignment: new THREE.Vector2(0, 0),
-		color: 0x0000ff, transparent: true, blending: THREE.AdditiveBlending
+		color: 0x00ff00, transparent: true, blending: THREE.AdditiveBlending
 	});
 	var sprite_glow = new THREE.Sprite(sprite_glow_material);
 	sprite_glow.scale.set(7, 7, 1.0);
 
+	var cylinder_glow_material = new THREE.SpriteMaterial({
+		map: new THREE.ImageUtils.loadTexture('assets/img/texture_glow.png' ),
+		useScreenCoordinates: false, alignment: new THREE.Vector2(0, 0),
+		color: 0x0000ff, transparent: true, blending: THREE.AdditiveBlending
+	});
 
 	// Enable camera auto rotation
 	controls.target = new THREE.Vector3(3, 7, 0);
@@ -131,7 +136,8 @@ function init(container) {
 		camera: camera,
 		renderer: renderer,
 		sprite_glow: sprite_glow,
-		animations: []
+		animations: [],
+		cylinder_glow_material: cylinder_glow_material
 	}
 }
 
@@ -165,7 +171,7 @@ function fillScene(scene, data, points) {
 			__log(`old parent ${elm.id}`, processed[elm.id]);
 		}
 		else {
-			var mesh = new THREE.Mesh(geometry[elm.geometry], material.blue.clone());
+			var mesh = new THREE.Mesh(geometry[elm.geometry], material.green.clone());
 			distance = 8;
 			mesh.position.set(x,y,z);
 			mesh.add(scene.sprite_glow.clone());
@@ -194,18 +200,26 @@ function fillScene(scene, data, points) {
 		distance *= children.length;
 
 		// DEBUG: inner sphere where all children will be distributed by pointsDistributionSphere.
-		var inner_sphere = new THREE.Mesh(
-			new THREE.SphereGeometry(distance, 70, 70, 0, Math.PI * 2, 0, Math.PI * 2),
-			material.inner_sphere
+		// var inner_sphere = new THREE.Mesh(
+		// 	new THREE.SphereGeometry(distance, 70, 70, 0, Math.PI * 2, 0, Math.PI * 2),
+		// 	material.inner_sphere
+		// );
+		// inner_sphere.position.set(x,y,z);
+		// scene.scene.add(inner_sphere);
+		var cylinder = new THREE.Mesh(
+			new THREE.CylinderGeometry(3, 3, 40, 55),
+			// scene.cylinder_glow_material.clone()
+			material.blue.clone()
+			// scene.cylinder_glow_material
 		);
-		inner_sphere.position.set(x,y,z);
-		//scene.scene.add(inner_sphere);
+		cylinder.position.set(x, y, z);
+		// scene.scene.add(cylinder);
 
-		points(children.length, distance).forEach((pos, i) => {
+		points(children.length, distance*3).forEach((pos, i) => {
 			var elm = data.elements.filter(elm => {
 				return elm.id === children[i].child;
 			}).pop();
-			var mesh = new THREE.Mesh(geometry[elm.geometry], material.blue.clone());
+			var mesh = new THREE.Mesh(geometry[elm.geometry], material.green.clone());
 			mesh.position.set(x + pos[0], y + pos[1], z + pos[2]);
 			mesh.add(scene.sprite_glow.clone());
 			scene.scene.add(mesh);
@@ -215,7 +229,7 @@ function fillScene(scene, data, points) {
 				new THREE.Vector3(x, y, z),
 				new THREE.Vector3(x + pos[0], y + pos[1], z + pos[2])
 			);
-			var line = new THREE.Line(line_geometry, new THREE.LineBasicMaterial({color: 0x0000ff, transparent: true,
+			var line = new THREE.Line(line_geometry, new THREE.LineBasicMaterial({color: 0x00ff00, transparent: true,
 				opacity: 0.3
 			}));
 			scene.scene.add(line);
@@ -224,7 +238,7 @@ function fillScene(scene, data, points) {
 			var flow_mesh = scene.sprite_glow.clone();
 
 			// https://github.com/mrdoob/three.js/blob/2136a132055c579bb140f5198992c7eb21256e83/examples/jsm/animation/AnimationClipCreator.js#L69
-			var duration = 1, pulseScale = 30;
+			var duration = 1, pulseScale = 20;
 			var times = [], values = [], tmp = new THREE.Vector3();
 
 			for ( var i = 0; i < duration * 10; i ++ ) {
@@ -237,6 +251,16 @@ function fillScene(scene, data, points) {
 					toArray( values, values.length );
 
 			}
+			// for ( var i = 0; i < duration * 20; i ++ ) {
+
+			// 	times.push( i / 20 );
+
+			// 	//var scaleFactor = Math.random() * pulseScale;
+			// 	var scaleFactor = (i)%10 * pulseScale/5;
+			// 	tmp.set( scaleFactor, scaleFactor, scaleFactor ).
+			// 		toArray( values, values.length );
+
+			// }
 			var pulse = new THREE.VectorKeyframeTrack( '.scale', times, values );
 
 			var direction = Math.random() >= 0.5

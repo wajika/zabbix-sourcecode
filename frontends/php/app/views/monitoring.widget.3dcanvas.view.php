@@ -33,7 +33,7 @@ $css = "<style>
 .label-3dcanvas {
 	position: absolute;
 	pointer-events:none;
-	color: #8080ff;
+	color: #80ff80;
 	font-weight: bold;
 	top: -1000px;
 	left: -1000px;
