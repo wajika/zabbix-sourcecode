@@ -26,18 +26,19 @@ var widgets_canvas = {},
 	raycaster = new THREE.Raycaster(),
 	clock = new THREE.Clock(),
 	geometry = {
-		sphere: new THREE.SphereGeometry(1, 70, 70, 0, Math.PI * 2, 0, Math.PI * 2),
-		icosahedron: new THREE.IcosahedronGeometry(1, 5)
+		sphere: new THREE.SphereBufferGeometry(1, 70, 70, 0, Math.PI * 2, 0, Math.PI * 2),
+		icosahedron: new THREE.IcosahedronBufferGeometry(1.5, 5),
+		connection: new THREE.IcosahedronBufferGeometry(0.3, 3)
 	},
 	material = {
+		connection: new THREE.MeshBasicMaterial({color: 0x0a466a, transparent: true, opacity: 0.4}),
 		red: new THREE.MeshStandardMaterial({color: 0xee0808, flatShading: true}),
 		green: new THREE.MeshStandardMaterial({color: 0x08ee08, flatShading: true}),
 		blue: new THREE.MeshStandardMaterial({color: 0x0a466a, flatShading: true}),
 		white: new THREE.MeshStandardMaterial({color: 0xffffff, flatShading: true}),
 		inner_sphere: new THREE.MeshStandardMaterial({color: 0x2020ff, transparent: true, opacity: 0.1})
 	},
-	shaders = getShadersGLSL(),
-	INTERSECTED;// TODO: move to widgets_canvas object
+	shaders = getShadersGLSL();
 
 $.subscribe('init.widget.3dcanvas', initWidget3dCanvasHandler);
 animate();
@@ -157,7 +158,7 @@ function init(container) {
 		scene: scene,
 		camera: camera,
 		renderer: renderer,
-		sprite_glow: sprite_glow,
+		// sprite_glow: sprite_glow,
 		animations: []
 	}
 }
@@ -198,7 +199,7 @@ function fillScene(scene, data, points) {
 			mesh.mouseleave = mouseleave;
 			mesh.mouseclick = mouseclick;
 			mesh.position.set(x,y,z);
-			mesh.add(scene.sprite_glow.clone());
+			//mesh.add(scene.sprite_glow.clone());
 			scene.scene.add(mesh);
 
 			var text = new TextLabelNode();
@@ -232,7 +233,7 @@ function fillScene(scene, data, points) {
 			mesh.mouseleave = mouseleave;
 			mesh.mouseclick = mouseclick;
 			mesh.position.set(x + pos[0], y + pos[1], z + pos[2]);
-			mesh.add(scene.sprite_glow.clone());
+			// mesh.add(scene.sprite_glow.clone());
 			scene.scene.add(mesh);
 
 			var line_geometry = new THREE.Geometry();
@@ -248,10 +249,11 @@ function fillScene(scene, data, points) {
 			scene.scene.add(line);
 
 			// Add data-flow-animation
-			var flow_mesh = scene.sprite_glow.clone();
+			// var flow_mesh = scene.sprite_glow.clone();
+			var flow_mesh = new THREE.Mesh(geometry.connection, material.connection.clone());
 
 			// https://github.com/mrdoob/three.js/blob/2136a132055c579bb140f5198992c7eb21256e83/examples/jsm/animation/AnimationClipCreator.js#L69
-			var duration = 1, pulseScale = 20;
+			var duration = 3, pulseScale = 20;
 			var times = [], values = [], tmp = new THREE.Vector3();
 
 			for ( var i = 0; i < duration * 10; i ++ ) {
