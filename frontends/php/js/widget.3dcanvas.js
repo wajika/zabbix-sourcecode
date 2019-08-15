@@ -32,7 +32,7 @@ var widgets_canvas = {},
 	material = {
 		red: new THREE.MeshStandardMaterial({color: 0xee0808, flatShading: true}),
 		green: new THREE.MeshStandardMaterial({color: 0x08ee08, flatShading: true}),
-		blue: new THREE.MeshStandardMaterial({color: 0x0000ff, flatShading: true}),
+		blue: new THREE.MeshStandardMaterial({color: 0x0a466a, flatShading: true}),
 		white: new THREE.MeshStandardMaterial({color: 0xffffff, flatShading: true}),
 		inner_sphere: new THREE.MeshStandardMaterial({color: 0x2020ff, transparent: true, opacity: 0.1})
 	},
@@ -60,6 +60,8 @@ function initWidget3dCanvasHandler(ev) {
 	fillScene(widgets_canvas[widgetid], ev.scene, pointsDistributionSphere);
 
 	container.on('mousemove', {widgetid: widgetid}, containerMouseMoveHandler);
+	container.on('mouseout', {widgetid: widgetid}, containerMouseOutHandler);
+	container.on('click', {widgetid: widgetid}, containerMouseClickHandler);
 }
 
 /**
@@ -68,10 +70,6 @@ function initWidget3dCanvasHandler(ev) {
  * @param {Object} ev         jQuery event object.
  */
 function containerMouseMoveHandler(ev) {
-	if (!ev.data || !ev.data.widgetid) {
-		return;
-	}
-
 	ev.preventDefault();
 
 	var widgetid = ev.data.widgetid,
@@ -83,6 +81,35 @@ function containerMouseMoveHandler(ev) {
 		y: - ((ev.clientY - rect.top) / container.height()) * 2 + 1,
 		clock: (new Date).getTime()
 	}
+}
+
+function containerMouseClickHandler(ev) {
+	ev.preventDefault();
+
+	var widgetid = ev.data.widgetid,
+		container = $(ev.target),
+		rect = ev.target.getBoundingClientRect(),
+		scene = widgets_canvas[widgetid];
+
+	scene.mouse = {
+		x: ((ev.clientX - rect.left) / container.width()) * 2 - 1,
+		y: - ((ev.clientY - rect.top) / container.height()) * 2 + 1,
+		clock: (new Date).getTime()
+	}
+
+	raycaster.setFromCamera(scene.mouse, scene.camera);
+	$.each(raycaster.intersectObjects(scene.scene.children), function(_, o) {
+		if (o.object && 'mouseclick' in o.object) {
+			scene.intersected = o;
+			o.object.mouseclick(scene);
+
+			return false;
+		}
+	});
+}
+
+function containerMouseOutHandler(ev) {
+
 }
 
 /**
@@ -113,7 +140,7 @@ function init(container) {
 	var sprite_glow_material = new THREE.SpriteMaterial({
 		map: new THREE.ImageUtils.loadTexture('assets/img/glow.png' ),
 		useScreenCoordinates: false, alignment: new THREE.Vector2(0, 0),
-		color: 0x00ff00, transparent: true, blending: THREE.AdditiveBlending
+		color: 0x0a466a, transparent: true, blending: THREE.AdditiveBlending
 	});
 	var sprite_glow = new THREE.Sprite(sprite_glow_material);
 	sprite_glow.scale.set(7, 7, 1.0);
@@ -165,10 +192,11 @@ function fillScene(scene, data, points) {
 			__log(`old parent ${elm.id}`, processed[elm.id]);
 		}
 		else {
-			var mesh = new THREE.Mesh(geometry[elm.geometry], material.green.clone());
+			var mesh = new THREE.Mesh(geometry[elm.geometry], material.blue.clone());
 			distance = 8;
 			mesh.mouseenter = mouseenter;
 			mesh.mouseleave = mouseleave;
+			mesh.mouseclick = mouseclick;
 			mesh.position.set(x,y,z);
 			mesh.add(scene.sprite_glow.clone());
 			scene.scene.add(mesh);
@@ -199,9 +227,10 @@ function fillScene(scene, data, points) {
 			var elm = data.elements.filter(elm => {
 				return elm.id === children[i].child;
 			}).pop();
-			var mesh = new THREE.Mesh(geometry[elm.geometry], material.green.clone());
+			var mesh = new THREE.Mesh(geometry[elm.geometry], material.blue.clone());
 			mesh.mouseenter = mouseenter;
 			mesh.mouseleave = mouseleave;
+			mesh.mouseclick = mouseclick;
 			mesh.position.set(x + pos[0], y + pos[1], z + pos[2]);
 			mesh.add(scene.sprite_glow.clone());
 			scene.scene.add(mesh);
@@ -211,7 +240,7 @@ function fillScene(scene, data, points) {
 				new THREE.Vector3(x, y, z),
 				new THREE.Vector3(x + pos[0], y + pos[1], z + pos[2])
 			);
-			var line = new THREE.Line(line_geometry, new THREE.LineBasicMaterial({color: 0x00ff00, transparent: true,
+			var line = new THREE.Line(line_geometry, new THREE.LineBasicMaterial({color: 0x0a466a, transparent: true,
 				opacity: 0.3
 			}));
 			line.mouseenter = mouseenter;
@@ -347,6 +376,11 @@ function mouseenter(scene) {
 
 function mouseleave(scene) {
 	scene.controls.autoRotate = true;
+}
+
+function mouseclick(scene) {
+	__log('lookat', scene.intersected);
+	// scene.camera.lookAt(scene.intersected);
 }
 
 /**

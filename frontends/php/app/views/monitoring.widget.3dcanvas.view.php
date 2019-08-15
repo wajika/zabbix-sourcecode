@@ -27,13 +27,12 @@ $css = "<style>
 	position: relative;
 	width: 100%;
 	height: 100%;
-	background-color: black;
 	overflow: hidden;
 }
 .label-3dcanvas {
 	position: absolute;
 	pointer-events:none;
-	color: #80ff80;
+	color: #0a466a;
 	font-weight: bold;
 	top: -1000px;
 	left: -1000px;
