@@ -36,6 +36,7 @@ var widgets_canvas = {},
 		white: new THREE.MeshStandardMaterial({color: 0xffffff, flatShading: true}),
 		inner_sphere: new THREE.MeshStandardMaterial({color: 0x2020ff, transparent: true, opacity: 0.1})
 	},
+	shaders = getShadersGLSL(),
 	INTERSECTED;// TODO: move to widgets_canvas object
 
 $.subscribe('init.widget.3dcanvas', initWidget3dCanvasHandler);
@@ -80,7 +81,7 @@ function containerMouseMoveHandler(ev) {
 	widgets_canvas[widgetid].mouse = {
 		x: ((ev.clientX - rect.left) / container.width()) * 2 - 1,
 		y: - ((ev.clientY - rect.top) / container.height()) * 2 + 1,
-		clock: (new Date()).getTime()
+		clock: (new Date).getTime()
 	}
 }
 
@@ -117,12 +118,6 @@ function init(container) {
 	var sprite_glow = new THREE.Sprite(sprite_glow_material);
 	sprite_glow.scale.set(7, 7, 1.0);
 
-	var cylinder_glow_material = new THREE.SpriteMaterial({
-		map: new THREE.ImageUtils.loadTexture('assets/img/texture_glow.png' ),
-		useScreenCoordinates: false, alignment: new THREE.Vector2(0, 0),
-		color: 0x0000ff, transparent: true, blending: THREE.AdditiveBlending
-	});
-
 	// Enable camera auto rotation
 	controls.target = new THREE.Vector3(3, 7, 0);
 	controls.update();
@@ -136,8 +131,7 @@ function init(container) {
 		camera: camera,
 		renderer: renderer,
 		sprite_glow: sprite_glow,
-		animations: [],
-		cylinder_glow_material: cylinder_glow_material
+		animations: []
 	}
 }
 
@@ -173,6 +167,8 @@ function fillScene(scene, data, points) {
 		else {
 			var mesh = new THREE.Mesh(geometry[elm.geometry], material.green.clone());
 			distance = 8;
+			mesh.mouseenter = mouseenter;
+			mesh.mouseleave = mouseleave;
 			mesh.position.set(x,y,z);
 			mesh.add(scene.sprite_glow.clone());
 			scene.scene.add(mesh);
@@ -199,27 +195,13 @@ function fillScene(scene, data, points) {
 
 		distance *= children.length;
 
-		// DEBUG: inner sphere where all children will be distributed by pointsDistributionSphere.
-		// var inner_sphere = new THREE.Mesh(
-		// 	new THREE.SphereGeometry(distance, 70, 70, 0, Math.PI * 2, 0, Math.PI * 2),
-		// 	material.inner_sphere
-		// );
-		// inner_sphere.position.set(x,y,z);
-		// scene.scene.add(inner_sphere);
-		var cylinder = new THREE.Mesh(
-			new THREE.CylinderGeometry(3, 3, 40, 55),
-			// scene.cylinder_glow_material.clone()
-			material.blue.clone()
-			// scene.cylinder_glow_material
-		);
-		cylinder.position.set(x, y, z);
-		// scene.scene.add(cylinder);
-
 		points(children.length, distance*3).forEach((pos, i) => {
 			var elm = data.elements.filter(elm => {
 				return elm.id === children[i].child;
 			}).pop();
 			var mesh = new THREE.Mesh(geometry[elm.geometry], material.green.clone());
+			mesh.mouseenter = mouseenter;
+			mesh.mouseleave = mouseleave;
 			mesh.position.set(x + pos[0], y + pos[1], z + pos[2]);
 			mesh.add(scene.sprite_glow.clone());
 			scene.scene.add(mesh);
@@ -232,6 +214,8 @@ function fillScene(scene, data, points) {
 			var line = new THREE.Line(line_geometry, new THREE.LineBasicMaterial({color: 0x00ff00, transparent: true,
 				opacity: 0.3
 			}));
+			line.mouseenter = mouseenter;
+			line.mouseleave = mouseleave;
 			scene.scene.add(line);
 
 			// Add data-flow-animation
@@ -311,12 +295,11 @@ function animate() {
 		scene.renderer.render(scene.scene, scene.camera);
 		scene.camera.updateMatrixWorld();
 		updateLabelsPositions(scene);
+		sceneMouseOverHandler(scene);
 
-		raycaster.setFromCamera(scene.mouse, scene.camera);
-		markMouseIntersection(scene);
-		if ( scene.animations ) {
+		if (scene.animations) {
 			scene.animations.each(mixer => {
-				mixer.update( delta );
+				mixer.update(delta);
 			})
 		}
 	});
@@ -327,32 +310,43 @@ function animate() {
  *
  * @param {Object} scene     Scene object
  */
-function markMouseIntersection(scene)
-{
-	var intersects = raycaster.intersectObjects(scene.scene.children);
+function sceneMouseOverHandler(scene) {
+	raycaster.setFromCamera(scene.mouse, scene.camera);
+	var objects = raycaster.intersectObjects(scene.scene.children),
+		uuids = $.map(objects, o => { return o.object.uuid; });
 
-	if (intersects.length > 0) {
-		// __log('intersected', intersects);
-		if ( INTERSECTED != intersects[ 0 ].object ) {
-			scene.controls.autoRotate = (new Date()).getTime() > scene.mouse.clock + 1000;
-
-			if ( INTERSECTED ) INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
-			INTERSECTED = intersects[ 0 ].object;
-			INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
-
-			if (INTERSECTED.children) {
-				INTERSECTED.material.color.setHex(0xffffff);
-			}
-			else {
-				INTERSECTED.material.color.setHex(0xffffff);
-			}
-		}
-	} else {
-		if ( INTERSECTED ) INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
-		INTERSECTED = null;
-
-		scene.controls.autoRotate = true;
+	if (objects.length && scene.intersected && uuids.indexOf(scene.intersected.object.uuid) != -1) {
+		return;
 	}
+
+	if (!objects.length) {
+		if (scene.intersected && 'mouseleave' in scene.intersected.object) {
+			scene.intersected.object.mouseleave(scene);
+		}
+
+		scene.intersected = null;
+		return;
+	}
+
+	if (scene.intersected && 'mouseleave' in scene.intersected.object) {
+		scene.intersected.object.mouseleave(scene);
+		scene.intersected = null;
+	}
+
+	if ('mouseenter' in objects[0].object) {
+		scene.intersected = objects[0];
+		scene.intersected.object.mouseenter(scene);
+	}
+}
+
+function mouseenter(scene) {
+	if (scene.mouse.clock + 1000 > (new Date).getTime()) {
+		scene.controls.autoRotate = false;
+	}
+}
+
+function mouseleave(scene) {
+	scene.controls.autoRotate = true;
 }
 
 /**
@@ -405,5 +399,34 @@ TextLabelNode.prototype.updatePosition = function(camera, width, height) {
 	this.element.style.left = vector.x + 'px';
 	this.element.style.top = vector.y + 'px';
 };
+
+/**
+ * Return object with shaders GLSL code.
+ */
+function getShadersGLSL() {
+	return {
+		bloomVertexShader: `
+		varying vec2 vUv;
+
+		void main() {
+			vUv = uv;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+		}
+		`,
+		bloomFragmentShader: `
+		uniform sampler2D baseTexture;
+		uniform sampler2D bloomTexture;
+		varying vec2 vUv;
+
+		vec4 getTexture(sampler2D texelToLinearTexture) {
+			return mapTexelToLinear(texture2D(texelToLinearTexture , vUv));
+		}
+
+		void main() {
+			gl_FragColor = (getTexture(baseTexture) + vec4(1.0) * getTexture(bloomTexture));
+		}
+		`
+	}
+}
 
 })(jQuery);
