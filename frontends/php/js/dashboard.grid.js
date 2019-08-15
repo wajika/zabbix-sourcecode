@@ -1904,7 +1904,9 @@
 		stopWidgetRefreshTimer(widget);
 		makeDraggable($obj, data, widget);
 		makeResizable($obj, data, widget);
-		doAction('onResizeEnd', $obj, data, widget);
+		if (widget.view_mode == 1) {
+			doAction('onResizeEnd', $obj, data, widget);
+		}
 	}
 
 	function deleteWidget($obj, data, widget) {
