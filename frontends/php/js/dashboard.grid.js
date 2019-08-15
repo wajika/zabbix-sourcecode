@@ -1899,12 +1899,14 @@
 	function setWidgetModeEdit($obj, data, widget) {
 		$('.btn-widget-action', widget['content_header']).parent('li').hide();
 		$('.btn-widget-delete', widget['content_header']).parent('li').show();
-		$('.dashbrd-grid-widget').removeClass('dashbrd-grid-widget-hidden-header');
 		removeWidgetInfoButtons(widget['content_header']);
 		stopWidgetRefreshTimer(widget);
 		makeDraggable($obj, data, widget);
 		makeResizable($obj, data, widget);
+
+		// ZBX_WIDGET_VIEW_MODE_HIDDEN_HEADER
 		if (widget.view_mode == 1) {
+			widget['div'].removeClass('dashbrd-grid-widget-hidden-header');
 			doAction('onResizeEnd', $obj, data, widget);
 		}
 	}
