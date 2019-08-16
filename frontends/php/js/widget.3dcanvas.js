@@ -28,10 +28,10 @@ var widgets_canvas = {},
 	geometry = {
 		sphere: new THREE.SphereBufferGeometry(1, 70, 70, 0, Math.PI * 2, 0, Math.PI * 2),
 		icosahedron: new THREE.IcosahedronBufferGeometry(1.5, 5),
-		connection: new THREE.IcosahedronBufferGeometry(0.3, 3)
+		connection: new THREE.IcosahedronBufferGeometry(0.1, 1)
 	},
 	material = {
-		connection: new THREE.MeshBasicMaterial({color: 0x0a466a, transparent: true, opacity: 0.4}),
+		connection: new THREE.MeshBasicMaterial({color: 0x40466a, transparent: true, opacity: 0.2}),
 		red: new THREE.MeshStandardMaterial({color: 0xee0808, flatShading: true}),
 		green: new THREE.MeshStandardMaterial({color: 0x08ee08, flatShading: true}),
 		blue: new THREE.MeshStandardMaterial({color: 0x0a466a, flatShading: true}),
@@ -39,6 +39,10 @@ var widgets_canvas = {},
 		inner_sphere: new THREE.MeshStandardMaterial({color: 0x2020ff, transparent: true, opacity: 0.1})
 	},
 	shaders = getShadersGLSL();
+
+var ENTIRE_SCENE = 0, BLOOM_SCENE = 1;
+var bloomLayer = new THREE.Layers();
+bloomLayer.set( BLOOM_SCENE );
 
 $.subscribe('init.widget.3dcanvas', initWidget3dCanvasHandler);
 animate();
@@ -119,7 +123,7 @@ function containerMouseOutHandler(ev) {
  * @param {Object} container   Dom element, 3d canvas container.
  */
 function init(container) {
-	var camera = new THREE.PerspectiveCamera(70, container.width() / container.height(), 0.1, 1000);
+	var camera = new THREE.PerspectiveCamera(60, container.width() / container.height(), 0.1, 1000);
 	var renderer = new THREE.WebGLRenderer({ alpha: true });
 	var controls = new THREE.OrbitControls(camera, renderer.domElement);
 	var scene = new THREE.Scene();
@@ -131,20 +135,12 @@ function init(container) {
 	light_directional.position.set(-3000, 1000, -1000);
 	scene.add(light_directional);
 
-
-	camera.position.set(15, 20, 100);
+	camera.position.set(0, 0, 1000);
+	camera.lookAt(0, 0, 0);
 	controls.update();
 
 	renderer.setSize(container.width(), container.height() - 10);
 	container.append(renderer.domElement);
-
-	var sprite_glow_material = new THREE.SpriteMaterial({
-		map: new THREE.ImageUtils.loadTexture('assets/img/glow.png' ),
-		useScreenCoordinates: false, alignment: new THREE.Vector2(0, 0),
-		color: 0x0a466a, transparent: true, blending: THREE.AdditiveBlending
-	});
-	var sprite_glow = new THREE.Sprite(sprite_glow_material);
-	sprite_glow.scale.set(7, 7, 1.0);
 
 	// Enable camera auto rotation
 	controls.target = new THREE.Vector3(3, 7, 0);
@@ -152,13 +148,21 @@ function init(container) {
 	controls.autoRotate = true;
 	controls.autoRotateSpeed = 3.0;
 
+	var composer = new POSTPROCESSING.EffectComposer(renderer);
+	// https://github.com/vanruesc/postprocessing
+	var effectPass = new POSTPROCESSING.EffectPass(camera, new POSTPROCESSING.BloomEffect(0, 0, 4));
+	effectPass.renderToScreen = true;
+
+	composer.addPass(new POSTPROCESSING.RenderPass(scene, camera));
+	composer.addPass(effectPass);
+
 	return {
 		controls: controls,
 		container: container,
 		scene: scene,
 		camera: camera,
+		composer: composer,
 		renderer: renderer,
-		// sprite_glow: sprite_glow,
 		animations: []
 	}
 }
@@ -253,17 +257,17 @@ function fillScene(scene, data, points) {
 			var flow_mesh = new THREE.Mesh(geometry.connection, material.connection.clone());
 
 			// https://github.com/mrdoob/three.js/blob/2136a132055c579bb140f5198992c7eb21256e83/examples/jsm/animation/AnimationClipCreator.js#L69
-			var duration = 3, pulseScale = 20;
+			var duration = 3, pulseScale = 3;
 			var times = [], values = [], tmp = new THREE.Vector3();
 
-			for ( var i = 0; i < duration * 10; i ++ ) {
+			for ( var i = 0; i < duration * 50; i ++ ) {
 
-				times.push( i / 10 );
+				times.push( i / 50 );
 
 				//var scaleFactor = Math.random() * pulseScale;
-				var scaleFactor = ((i%4) + 1)/10 * pulseScale;
-				tmp.set( scaleFactor, scaleFactor, scaleFactor ).
-					toArray( values, values.length );
+				var scaleFactor = (i%12)*pulseScale/2;
+				tmp.set(scaleFactor, scaleFactor, scaleFactor)
+					.toArray(values, values.length);
 
 			}
 			// for ( var i = 0; i < duration * 20; i ++ ) {
@@ -291,7 +295,7 @@ function fillScene(scene, data, points) {
 
 
 			var text = new TextLabelNode();
-			text.setHTML(elm.deails);
+			text.setHTML(elm.details);
 			text.parent = mesh;
 			scene.labels.push(text);
 			scene.container.append(text.element);
@@ -310,9 +314,13 @@ function updateLabelsPositions(scene) {
 		height = scene.container.height();
 
 	scene.labels.each(label => {
-		label.updatePosition(scene.camera, width, height);
+		label.updatePosition(scene.controls.object, width, height);
 	});
 }
+
+// var a = 0;
+// var x = 0, y = 0, z = 1000;
+// var ca = 90;
 
 /**
  * Animation frame handler for all 3d canvas objects.
@@ -322,6 +330,9 @@ function animate() {
 	requestAnimationFrame(animate);
 
 	Object.values(widgets_canvas).each(scene => {
+		// scene.camera.position.set(x, y, z+Math.sin(a)*600);
+		// a = a + delta;
+		// scene.camera.rotation.y = ca + Math.sin(a);
 		scene.controls.update();
 		scene.renderer.render(scene.scene, scene.camera);
 		scene.camera.updateMatrixWorld();
@@ -333,6 +344,8 @@ function animate() {
 				mixer.update(delta);
 			})
 		}
+
+		scene.composer.render(delta);
 	});
 };
 
@@ -381,8 +394,8 @@ function mouseleave(scene) {
 }
 
 function mouseclick(scene) {
-	__log('lookat', scene.intersected);
-	// scene.camera.lookAt(scene.intersected);
+	var vect3 = scene.intersected.point;
+	scene.camera.position.copy(vect3);
 }
 
 /**
@@ -424,7 +437,7 @@ TextLabelNode.prototype.setHTML = function (html) {
 };
 
 TextLabelNode.prototype.updatePosition = function(camera, width, height) {
-	if(parent) {
+	if (this.parent) {
 		this.position.copy(this.parent.position);
 	}
 
@@ -434,6 +447,13 @@ TextLabelNode.prototype.updatePosition = function(camera, width, height) {
 
 	this.element.style.left = vector.x + 'px';
 	this.element.style.top = vector.y + 'px';
+
+	// this.setHTML(distance.toFixed(2));
+	//this.setHTML(camera.position.distanceTo(this.position).toFixed(2));
+	//this.setHTML(camera.position.distanceTo(vector).toFixed(2));
+	this.element.style.display = this.position.z < 0 ? 'none' : 'block';
+
+	this.element.style.opacity = 1.5-Math.abs(camera.position.distanceTo(this.position)/1500);
 };
 
 /**
