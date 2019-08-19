@@ -61,7 +61,9 @@ $fields = [
 	'dependencies' =>							[T_ZBX_INT, O_OPT, null,	DB_ID,			null],
 	'new_dependency' =>							[T_ZBX_INT, O_OPT, null,	DB_ID.'{}>0',	'isset({add_dependency})'],
 	'g_triggerid' =>							[T_ZBX_INT, O_OPT, null,	DB_ID,			null],
-	'copy_targetids' =>							[T_ZBX_INT, O_OPT, null,	DB_ID,			null],
+	'copy_hostgroup_targetids' =>				[T_ZBX_INT, O_OPT, null,	DB_ID,			null],
+	'copy_templates_targetids' =>				[T_ZBX_INT, O_OPT, null,	DB_ID,			null],
+	'copy_host_targetids' =>					[T_ZBX_INT, O_OPT, null,	DB_ID,			null],
 	'visible' =>								[T_ZBX_STR, O_OPT, null,	null,			null],
 	'tags' =>									[T_ZBX_STR, O_OPT, null,	null,			null],
 	'mass_update_tags'	=>						[T_ZBX_INT, O_OPT, null,
@@ -554,35 +556,39 @@ elseif (hasRequest('action') && str_in_array(getRequest('action'), ['trigger.mas
 }
 elseif (hasRequest('action') && getRequest('action') === 'trigger.masscopyto' && hasRequest('copy')
 		&& hasRequest('g_triggerid')) {
+	$triggerids = getRequest('g_triggerid', []);
+	$hostids = [];
 
-	if (getRequest('copy_targetids', []) && hasRequest('copy_type')) {
+	// Select copy targers.
+	if (hasRequest('copy_type')) {
+		switch (getRequest('copy_type')) {
+			case COPY_TYPE_TO_HOST:
+				$hostids = getRequest('copy_host_targetids', []);
+				break;
 
-		// Hosts or templates.
-		if (getRequest('copy_type') == COPY_TYPE_TO_HOST || getRequest('copy_type') == COPY_TYPE_TO_TEMPLATE) {
-			$hosts_ids = getRequest('copy_targetids');
+			case COPY_TYPE_TO_TEMPLATE:
+				$hostids = getRequest('copy_templates_targetids', []);
+				break;
+
+			case COPY_TYPE_TO_HOST_GROUP:
+				$db_hosts = getRequest('copy_hostgroup_targetids', [])
+					? API::Host()->get([
+						'output' => [],
+						'groupids' => getRequest('copy_hostgroup_targetids', []),
+						'preservekeys' => true
+					])
+					: [];
+
+				$hostids = array_keys($db_hosts);
+				break;
 		}
-		// Host groups.
-		else {
-			$hosts_ids = [];
-			$group_ids = getRequest('copy_targetids');
-			$db_hosts = DBselect(
-				'SELECT DISTINCT h.hostid'.
-				' FROM hosts h,hosts_groups hg'.
-				' WHERE h.hostid=hg.hostid'.
-					' AND '.dbConditionInt('hg.groupid', $group_ids)
-			);
+	}
 
-			while ($db_host = DBfetch($db_hosts)) {
-				$hosts_ids[] = $db_host['hostid'];
-			}
-		}
-
+	// Perform copy action and show result message.
+	if ($hostids) {
 		DBstart();
-
-		$result = copyTriggersToHosts(getRequest('g_triggerid'), $hosts_ids, getRequest('hostid'));
+		$result = copyTriggersToHosts($triggerids, $hostids, getRequest('hostid'));
 		$result = DBend($result);
-
-		$triggers_count = count(getRequest('g_triggerid'));
 
 		if ($result) {
 			uncheckTableRows(getRequest('checkbox_hash'));
@@ -590,8 +596,8 @@ elseif (hasRequest('action') && getRequest('action') === 'trigger.masscopyto' &&
 		}
 
 		show_messages($result,
-			_n('Trigger copied', 'Triggers copied', $triggers_count),
-			_n('Cannot copy trigger', 'Cannot copy triggers', $triggers_count)
+			_n('Trigger copied', 'Triggers copied', count($triggerids)),
+			_n('Cannot copy trigger', 'Cannot copy triggers', count($triggerids))
 		);
 	}
 	else {

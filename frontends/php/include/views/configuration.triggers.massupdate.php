@@ -44,27 +44,23 @@ foreach ($data['g_triggerid'] as $triggerid) {
  */
 $trigger_form_list = (new CFormList('trigger-form-list'))
 	->addRow(
-		(new CVisibilityBox('visible[priority]', 'priority-div', _('Original')))
+		(new CVisibilityBox('visible[priority]', 'priority', _('Original')))
 			->setLabel(_('Severity'))
 			->setChecked(array_key_exists('priority', $data['visible']))
 			->setAttribute('autofocus', 'autofocus'),
-		(new CDiv(
-			new CSeverity([
-				'name' => 'priority',
-				'value' => (int) $data['priority']
-			])
-		))->setId('priority-div')
+		new CSeverity([
+			'name' => 'priority',
+			'value' => (int) $data['priority']
+		])
 	)
 	->addRow(
-		(new CVisibilityBox('visible[manual_close]', 'manual-close-div', _('Original')))
+		(new CVisibilityBox('visible[manual_close]', 'manual_close', _('Original')))
 			->setLabel(_('Allow manual close'))
 			->setChecked(array_key_exists('manual_close', $data['visible'])),
-		(new CDiv(
-			(new CRadioButtonList('manual_close', (int) $data['manual_close']))
-				->addValue(_('No'), ZBX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED)
-				->addValue(_('Yes'), ZBX_TRIGGER_MANUAL_CLOSE_ALLOWED)
-				->setModern(true)
-		))->setId('manual-close-div')
+		(new CRadioButtonList('manual_close', (int) $data['manual_close']))
+			->addValue(_('No'), ZBX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED)
+			->addValue(_('Yes'), ZBX_TRIGGER_MANUAL_CLOSE_ALLOWED)
+			->setModern(true)
 	);
 
 /*

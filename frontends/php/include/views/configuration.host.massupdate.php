@@ -186,16 +186,14 @@ $inventoryFormList = new CFormList('inventoryFormList');
 
 // append inventories to form list
 $inventoryFormList->addRow(
-	(new CVisibilityBox('visible[inventory_mode]', 'inventory_mode_div', _('Original')))
+	(new CVisibilityBox('visible[inventory_mode]', 'inventory_mode', _('Original')))
 		->setLabel(_('Inventory mode'))
 		->setChecked(array_key_exists('inventory_mode', $data['visible'])),
-	(new CDiv(
-		(new CRadioButtonList('inventory_mode', (int) $data['inventory_mode']))
-			->addValue(_('Disabled'), HOST_INVENTORY_DISABLED)
-			->addValue(_('Manual'), HOST_INVENTORY_MANUAL)
-			->addValue(_('Automatic'), HOST_INVENTORY_AUTOMATIC)
-			->setModern(true)
-	))->setId('inventory_mode_div')
+	(new CRadioButtonList('inventory_mode', (int) $data['inventory_mode']))
+		->addValue(_('Disabled'), HOST_INVENTORY_DISABLED)
+		->addValue(_('Manual'), HOST_INVENTORY_MANUAL)
+		->addValue(_('Automatic'), HOST_INVENTORY_AUTOMATIC)
+		->setModern(true)
 );
 
 $tags_form_list = new CFormList('tagsFormList');
