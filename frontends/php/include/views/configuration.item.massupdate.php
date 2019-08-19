@@ -110,16 +110,14 @@ $itemFormList->addRow(
 
 // ITEM_TYPE_HTTPAGENT Request body type.
 $itemFormList->addRow(
-	(new CVisibilityBox('visible[post_type]', 'post_type_container', _('Original')))
+	(new CVisibilityBox('visible[post_type]', 'post_type', _('Original')))
 		->setLabel(_('Request body type'))
 		->setChecked(array_key_exists('post_type', $data['visible'])),
-	(new CDiv(
-		(new CRadioButtonList('post_type', (int) $data['post_type']))
-			->addValue(_('Raw data'), ZBX_POSTTYPE_RAW)
-			->addValue(_('JSON data'), ZBX_POSTTYPE_JSON)
-			->addValue(_('XML data'), ZBX_POSTTYPE_XML)
-			->setModern(true)
-	))->setId('post_type_container')
+	(new CRadioButtonList('post_type', (int) $data['post_type']))
+		->addValue(_('Raw data'), ZBX_POSTTYPE_RAW)
+		->addValue(_('JSON data'), ZBX_POSTTYPE_JSON)
+		->addValue(_('XML data'), ZBX_POSTTYPE_XML)
+		->setModern(true)
 );
 
 // ITEM_TYPE_HTTPAGENT Request body.
@@ -217,15 +215,13 @@ $itemFormList->addRow(
 
 // append snmpv3 authprotocol to form list
 $itemFormList->addRow(
-	(new CVisibilityBox('visible[snmpv3_authprotocol]', 'authprotocol_div', _('Original')))
+	(new CVisibilityBox('visible[snmpv3_authprotocol]', 'snmpv3_authprotocol', _('Original')))
 		->setLabel(_('Authentication protocol'))
 		->setChecked(isset($data['visible']['snmpv3_authprotocol'])),
-	(new CDiv(
-		(new CRadioButtonList('snmpv3_authprotocol', (int) $data['snmpv3_authprotocol']))
-			->addValue(_('MD5'), ITEM_AUTHPROTOCOL_MD5)
-			->addValue(_('SHA'), ITEM_AUTHPROTOCOL_SHA)
-			->setModern(true)
-	))->setId('authprotocol_div')
+	(new CRadioButtonList('snmpv3_authprotocol', (int) $data['snmpv3_authprotocol']))
+		->addValue(_('MD5'), ITEM_AUTHPROTOCOL_MD5)
+		->addValue(_('SHA'), ITEM_AUTHPROTOCOL_SHA)
+		->setModern(true)
 );
 
 // append snmpv3 authpassphrase to form list
@@ -239,16 +235,13 @@ $itemFormList->addRow(
 
 // append snmpv3 privprotocol to form list
 $itemFormList->addRow(
-	(new CVisibilityBox('visible[snmpv3_privprotocol]', 'privprotocol_div', _('Original')))
+	(new CVisibilityBox('visible[snmpv3_privprotocol]', 'snmpv3_privprotocol', _('Original')))
 		->setLabel(_('Privacy protocol'))
 		->setChecked(isset($data['visible']['snmpv3_privprotocol'])),
-	(new CDiv(
-		(new CRadioButtonList('snmpv3_privprotocol', (int) $data['snmpv3_privprotocol']))
-			->addValue(_('DES'), ITEM_PRIVPROTOCOL_DES)
-			->addValue(_('AES'), ITEM_PRIVPROTOCOL_AES)
-			->setModern(true)
-	))
-		->setId('privprotocol_div')
+	(new CRadioButtonList('snmpv3_privprotocol', (int) $data['snmpv3_privprotocol']))
+		->addValue(_('DES'), ITEM_PRIVPROTOCOL_DES)
+		->addValue(_('AES'), ITEM_PRIVPROTOCOL_AES)
+		->setModern(true)
 );
 
 // append snmpv3 privpassphrase to form list
