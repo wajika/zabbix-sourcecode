@@ -486,6 +486,7 @@ $item_form_list
 				->addValue(_('Add'), ZBX_ACTION_ADD)
 				->addValue(_('Replace'), ZBX_ACTION_REPLACE)
 				->addValue(_('Remove'), ZBX_ACTION_REMOVE)
+				->addStyle('margin-bottom: 5px;')
 				->setModern(true),
 			(new CMultiSelect([
 				'name' => 'applications[]',
@@ -561,6 +562,7 @@ $item_form_list
 				->addValue(_('Add'), ZBX_ACTION_ADD)
 				->addValue(_('Replace'), ZBX_ACTION_REPLACE)
 				->addValue(_('Remove'), ZBX_ACTION_REMOVE)
+				->addStyle('margin-bottom: 5px;')
 				->setModern(true),
 			(new CMultiSelect([
 				'name' => 'application_prototypes[]',
