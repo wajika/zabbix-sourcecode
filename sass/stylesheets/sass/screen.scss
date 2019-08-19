@@ -1732,6 +1732,10 @@ output {
 
 	li {
 		display: table-row;
+
+		&.hidden {
+			display: none;
+		}
 	}
 
 	.multiselect-suggest {

@@ -1187,6 +1187,8 @@ output {
   color: #f2f2f2; }
   .table-forms li {
     display: table-row; }
+    .table-forms li.hidden {
+      display: none; }
   .table-forms .multiselect-suggest li, .table-forms .multiselect-matches li {
     display: block; }
   .table-forms th {

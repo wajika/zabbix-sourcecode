@@ -60,7 +60,9 @@ $fields = [
 	'show_work_period' =>	[T_ZBX_INT, O_OPT, null,		IN('1'),		null],
 	'show_triggers' =>		[T_ZBX_INT, O_OPT, null,		IN('1'),		null],
 	'group_graphid' =>		[T_ZBX_INT, O_OPT, null,		DB_ID,			null],
-	'copy_targetids' =>		[T_ZBX_INT, O_OPT, null,		DB_ID,			null],
+	'copy_host_targetids' => [T_ZBX_INT, O_OPT, null,		DB_ID,			null],
+	'copy_templates_targetids' => [T_ZBX_INT, O_OPT, null,	DB_ID,			null],
+	'copy_hostgroup_targetids' => [T_ZBX_INT, O_OPT, null,	DB_ID,			null],
 	// actions
 	'action' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, IN('"graph.masscopyto","graph.massdelete"'),	null],
 	'add' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,			null],
@@ -330,51 +332,45 @@ elseif (hasRequest('action') && getRequest('action') === 'graph.massdelete' && h
 }
 elseif (hasRequest('action') && getRequest('action') === 'graph.masscopyto' && hasRequest('copy')
 		&& hasRequest('group_graphid')) {
-	if (getRequest('copy_targetids', []) && hasRequest('copy_type')) {
+	$graphids = getRequest('group_graphid', []);
+	$hostids = [];
+
+	// Select copy targers.
+	if (hasRequest('copy_type')) {
+		switch (getRequest('copy_type')) {
+			case COPY_TYPE_TO_HOST:
+				$hostids = getRequest('copy_host_targetids', []);
+				break;
+
+			case COPY_TYPE_TO_TEMPLATE:
+				$hostids = getRequest('copy_templates_targetids', []);
+				break;
+
+			case COPY_TYPE_TO_HOST_GROUP:
+				$db_hosts = getRequest('copy_hostgroup_targetids', [])
+					? API::Host()->get([
+						'output' => ['hostid'],
+						'groupids' => getRequest('copy_hostgroup_targetids', []),
+						'preservekeys' => true
+					])
+					: [];
+
+				$hostids = array_keys($db_hosts);
+				break;
+		}
+	}
+
+	// Perform copy action and show result message.
+	if ($hostids) {
 		$result = true;
 
-		$options = [
-			'output' => ['hostid'],
-			'editable' => true,
-			'templated_hosts' => true
-		];
-
-		// hosts or templates
-		if (getRequest('copy_type') == COPY_TYPE_TO_HOST || getRequest('copy_type') == COPY_TYPE_TO_TEMPLATE) {
-			$options['hostids'] = getRequest('copy_targetids');
-		}
-		// host groups
-		else {
-			$groupids = getRequest('copy_targetids');
-			zbx_value2array($groupids);
-
-			$dbGroups = API::HostGroup()->get([
-				'output' => ['groupid'],
-				'groupids' => $groupids,
-				'editable' => true
-			]);
-			$dbGroups = zbx_toHash($dbGroups, 'groupid');
-
-			foreach ($groupids as $groupid) {
-				if (!isset($dbGroups[$groupid])) {
-					access_deny();
-				}
-			}
-
-			$options['groupids'] = $groupids;
-		}
-
-		$dbHosts = API::Host()->get($options);
-
 		DBstart();
-		foreach (getRequest('group_graphid') as $graphid) {
-			foreach ($dbHosts as $host) {
-				$result &= (bool) copyGraphToHost($graphid, $host['hostid']);
+		foreach ($graphids as $graphid) {
+			foreach ($hostids as $hostid) {
+				$result &= (bool) copyGraphToHost($graphid, $hostid);
 			}
 		}
 		$result = DBend($result);
-
-		$graphs_count = count(getRequest('group_graphid'));
 
 		if ($result) {
 			uncheckTableRows(
@@ -383,14 +379,13 @@ elseif (hasRequest('action') && getRequest('action') === 'graph.masscopyto' && h
 			unset($_REQUEST['group_graphid']);
 		}
 		show_messages($result,
-			_n('Graph copied', 'Graphs copied', $graphs_count),
-			_n('Cannot copy graph', 'Cannot copy graphs', $graphs_count)
+			_n('Graph copied', 'Graphs copied', count(getRequest('group_graphid'))),
+			_n('Cannot copy graph', 'Cannot copy graphs', count(getRequest('group_graphid')))
 		);
 	}
 	else {
-		error(_('No target selected.'));
+		show_error_message(_('No target selected.'));
 	}
-	show_messages();
 }
 
 /*

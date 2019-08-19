@@ -125,7 +125,9 @@ $fields = [
 		'(isset({add}) || isset({update})) && isset({value_type}) && {value_type} == 2'],
 	'preprocessing' =>			[T_ZBX_STR, O_OPT, P_NO_TRIM,	null,	null],
 	'group_itemid' =>			[T_ZBX_INT, O_OPT, null,	DB_ID,		null],
-	'copy_targetids' =>			[T_ZBX_INT, O_OPT, null,	DB_ID,		null],
+	'copy_hostgroup_targetids' => [T_ZBX_INT, O_OPT, null,	DB_ID,		null],
+	'copy_host_targetids' =>	[T_ZBX_INT, O_OPT, null,	DB_ID,		null],
+	'copy_templates_targetids' => [T_ZBX_INT, O_OPT, null,	DB_ID,		null],
 	'new_application' =>		[T_ZBX_STR, O_OPT, null,	null,		'isset({add}) || isset({update})'],
 	'visible' =>				[T_ZBX_STR, O_OPT, null,	null,		null],
 	'applications' =>			[T_ZBX_INT, O_OPT, null,	DB_ID,		null],
@@ -1229,41 +1231,48 @@ elseif (hasRequest('action') && str_in_array(getRequest('action'), ['item.massen
 }
 elseif (hasRequest('action') && getRequest('action') === 'item.masscopyto' && hasRequest('copy')
 		&& hasRequest('group_itemid')) {
-	if (getRequest('copy_targetids', []) && hasRequest('copy_type')) {
-		// hosts or templates
-		if (getRequest('copy_type') == COPY_TYPE_TO_HOST || getRequest('copy_type') == COPY_TYPE_TO_TEMPLATE) {
-			$hosts_ids = getRequest('copy_targetids');
-		}
-		// host groups
-		else {
-			$hosts_ids = [];
-			$group_ids = getRequest('copy_targetids');
+	$itemids = getRequest('group_itemid', []);
+	$hostids = [];
 
-			$db_hosts = DBselect(
-				'SELECT DISTINCT h.hostid'.
-				' FROM hosts h,hosts_groups hg'.
-				' WHERE h.hostid=hg.hostid'.
-					' AND '.dbConditionInt('hg.groupid', $group_ids)
-			);
-			while ($db_host = DBfetch($db_hosts)) {
-				$hosts_ids[] = $db_host['hostid'];
-			}
-		}
+	// Select copy targers.
+	if (hasRequest('copy_type')) {
+		switch (getRequest('copy_type')) {
+			case COPY_TYPE_TO_HOST:
+				$hostids = getRequest('copy_host_targetids', []);
+				break;
 
+			case COPY_TYPE_TO_TEMPLATE:
+				$hostids = getRequest('copy_templates_targetids', []);
+				break;
+
+			case COPY_TYPE_TO_HOST_GROUP:
+				$db_hosts = getRequest('copy_hostgroup_targetids', [])
+					? API::Host()->get([
+						'output' => ['hostid'],
+						'groupids' => getRequest('copy_hostgroup_targetids', []),
+						'preservekeys' => true
+					])
+					: [];
+
+				$hostids = array_keys($db_hosts);
+				break;
+		}
+	}
+
+	// Perform copy action and show result message.
+	if ($hostids) {
 		DBstart();
-
-		$result = copyItemsToHosts(getRequest('group_itemid'), $hosts_ids);
+		$result = copyItemsToHosts($itemids, $hostids);
 		$result = DBend($result);
-
-		$items_count = count(getRequest('group_itemid'));
 
 		if ($result) {
 			uncheckTableRows(getRequest('hostid'));
 			unset($_REQUEST['group_itemid']);
 		}
+
 		show_messages($result,
-			_n('Item copied', 'Items copied', $items_count),
-			_n('Cannot copy item', 'Cannot copy items', $items_count)
+			_n('Item copied', 'Items copied', count($itemids)),
+			_n('Cannot copy item', 'Cannot copy items', count($itemids))
 		);
 	}
 	else {
