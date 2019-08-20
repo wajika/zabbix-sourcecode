@@ -92,6 +92,8 @@ class CMultifieldTableElement extends CTableElement {
 	 */
 	public function setFieldMapping($mapping) {
 		$this->mapping = $mapping;
+
+		return $this;
 	}
 
 	/**
@@ -115,6 +117,40 @@ class CMultifieldTableElement extends CTableElement {
 	}
 
 	/**
+	 * Get control data from row.
+	 *
+	 * @param CTableRowElement $row        table row
+	 * @param string|integer   $column     column name or index
+	 *
+	 * @return array
+	 */
+	protected function getRowControlData($row, $column) {
+		if (($mapping = CTestArrayHelper::get($this->mapping, $column, $column)) === null) {
+			return null;
+		}
+
+		if (!is_array($mapping)) {
+			$mapping = ['name' => $mapping];
+		}
+		elseif (!array_key_exists('name', $mapping)) {
+			$mapping['name'] = $column;
+		}
+
+		$class = CTestArrayHelper::get($mapping, 'class', 'CElement');
+		if (array_key_exists('selector', $mapping)) {
+			$mapping['element'] = $row->getColumn($column)->query($mapping['selector'])
+					->cast($class)
+					->all()
+					->find(CElementQuery::VISIBLE);
+		}
+		else {
+			$mapping['element'] = CElementQuery::getInputElement($row->getColumn($column), '.', $class);
+		}
+
+		return $mapping;
+	}
+
+	/**
 	 * Get controls from row.
 	 *
 	 * @param CTableRowElement $row        table row
@@ -130,35 +166,17 @@ class CMultifieldTableElement extends CTableElement {
 		}
 
 		foreach ($row->query('xpath:./td|./th')->all() as $i => $column) {
-			$label = CTestArrayHelper::get($headers, $i, $i);
-			$mapping = CTestArrayHelper::get($this->mapping, $label, $label);
-			if ($mapping === null) {
+			$column = CTestArrayHelper::get($headers, $i, $i);
+			if (!array_key_exists($column, $this->mapping)) {
+				$column = $i;
+			}
+
+			$data = $this->getRowControlData($row, $column);
+			if ($data['element'] === null) {
 				continue;
 			}
 
-			if (!is_array($mapping)) {
-				$mapping = ['name' => $mapping];
-			}
-			elseif (!array_key_exists('name', $mapping)) {
-				$mapping['name'] = $label;
-			}
-
-			if (array_key_exists('selector', $mapping)) {
-				$control = $column->query($mapping['selector'])
-						->cast(CTestArrayHelper::get($mapping, 'class', 'CElement'))
-						->one(false);
-			}
-			else {
-				$control = (!is_array($this->mapping) || array_key_exists($label, $this->mapping))
-						? CElementQuery::getInputElement($column, '.', CTestArrayHelper::get($mapping, 'class'))
-						: null;
-			}
-
-			if ($control === null) {
-				continue;
-			}
-
-			$controls[$mapping['name']] = $control;
+			$controls[$data['name']] = $data['element'];
 		}
 
 		return $controls;
@@ -230,21 +248,26 @@ class CMultifieldTableElement extends CTableElement {
 	 * return $this
 	 */
 	public function updateRow($index, $values) {
-		foreach ($this->getRowControls($this->getRow($index)) as $name => $control) {
-			if (array_key_exists($name, $values)) {
-				$control->fill($values[$name]);
-				unset($values[$name]);
-			}
-		}
+		$headers = $this->getHeadersText();
 
-		if ($values) {
-			throw new Exception('Failed to set values for fields ['.implode(', ', array_keys($values)).'] when filling'.
-					' multifield row (controls are not present for those fields).'
-			);
+		foreach ($values as $column => $value) {
+			if (!array_key_exists($column, $this->getFieldMapping())) {
+				$column = array_search($column, $headers);
+			}
+
+			$data = $this->getRowControlData($this->getRow($index), $column);
+			if ($data['element'] === null) {
+				throw new Exception('Failed to set values for field "'.$column.'" when filling multifield row'.
+						' (control is not present).'
+				);
+			}
+
+			$data['element']->fill($value);
 		}
 
 		return $this;
 	}
+
 
 	/**
 	 * Remove row by index.
