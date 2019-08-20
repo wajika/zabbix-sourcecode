@@ -44,6 +44,7 @@ require_once dirname(__FILE__).'/testPageHosts.php';
 require_once dirname(__FILE__).'/testPageInventory.php';
 require_once dirname(__FILE__).'/testPageItems.php';
 require_once dirname(__FILE__).'/testPageItemPrototypes.php';
+require_once dirname(__FILE__).'/testPageItemPrototypesMassUpdate.php';
 require_once dirname(__FILE__).'/testPageTriggers.php';
 require_once dirname(__FILE__).'/testPageTriggerPrototypes.php';
 require_once dirname(__FILE__).'/testPageMaintenance.php';
@@ -164,6 +165,7 @@ class SeleniumTests {
 		$suite->addTestSuite('testPageInventory');
 		$suite->addTestSuite('testPageItems');
 		$suite->addTestSuite('testPageItemPrototypes');
+		$suite->addTestSuite('testPageItemPrototypesMassUpdate');
 		$suite->addTestSuite('testPageTriggers');
 		$suite->addTestSuite('testPageTriggerPrototypes');
 		$suite->addTestSuite('testPageLatestData');
