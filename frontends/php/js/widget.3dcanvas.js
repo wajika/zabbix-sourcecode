@@ -27,11 +27,11 @@ var widgets_canvas = {},
 	clock = new THREE.Clock(),
 	geometry = {
 		sphere: new THREE.SphereBufferGeometry(1, 70, 70, 0, Math.PI * 2, 0, Math.PI * 2),
-		icosahedron: new THREE.IcosahedronBufferGeometry(1.5, 5),
+		icosahedron: new THREE.IcosahedronBufferGeometry(3.5, 5),
 		connection: new THREE.IcosahedronBufferGeometry(1, 1)
 	},
 	material = {
-		connection: new THREE.MeshBasicMaterial({color: 0x0275ff}),
+		connection: new THREE.MeshBasicMaterial({color: 0x0a466a}),
 		red: new THREE.MeshStandardMaterial({color: 0xee0808, flatShading: true}),
 		green: new THREE.MeshStandardMaterial({color: 0x08ee08, flatShading: true}),
 		blue: new THREE.MeshStandardMaterial({color: 0x0a466a, flatShading: true}),
@@ -41,9 +41,9 @@ var widgets_canvas = {},
 	shaders = getShadersGLSL();
 
 	var  ENTIRE_SCENE = 0, BLUR_SCENE = 1;
-var ENTIRE_SCENE = 0, BLOOM_SCENE = 1;
-var bloomLayer = new THREE.Layers();
-bloomLayer.set( BLOOM_SCENE );
+// var ENTIRE_SCENE = 0, BLOOM_SCENE = 1;
+// var bloomLayer = new THREE.Layers();
+// bloomLayer.set( BLOOM_SCENE );
 
 $.subscribe('init.widget.3dcanvas', initWidget3dCanvasHandler);
 animate();
@@ -147,8 +147,8 @@ function init(container) {
 	renderer.setPixelRatio(window.devicePixelRatio);
 	renderer.setSize(width, height - 10);
 	container.append(renderer.domElement);
-	var materials = {};
-	var darkMaterial = new THREE.MeshBasicMaterial( { color: "white" } );
+	// var materials = {};
+	// var darkMaterial = new THREE.MeshBasicMaterial( { color: "white" } );
 
 	// Enable camera auto rotation
 	controls.target = new THREE.Vector3(3, 7, 0);
@@ -156,84 +156,84 @@ function init(container) {
 	controls.autoRotate = true;
 	controls.autoRotateSpeed = 3.0;
 
-	var scene_pass = new THREE.RenderPass(scene, camera);
-	var params = {
-		exposure: 1,
-		bloomStrength: 5,
-		bloomThreshold: 0,
-		bloomRadius: 0,
-		scene: "Scene with Glow"
-	};
-	var bloom = new THREE.UnrealBloomPass(new THREE.Vector2(width, height), 1.5, 0.4, 0.85);
-	bloom.threshold = params.threshold;
-	bloom.strength = params.strength;
-	bloom.radius = params.radius;
-	var bloom_composer = new THREE.EffectComposer( renderer );
-	bloom_composer.renderToScreen = false;
-	bloom_composer.addPass(scene_pass);
-	bloom_composer.addPass(bloom);
-	var final_pass = new THREE.ShaderPass(
-		new THREE.ShaderMaterial({
-			uniforms: {
-				baseTexture: {value: null},
-				bloomTexture: {value: bloom_composer.renderTarget2.texture},
-				vertexShader: shaders.bloomVertexShader,
-				fragmentShader: shaders.bloomFragmentShader,
-				defines: {}
-			}
-		}), "baseTexture"
-	);
-	final_pass.needSwap = true;
-	var final_composer = new THREE.EffectComposer(renderer);
-	final_composer.addPass(scene_pass);
-	final_composer.addPass(bloom);
+	// var scene_pass = new THREE.RenderPass(scene, camera);
+	// var params = {
+	// 	exposure: 1,
+	// 	bloomStrength: 5,
+	// 	bloomThreshold: 0,
+	// 	bloomRadius: 0,
+	// 	scene: "Scene with Glow"
+	// };
+	// var bloom = new THREE.UnrealBloomPass(new THREE.Vector2(width, height), 1.5, 0.4, 0.85);
+	// bloom.threshold = params.threshold;
+	// bloom.strength = params.strength;
+	// bloom.radius = params.radius;
+	// var bloom_composer = new THREE.EffectComposer( renderer );
+	// bloom_composer.renderToScreen = false;
+	// bloom_composer.addPass(scene_pass);
+	// bloom_composer.addPass(bloom);
+	// var final_pass = new THREE.ShaderPass(
+	// 	new THREE.ShaderMaterial({
+	// 		uniforms: {
+	// 			baseTexture: {value: null},
+	// 			bloomTexture: {value: bloom_composer.renderTarget2.texture},
+	// 			vertexShader: shaders.bloomVertexShader,
+	// 			fragmentShader: shaders.bloomFragmentShader,
+	// 			defines: {}
+	// 		}
+	// 	}), "baseTexture"
+	// );
+	// final_pass.needSwap = true;
+	// var final_composer = new THREE.EffectComposer(renderer);
+	// final_composer.addPass(scene_pass);
+	// final_composer.addPass(bloom);
 
 	// debug
-	var gui = new GUI();
-	var folder = gui.addFolder( 'Bloom Parameters' );
-	folder.add( params, 'exposure', 0.1, 2 ).onChange( function ( value ) {
-		renderer.toneMappingExposure = Math.pow( value, 4.0 );
-		render();
-	} );
-	folder.add(params, 'bloomThreshold', 0.0, 1.0 ).onChange( function ( value ) {
-		bloom.threshold = Number( value );
-		render();
-	} );
-	folder.add( params, 'bloomStrength', 0.0, 10.0 ).onChange( function ( value ) {
-		bloom.strength = Number( value );
-		render();
-	} );
-	folder.add( params, 'bloomRadius', 0.0, 1.0 ).step( 0.01 ).onChange( function ( value ) {
-		bloom.radius = Number( value );
-		render();
-	} );
+	// var gui = new GUI();
+	// var folder = gui.addFolder( 'Bloom Parameters' );
+	// folder.add( params, 'exposure', 0.1, 2 ).onChange( function ( value ) {
+	// 	renderer.toneMappingExposure = Math.pow( value, 4.0 );
+	// 	render();
+	// } );
+	// folder.add(params, 'bloomThreshold', 0.0, 1.0 ).onChange( function ( value ) {
+	// 	bloom.threshold = Number( value );
+	// 	render();
+	// } );
+	// folder.add( params, 'bloomStrength', 0.0, 10.0 ).onChange( function ( value ) {
+	// 	bloom.strength = Number( value );
+	// 	render();
+	// } );
+	// folder.add( params, 'bloomRadius', 0.0, 1.0 ).step( 0.01 ).onChange( function ( value ) {
+	// 	bloom.radius = Number( value );
+	// 	render();
+	// } );
 
-	function render() {
-		scene.traverse( darkenNonBloomed );
-		bloom_composer.render();
-		scene.traverse( restoreMaterial );
-	}
+	// function render() {
+	// 	scene.traverse( darkenNonBloomed );
+	// 	bloom_composer.render();
+	// 	scene.traverse( restoreMaterial );
+	// }
 
-	function darkenNonBloomed( obj ) {
-		if ( obj.isMesh && bloomLayer.test( obj.layers ) === false ) {
-			materials[ obj.uuid ] = obj.material;
-			obj.material = darkMaterial;
-		}
-	}
-	function restoreMaterial( obj ) {
-		if ( materials[ obj.uuid ] ) {
-			obj.material = materials[ obj.uuid ];
-			delete materials[ obj.uuid ];
-		}
-	}
+	// function darkenNonBloomed( obj ) {
+	// 	if ( obj.isMesh && bloomLayer.test( obj.layers ) === false ) {
+	// 		materials[ obj.uuid ] = obj.material;
+	// 		obj.material = darkMaterial;
+	// 	}
+	// }
+	// function restoreMaterial( obj ) {
+	// 	if ( materials[ obj.uuid ] ) {
+	// 		obj.material = materials[ obj.uuid ];
+	// 		delete materials[ obj.uuid ];
+	// 	}
+	// }
 
 	// var render_params = {
 	// 	minFilter: THREE.LinearFilter,
 	// 	magFilter: THREE.LinearFilter,
 	// 	stencilBuffer: false
 	// };
-	// var composer = new THREE.EffectComposer(renderer);
-	// var render_pass = new THREE.RenderPass(scene, camera);
+	var composer = new THREE.EffectComposer(renderer);
+	var render_pass = new THREE.RenderPass(scene, camera);
 	// var save_pass = new THREE.SavePass(
 	// 	new THREE.WebGLRenderTarget(
 	// 		width,
@@ -246,7 +246,7 @@ function init(container) {
 	// blend_pass.uniforms.mixRatio.value = 0.9;
 	// var output_pass = new THREE.ShaderPass(THREE.CopyShader);
 	// output_pass.renderToScreen = true;
-	// composer.addPass(render_pass);
+	composer.addPass(render_pass);
 	// composer.addPass(blend_pass);
 	// composer.addPass(save_pass);
 	// composer.addPass(output_pass);
@@ -256,10 +256,11 @@ function init(container) {
 		container: container,
 		scene: scene,
 		camera: camera,
-		composer: final_composer,
-		// composer: composer,
+		// composer: final_composer,
+		composer: composer,
 		renderer: renderer,
 		animations: [],
+		textured_animations: [],
 
 		rotation_center: new THREE.Vector3()
 	}
@@ -339,17 +340,55 @@ function fillScene(scene, data, points) {
 			// mesh.add(scene.sprite_glow.clone());
 			scene.scene.add(mesh);
 
-			var line_geometry = new THREE.Geometry();
-			line_geometry.vertices.push(
-				new THREE.Vector3(x, y, z),
-				new THREE.Vector3(x + pos[0], y + pos[1], z + pos[2])
+			// var line_geometry = new THREE.Geometry();
+			// line_geometry.vertices.push(
+			// 	new THREE.Vector3(x, y, z),
+			// 	new THREE.Vector3(x + pos[0], y + pos[1], z + pos[2])
+			// );
+			// var line = new THREE.Line(line_geometry, new THREE.LineBasicMaterial({color: 0x0a466a, transparent: true,
+			// 	opacity: 0.3
+			// }));
+			//var line_material = new THREE.MeshBasicMaterial( { color: 0x0a466a, transparent: true, opacity: 0.2 } );
+			var line_material = new THREE.MeshStandardMaterial({
+				color: Math.random() > 0.7 ? 0xb80202 : 0x03b802,
+				transparent: true,
+				side: THREE.SingleSided,
+				alphaTest: 0.3,
+				opacity: 0.3,
+				roughness: 0
+			});
+			var image = document.createElement('img');
+			var alphaMap = new THREE.Texture(image);
+			image.onload = function()  {
+				alphaMap.needsUpdate = true;
+			};
+			image.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGUlEQVQoU2NkYGD4z4AHMP7//x+/gmFhAgCXphP14bko/wAAAABJRU5ErkJggg==';
+			line_material.alphaMap = alphaMap;
+			line_material.alphaMap.magFilter = THREE.NearestFilter;
+			line_material.alphaMap.wrapT = THREE.RepeatWrapping;
+			line_material.alphaMap.repeat.y = 1;
+			line_material.alphaMap.rotation = 1.5708;// radians value for 90degrees
+			var path =  Math.random() >= 0.5
+				? [
+					new THREE.Vector3(x, y, z),
+					new THREE.Vector3(x + pos[0], y + pos[1], z + pos[2])
+				]
+				: [
+					new THREE.Vector3(x + pos[0], y + pos[1], z + pos[2]),
+					new THREE.Vector3(x, y, z)
+				];
+			path = new THREE.CatmullRomCurve3(path);
+			var line = new THREE.Mesh(
+				new THREE.TubeBufferGeometry(
+					path,
+					10, 1, 10, false
+				),
+				line_material
 			);
-			var line = new THREE.Line(line_geometry, new THREE.LineBasicMaterial({color: 0x0a466a, transparent: true,
-				opacity: 0.3
-			}));
 			line.mouseenter = mouseenter;
 			line.mouseleave = mouseleave;
 			// line.layers.enable(ENTIRE_SCENE);
+			scene.textured_animations.push(line);
 			scene.scene.add(line);
 
 			// Add data-flow-animation
@@ -392,8 +431,8 @@ function fillScene(scene, data, points) {
 			var mixer = new THREE.AnimationMixer( flow_mesh );
 			var clipAction = mixer.clipAction( clip );
 			clipAction.play();
-			scene.animations.push(mixer);
-			scene.scene.add(flow_mesh);
+			// scene.animations.push(mixer);
+			// scene.scene.add(flow_mesh);
 
 
 			var text = new TextLabelNode();
@@ -429,6 +468,7 @@ function updateLabelsPositions(scene) {
  */
 function animate() {
 	var delta = clock.getDelta();
+	var time = clock.getElapsedTime();
 	requestAnimationFrame(animate);
 
 	Object.values(widgets_canvas).each(scene => {
@@ -449,6 +489,12 @@ function animate() {
 		}
 
 		scene.composer.render(delta);
+
+		$.map(scene.textured_animations, obj => {
+			if (obj.material.alphaMap) {
+				obj.material.alphaMap.offset.y = time*0.5;
+			}
+		});
 	});
 };
 
