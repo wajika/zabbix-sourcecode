@@ -41,9 +41,9 @@ var widgets_canvas = {},
 	shaders = getShadersGLSL();
 
 	var  ENTIRE_SCENE = 0, BLUR_SCENE = 1;
-// var ENTIRE_SCENE = 0, BLOOM_SCENE = 1;
-// var bloomLayer = new THREE.Layers();
-// bloomLayer.set( BLOOM_SCENE );
+var ENTIRE_SCENE = 0, BLOOM_SCENE = 1;
+var bloomLayer = new THREE.Layers();
+bloomLayer.set( BLOOM_SCENE );
 
 $.subscribe('init.widget.3dcanvas', initWidget3dCanvasHandler);
 animate();
@@ -147,8 +147,8 @@ function init(container) {
 	renderer.setPixelRatio(window.devicePixelRatio);
 	renderer.setSize(width, height - 10);
 	container.append(renderer.domElement);
-	// var materials = {};
-	// var darkMaterial = new THREE.MeshBasicMaterial( { color: "white" } );
+	var materials = {};
+	var darkMaterial = new THREE.MeshBasicMaterial( { color: "white" } );
 
 	// Enable camera auto rotation
 	controls.target = new THREE.Vector3(3, 7, 0);
@@ -156,108 +156,108 @@ function init(container) {
 	controls.autoRotate = true;
 	controls.autoRotateSpeed = 3.0;
 
-	// var scene_pass = new THREE.RenderPass(scene, camera);
-	// var params = {
-	// 	exposure: 1,
-	// 	bloomStrength: 5,
-	// 	bloomThreshold: 0,
-	// 	bloomRadius: 0,
-	// 	scene: "Scene with Glow"
-	// };
-	// var bloom = new THREE.UnrealBloomPass(new THREE.Vector2(width, height), 1.5, 0.4, 0.85);
-	// bloom.threshold = params.threshold;
-	// bloom.strength = params.strength;
-	// bloom.radius = params.radius;
-	// var bloom_composer = new THREE.EffectComposer( renderer );
-	// bloom_composer.renderToScreen = false;
-	// bloom_composer.addPass(scene_pass);
-	// bloom_composer.addPass(bloom);
-	// var final_pass = new THREE.ShaderPass(
-	// 	new THREE.ShaderMaterial({
-	// 		uniforms: {
-	// 			baseTexture: {value: null},
-	// 			bloomTexture: {value: bloom_composer.renderTarget2.texture},
-	// 			vertexShader: shaders.bloomVertexShader,
-	// 			fragmentShader: shaders.bloomFragmentShader,
-	// 			defines: {}
-	// 		}
-	// 	}), "baseTexture"
-	// );
-	// final_pass.needSwap = true;
-	// var final_composer = new THREE.EffectComposer(renderer);
-	// final_composer.addPass(scene_pass);
-	// final_composer.addPass(bloom);
+	var scene_pass = new THREE.RenderPass(scene, camera);
+	var params = {
+		exposure: 1,
+		bloomStrength: 5,
+		bloomThreshold: 0,
+		bloomRadius: 0,
+		scene: "Scene with Glow"
+	};
+	var bloom = new THREE.UnrealBloomPass(new THREE.Vector2(width, height), 1.5, 0.4, 0.85);
+	bloom.threshold = params.threshold;
+	bloom.strength = params.strength;
+	bloom.radius = params.radius;
+	var bloom_composer = new THREE.EffectComposer( renderer );
+	bloom_composer.renderToScreen = false;
+	bloom_composer.addPass(scene_pass);
+	bloom_composer.addPass(bloom);
+	var final_pass = new THREE.ShaderPass(
+		new THREE.ShaderMaterial({
+			uniforms: {
+				baseTexture: {value: null},
+				bloomTexture: {value: bloom_composer.renderTarget2.texture},
+				vertexShader: shaders.bloomVertexShader,
+				fragmentShader: shaders.bloomFragmentShader,
+				defines: {}
+			}
+		}), "baseTexture"
+	);
+	final_pass.needSwap = true;
+	var final_composer = new THREE.EffectComposer(renderer);
+	final_composer.addPass(scene_pass);
+	final_composer.addPass(bloom);
 
 	// debug
-	// var gui = new GUI();
-	// var folder = gui.addFolder( 'Bloom Parameters' );
-	// folder.add( params, 'exposure', 0.1, 2 ).onChange( function ( value ) {
-	// 	renderer.toneMappingExposure = Math.pow( value, 4.0 );
-	// 	render();
-	// } );
-	// folder.add(params, 'bloomThreshold', 0.0, 1.0 ).onChange( function ( value ) {
-	// 	bloom.threshold = Number( value );
-	// 	render();
-	// } );
-	// folder.add( params, 'bloomStrength', 0.0, 10.0 ).onChange( function ( value ) {
-	// 	bloom.strength = Number( value );
-	// 	render();
-	// } );
-	// folder.add( params, 'bloomRadius', 0.0, 1.0 ).step( 0.01 ).onChange( function ( value ) {
-	// 	bloom.radius = Number( value );
-	// 	render();
-	// } );
+	var gui = new GUI();
+	var folder = gui.addFolder( 'Bloom Parameters' );
+	folder.add( params, 'exposure', 0.1, 2 ).onChange( function ( value ) {
+		renderer.toneMappingExposure = Math.pow( value, 4.0 );
+		render();
+	} );
+	folder.add(params, 'bloomThreshold', 0.0, 1.0 ).onChange( function ( value ) {
+		bloom.threshold = Number( value );
+		render();
+	} );
+	folder.add( params, 'bloomStrength', 0.0, 10.0 ).onChange( function ( value ) {
+		bloom.strength = Number( value );
+		render();
+	} );
+	folder.add( params, 'bloomRadius', 0.0, 1.0 ).step( 0.01 ).onChange( function ( value ) {
+		bloom.radius = Number( value );
+		render();
+	} );
 
-	// function render() {
-	// 	scene.traverse( darkenNonBloomed );
-	// 	bloom_composer.render();
-	// 	scene.traverse( restoreMaterial );
-	// }
+	function render() {
+		scene.traverse( darkenNonBloomed );
+		bloom_composer.render();
+		scene.traverse( restoreMaterial );
+	}
 
-	// function darkenNonBloomed( obj ) {
-	// 	if ( obj.isMesh && bloomLayer.test( obj.layers ) === false ) {
-	// 		materials[ obj.uuid ] = obj.material;
-	// 		obj.material = darkMaterial;
-	// 	}
-	// }
-	// function restoreMaterial( obj ) {
-	// 	if ( materials[ obj.uuid ] ) {
-	// 		obj.material = materials[ obj.uuid ];
-	// 		delete materials[ obj.uuid ];
-	// 	}
-	// }
+	function darkenNonBloomed( obj ) {
+		if ( obj.isMesh && bloomLayer.test( obj.layers ) === false ) {
+			materials[ obj.uuid ] = obj.material;
+			obj.material = darkMaterial;
+		}
+	}
+	function restoreMaterial( obj ) {
+		if ( materials[ obj.uuid ] ) {
+			obj.material = materials[ obj.uuid ];
+			delete materials[ obj.uuid ];
+		}
+	}
 
-	var render_params = {
-		minFilter: THREE.LinearFilter,
-		magFilter: THREE.LinearFilter,
-		stencilBuffer: false
-	};
-	var composer = new THREE.EffectComposer(renderer);
-	var render_pass = new THREE.RenderPass(scene, camera);
-	var save_pass = new THREE.SavePass(
-		new THREE.WebGLRenderTarget(
-			width,
-			height,
-			render_params
-		)
-	);
-	var blend_pass = new THREE.ShaderPass(THREE.BlendShader, "tDiffuse1");
-	blend_pass.uniforms.tDiffuse2.value = save_pass.renderTarget.texture;
-	blend_pass.uniforms.mixRatio.value = 0.9;
-	var output_pass = new THREE.ShaderPass(THREE.CopyShader);
-	output_pass.renderToScreen = true;
-	composer.addPass(render_pass);
-	composer.addPass(blend_pass);
-	composer.addPass(save_pass);
-	composer.addPass(output_pass);
+	// var render_params = {
+	// 	minFilter: THREE.LinearFilter,
+	// 	magFilter: THREE.LinearFilter,
+	// 	stencilBuffer: false
+	// };
+	// var composer = new THREE.EffectComposer(renderer);
+	// var render_pass = new THREE.RenderPass(scene, camera);
+	// var save_pass = new THREE.SavePass(
+	// 	new THREE.WebGLRenderTarget(
+	// 		width,
+	// 		height,
+	// 		render_params
+	// 	)
+	// );
+	// var blend_pass = new THREE.ShaderPass(THREE.BlendShader, "tDiffuse1");
+	// blend_pass.uniforms.tDiffuse2.value = save_pass.renderTarget.texture;
+	// blend_pass.uniforms.mixRatio.value = 0.9;
+	// var output_pass = new THREE.ShaderPass(THREE.CopyShader);
+	// output_pass.renderToScreen = true;
+	// composer.addPass(render_pass);
+	// composer.addPass(blend_pass);
+	// composer.addPass(save_pass);
+	// composer.addPass(output_pass);
 
 	return {
 		controls: controls,
 		container: container,
 		scene: scene,
 		camera: camera,
-		// composer: final_composer,
-		composer: composer,
+		composer: final_composer,
+		// composer: composer,
 		renderer: renderer,
 		animations: [],
 
