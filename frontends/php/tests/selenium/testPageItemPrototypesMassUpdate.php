@@ -296,13 +296,11 @@ class testPageItemPrototypesMassUpdate extends CWebTest{
 			elseif ($field === 'Headers') {
 				$headers_table = $form->query('id:headers_pairs')->asMultifieldTable([
 						'mapping' => [
-							[
-								'name' => 'Name',
+							'Name' => [
 								'selector' => 'xpath:./input',
 								'class' => 'CElement'
 							],
-							[
-								'name' => 'Value',
+							'Value' => [
 								'selector' => 'xpath:./input',
 								'class' => 'CElement'
 							]
@@ -440,13 +438,11 @@ class testPageItemPrototypesMassUpdate extends CWebTest{
 						$headers_table = $form->query('id:headers_pairs')
 							->asMultifieldTable([
 								'mapping' => [
-									[
-										'name' => 'Name',
+									'Name' => [
 										'selector' => 'xpath:./input',
 										'class' => 'CElement'
 									],
-									[
-										'name' => 'Value',
+									'Value' => [
 										'selector' => 'xpath:./input',
 										'class' => 'CElement'
 									]
@@ -473,37 +469,6 @@ class testPageItemPrototypesMassUpdate extends CWebTest{
 						'Host interface' => '127.0.0.2 : 10099',
 						'Type of information'=> 'Numeric (float)',
 						'Units'=> '$',
-						'Update interval' => [
-							'Delay' => '90s',
-							'Custom intervals' => [
-								['Type' => 'Flexible', 'Interval' => '60s', 'Period' => '2-5,3:00-17:00'],
-								['Type' => 'Scheduling', 'Interval' => 'wd3-4h1-15']
-							]
-						],
-						'History storage period' => [
-							'type' => 'Do not keep history',
-							'case' => 'history'
-						],
-						'Trend storage period' => [
-							'type' => 'Storage period',
-							'period' => '400d',
-							'case' => 'trends'
-						],
-						'Show value' => 'TruthValue',
-						'Applications' => [
-							'action' => 'Add',
-							'query' => 'applications',
-							'radio'=> 'app',
-							'application' => 'New application'
-						],
-						'Application prototypes' => [
-							'action' => 'Add',
-							'query' => 'application_prototypes',
-							'radio' => 'app_prot',
-							'application' => 'New application prototype'
-						],
-						'Description' => 'New test description',
-						'Create enabled' => 'Disabled'
 					]
 				]
 			]
