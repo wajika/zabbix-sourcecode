@@ -28,21 +28,22 @@ var widgets_canvas = {},
 	geometry = {
 		sphere: new THREE.SphereBufferGeometry(1, 70, 70, 0, Math.PI * 2, 0, Math.PI * 2),
 		icosahedron: new THREE.IcosahedronBufferGeometry(1.5, 5),
-		connection: new THREE.IcosahedronBufferGeometry(0.1, 1)
+		connection: new THREE.IcosahedronBufferGeometry(1, 1)
 	},
 	material = {
-		connection: new THREE.MeshBasicMaterial({color: 0x40466a, transparent: true, opacity: 0.2}),
+		connection: new THREE.MeshBasicMaterial({color: 0x0275ff}),
 		red: new THREE.MeshStandardMaterial({color: 0xee0808, flatShading: true}),
 		green: new THREE.MeshStandardMaterial({color: 0x08ee08, flatShading: true}),
 		blue: new THREE.MeshStandardMaterial({color: 0x0a466a, flatShading: true}),
 		white: new THREE.MeshStandardMaterial({color: 0xffffff, flatShading: true}),
-		inner_sphere: new THREE.MeshStandardMaterial({color: 0x2020ff, transparent: true, opacity: 0.1})
+		inner_sphere: new THREE.MeshStandardMaterial({color: 0x0275b8})
 	},
 	shaders = getShadersGLSL();
 
-var ENTIRE_SCENE = 0, BLOOM_SCENE = 1;
-var bloomLayer = new THREE.Layers();
-bloomLayer.set( BLOOM_SCENE );
+	var  ENTIRE_SCENE = 0, BLUR_SCENE = 1;
+// var ENTIRE_SCENE = 0, BLOOM_SCENE = 1;
+// var bloomLayer = new THREE.Layers();
+// bloomLayer.set( BLOOM_SCENE );
 
 $.subscribe('init.widget.3dcanvas', initWidget3dCanvasHandler);
 animate();
@@ -123,10 +124,13 @@ function containerMouseOutHandler(ev) {
  * @param {Object} container   Dom element, 3d canvas container.
  */
 function init(container) {
-	var camera = new THREE.PerspectiveCamera(60, container.width() / container.height(), 0.1, 1000);
+	var width = container.width(),
+		height = container.height();
+	var camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
 	var renderer = new THREE.WebGLRenderer({ alpha: true });
 	var controls = new THREE.OrbitControls(camera, renderer.domElement);
 	var scene = new THREE.Scene();
+	// scene.background = new THREE.Color( 0xffff00 );
 
 	var light_hemisphere = new THREE.HemisphereLight(0xffffff, 0x444444);
 	light_hemisphere.position.set(0, 1000, 0);
@@ -139,8 +143,12 @@ function init(container) {
 	camera.lookAt(0, 0, 0);
 	controls.update();
 
-	renderer.setSize(container.width(), container.height() - 10);
+	renderer.shadowMap.enabled = true;
+	renderer.setPixelRatio(window.devicePixelRatio);
+	renderer.setSize(width, height - 10);
 	container.append(renderer.domElement);
+	// var materials = {};
+	// var darkMaterial = new THREE.MeshBasicMaterial( { color: "white" } );
 
 	// Enable camera auto rotation
 	controls.target = new THREE.Vector3(3, 7, 0);
@@ -148,22 +156,112 @@ function init(container) {
 	controls.autoRotate = true;
 	controls.autoRotateSpeed = 3.0;
 
-	var composer = new POSTPROCESSING.EffectComposer(renderer);
-	// https://github.com/vanruesc/postprocessing
-	var effectPass = new POSTPROCESSING.EffectPass(camera, new POSTPROCESSING.BloomEffect(0, 0, 4));
-	effectPass.renderToScreen = true;
+	// var scene_pass = new THREE.RenderPass(scene, camera);
+	// var params = {
+	// 	exposure: 1,
+	// 	bloomStrength: 5,
+	// 	bloomThreshold: 0,
+	// 	bloomRadius: 0,
+	// 	scene: "Scene with Glow"
+	// };
+	// var bloom = new THREE.UnrealBloomPass(new THREE.Vector2(width, height), 1.5, 0.4, 0.85);
+	// bloom.threshold = params.threshold;
+	// bloom.strength = params.strength;
+	// bloom.radius = params.radius;
+	// var bloom_composer = new THREE.EffectComposer( renderer );
+	// bloom_composer.renderToScreen = false;
+	// bloom_composer.addPass(scene_pass);
+	// bloom_composer.addPass(bloom);
+	// var final_pass = new THREE.ShaderPass(
+	// 	new THREE.ShaderMaterial({
+	// 		uniforms: {
+	// 			baseTexture: {value: null},
+	// 			bloomTexture: {value: bloom_composer.renderTarget2.texture},
+	// 			vertexShader: shaders.bloomVertexShader,
+	// 			fragmentShader: shaders.bloomFragmentShader,
+	// 			defines: {}
+	// 		}
+	// 	}), "baseTexture"
+	// );
+	// final_pass.needSwap = true;
+	// var final_composer = new THREE.EffectComposer(renderer);
+	// final_composer.addPass(scene_pass);
+	// final_composer.addPass(bloom);
 
-	composer.addPass(new POSTPROCESSING.RenderPass(scene, camera));
-	composer.addPass(effectPass);
+	// debug
+	// var gui = new GUI();
+	// var folder = gui.addFolder( 'Bloom Parameters' );
+	// folder.add( params, 'exposure', 0.1, 2 ).onChange( function ( value ) {
+	// 	renderer.toneMappingExposure = Math.pow( value, 4.0 );
+	// 	render();
+	// } );
+	// folder.add(params, 'bloomThreshold', 0.0, 1.0 ).onChange( function ( value ) {
+	// 	bloom.threshold = Number( value );
+	// 	render();
+	// } );
+	// folder.add( params, 'bloomStrength', 0.0, 10.0 ).onChange( function ( value ) {
+	// 	bloom.strength = Number( value );
+	// 	render();
+	// } );
+	// folder.add( params, 'bloomRadius', 0.0, 1.0 ).step( 0.01 ).onChange( function ( value ) {
+	// 	bloom.radius = Number( value );
+	// 	render();
+	// } );
+
+	// function render() {
+	// 	scene.traverse( darkenNonBloomed );
+	// 	bloom_composer.render();
+	// 	scene.traverse( restoreMaterial );
+	// }
+
+	// function darkenNonBloomed( obj ) {
+	// 	if ( obj.isMesh && bloomLayer.test( obj.layers ) === false ) {
+	// 		materials[ obj.uuid ] = obj.material;
+	// 		obj.material = darkMaterial;
+	// 	}
+	// }
+	// function restoreMaterial( obj ) {
+	// 	if ( materials[ obj.uuid ] ) {
+	// 		obj.material = materials[ obj.uuid ];
+	// 		delete materials[ obj.uuid ];
+	// 	}
+	// }
+
+	var render_params = {
+		minFilter: THREE.LinearFilter,
+		magFilter: THREE.LinearFilter,
+		stencilBuffer: false
+	};
+	var composer = new THREE.EffectComposer(renderer);
+	var render_pass = new THREE.RenderPass(scene, camera);
+	var save_pass = new THREE.SavePass(
+		new THREE.WebGLRenderTarget(
+			width,
+			height,
+			render_params
+		)
+	);
+	var blend_pass = new THREE.ShaderPass(THREE.BlendShader, "tDiffuse1");
+	blend_pass.uniforms.tDiffuse2.value = save_pass.renderTarget.texture;
+	blend_pass.uniforms.mixRatio.value = 0.9;
+	var output_pass = new THREE.ShaderPass(THREE.CopyShader);
+	output_pass.renderToScreen = true;
+	composer.addPass(render_pass);
+	composer.addPass(blend_pass);
+	composer.addPass(save_pass);
+	composer.addPass(output_pass);
 
 	return {
 		controls: controls,
 		container: container,
 		scene: scene,
 		camera: camera,
+		// composer: final_composer,
 		composer: composer,
 		renderer: renderer,
-		animations: []
+		animations: [],
+
+		rotation_center: new THREE.Vector3()
 	}
 }
 
@@ -237,6 +335,7 @@ function fillScene(scene, data, points) {
 			mesh.mouseleave = mouseleave;
 			mesh.mouseclick = mouseclick;
 			mesh.position.set(x + pos[0], y + pos[1], z + pos[2]);
+			// mesh.layers.enable(BLOOM_SCENE);
 			// mesh.add(scene.sprite_glow.clone());
 			scene.scene.add(mesh);
 
@@ -250,26 +349,28 @@ function fillScene(scene, data, points) {
 			}));
 			line.mouseenter = mouseenter;
 			line.mouseleave = mouseleave;
+			// line.layers.enable(ENTIRE_SCENE);
 			scene.scene.add(line);
 
 			// Add data-flow-animation
 			// var flow_mesh = scene.sprite_glow.clone();
 			var flow_mesh = new THREE.Mesh(geometry.connection, material.connection.clone());
+			flow_mesh.layers.enable(BLUR_SCENE);
 
 			// https://github.com/mrdoob/three.js/blob/2136a132055c579bb140f5198992c7eb21256e83/examples/jsm/animation/AnimationClipCreator.js#L69
-			var duration = 3, pulseScale = 3;
-			var times = [], values = [], tmp = new THREE.Vector3();
+			// var duration = 3, pulseScale = 3;
+			// var times = [], values = [], tmp = new THREE.Vector3();
 
-			for ( var i = 0; i < duration * 50; i ++ ) {
+			// for ( var i = 0; i < duration * 50; i ++ ) {
 
-				times.push( i / 50 );
+			// 	times.push( i / 50 );
 
-				//var scaleFactor = Math.random() * pulseScale;
-				var scaleFactor = (i%12)*pulseScale/2;
-				tmp.set(scaleFactor, scaleFactor, scaleFactor)
-					.toArray(values, values.length);
+			// 	//var scaleFactor = Math.random() * pulseScale;
+			// 	var scaleFactor = (i%12)*pulseScale/2;
+			// 	tmp.set(scaleFactor, scaleFactor, scaleFactor)
+			// 		.toArray(values, values.length);
 
-			}
+			// }
 			// for ( var i = 0; i < duration * 20; i ++ ) {
 
 			// 	times.push( i / 20 );
@@ -280,13 +381,14 @@ function fillScene(scene, data, points) {
 			// 		toArray( values, values.length );
 
 			// }
-			var pulse = new THREE.VectorKeyframeTrack( '.scale', times, values );
+			// var pulse = new THREE.VectorKeyframeTrack( '.scale', times, values );
 
 			var direction = Math.random() >= 0.5
 				? [ x + pos[0], y + pos[1], z + pos[2], x, y, z ]
 				: [ x, y, z, x + pos[0], y + pos[1], z + pos[2] ];
-			var positions = new THREE.VectorKeyframeTrack( '.position', [ 0, 1 ], direction, THREE.LoopPingPong );
-			var clip = new THREE.AnimationClip( 'Action', 1, [ positions, pulse ] );
+			var positions = new THREE.VectorKeyframeTrack( '.position', [ 0, 1 ], direction, THREE.LoopRepeat );
+			var clip = new THREE.AnimationClip('Action', 3, [positions]);
+			// var clip = new THREE.AnimationClip( 'Action', 1, [ positions, pulse ] );
 			var mixer = new THREE.AnimationMixer( flow_mesh );
 			var clipAction = mixer.clipAction( clip );
 			clipAction.play();
@@ -330,11 +432,12 @@ function animate() {
 	requestAnimationFrame(animate);
 
 	Object.values(widgets_canvas).each(scene => {
+		updateRotationCenter(scene);
 		// scene.camera.position.set(x, y, z+Math.sin(a)*600);
 		// a = a + delta;
 		// scene.camera.rotation.y = ca + Math.sin(a);
 		scene.controls.update();
-		scene.renderer.render(scene.scene, scene.camera);
+		// scene.renderer.render(scene.scene, scene.camera);
 		scene.camera.updateMatrixWorld();
 		updateLabelsPositions(scene);
 		sceneMouseOverHandler(scene);
@@ -394,8 +497,27 @@ function mouseleave(scene) {
 }
 
 function mouseclick(scene) {
-	var vect3 = scene.intersected.point;
-	scene.camera.position.copy(vect3);
+	scene.rotation_center = scene.intersected.point;
+	// var vect3 = scene.intersected.point;
+
+	// __log('click', scene.controls.target, vect3);
+	// scene.controls.target.set(vect3.x, vect3.y, vect3.z);
+}
+
+function updateRotationCenter(scene) {
+	var vect3 = scene.rotation_center,
+		camera = scene.controls.target;
+
+	['x', 'y', 'z'].forEach(axis => {
+		if (Math.abs(vect3[axis] - camera[axis]) < 0.5) {
+			camera[axis] = vect3[axis];
+		}
+		else {
+			camera[axis] -= vect3[axis] > camera[axis]
+				? (camera[axis] - vect3[axis])/2
+				: (camera[axis] - vect3[axis])/2;
+		}
+	});
 }
 
 /**

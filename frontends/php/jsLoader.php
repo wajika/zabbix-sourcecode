@@ -69,8 +69,9 @@ $availableJScripts = [
 	'jquery.js' => 'vendors/',
 	'jquery-ui.js' => 'vendors/',
 	'three.min.js' => 'vendors/',
-	'three.postprocessing.min.js' => 'vendors/',
+	'three.postprocessing.js' => 'vendors/', // TODO: minify
 	'three.orbitcontrols.js' => 'vendors/', // TODO: minify
+	'three.debug.gui.js' => 'vendors/', // threejs debug GUI
 	'widget.3dcanvas.js' => '',
 	// classes
 	'class.bbcode.js' => '',

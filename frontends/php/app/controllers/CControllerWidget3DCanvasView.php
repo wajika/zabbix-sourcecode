@@ -61,7 +61,7 @@ class CControllerWidget3DCanvasView extends CControllerWidget {
 			foreach ($parents as $parentid) {
 				for ($i = rand(1, $max_childs_count); $i > 0; $i--) {
 					$elements[] = [
-						'id' => 'h'.$id, 'geometry' => 'icosahedron', 'deails' => $label.$id
+						'id' => 'h'.$id, 'geometry' => 'icosahedron', 'details' => $label.$id
 					];
 					$connections[] = [
 						'parent' => $parentid, 'child' => 'h'.$id
@@ -74,6 +74,9 @@ class CControllerWidget3DCanvasView extends CControllerWidget {
 
 			$parents = $new_parents;
 		}
+
+		// $elements = [$elements[0]];
+		// $connections = [];
 
 		$event_data = [
 			'type' => 'init.widget.3dcanvas',
