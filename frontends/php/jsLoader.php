@@ -73,6 +73,7 @@ $availableJScripts = [
 	'three.orbitcontrols.js' => 'vendors/', // TODO: minify
 	'three.debug.gui.js' => 'vendors/', // threejs debug GUI
 	'widget.3dcanvas.js' => '',
+	'widget.3dcanvas.gltf.js' => '',
 	// classes
 	'class.bbcode.js' => '',
 	'class.calendar.js' => '',
