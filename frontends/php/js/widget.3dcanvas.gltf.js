@@ -38,7 +38,7 @@ function render() {
 	delta = clock.getDelta();
 
 	Object.values(widgets).each(function(widget, id) {
-		widget.render();
+		widget.render(delta);
 		widget.mouse.over && widget.interact();
 	});
 
@@ -63,7 +63,7 @@ function THREEWidget($container, id, gltf_uri) {
 
 	// camera
 	this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
-	this.camera.position.set(0, 0, 20);
+	this.camera.position.set(0, 0, 400);
 	this.camera.lookAt(0, 0, 0);
 
 	// renderer
@@ -101,6 +101,10 @@ function THREEWidget($container, id, gltf_uri) {
 	outline.visibleEdgeColor.set('#f50000');
 	this.composer.addPass(outline);
 
+	// animations
+	var mixer = new THREE.AnimationMixer(this.scene);
+	this.mixer = mixer;
+
 	$container.append(this.renderer.domElement);
 	this.controls.update();
 
@@ -109,6 +113,12 @@ function THREEWidget($container, id, gltf_uri) {
 	this.loader = new THREE.GLTFLoader();
 	this.loader.load(gltf_uri, function(data) {
 		scene.add(data.scene);
+
+		data.animations.forEach(clip => {
+			mixer.clipAction(clip).play();
+			console. log(`glTF: added animation "${clip.name}"`, clip);
+		});
+
 		// console. log(`gltf loaded: ${dumpObject(data.scene).join('\n')}`);
 	});
 
@@ -118,9 +128,12 @@ function THREEWidget($container, id, gltf_uri) {
 		.on('click', this.handlers.click.bind(this));
 }
 
-THREEWidget.prototype.render = function() {
-	this.controls.autoRotate = this.mouse.activity + 2 < clock.getElapsedTime();
+THREEWidget.prototype.render = function(delta) {
+	this.mixer.update(delta);
+
+	this.controls.autoRotate = this.mouse.activity + 2 < (new Date()).getTime() / 1000;
 	this.controls.update();
+
 	// this.renderer.render(this.scene, this.camera);
 	this.composer.render();
 }
@@ -147,7 +160,8 @@ THREEWidget.prototype.handlers = {
 			x: ((e.clientX - rect.left) / this.width) * 2 - 1,
 			y: - ((e.clientY - rect.top) / this.height) * 2 + 1,
 			over: e.type === 'mousemove',
-			activity: clock.getElapsedTime()
+			// clock.getElapsedTime() can not be used because this will make animations ugly.
+			activity: (new Date()).getTime() / 1000
 		}
 	},
 	click: function() {
