@@ -50,7 +50,7 @@ render();
 function THREEWidget($container, id, gltf_uri) {
 	var width = $container.width(),
 		height = $container.height(),
-		scene;
+		scene, renderer;
 
 	this.id = id;
 	this.mouse = {
@@ -67,10 +67,12 @@ function THREEWidget($container, id, gltf_uri) {
 	this.camera.lookAt(0, 0, 0);
 
 	// renderer
-	this.renderer = new THREE.WebGLRenderer({ alpha: true });
-	this.renderer.shadowMap.enabled = true;
-	this.renderer.setPixelRatio(window.devicePixelRatio);
-	this.renderer.setSize(width, height - 10);
+	renderer = new THREE.WebGLRenderer({alpha: true});
+	renderer.shadowMap.enabled = true;
+	renderer.setClearColor(0x000000, 0);
+	renderer.setPixelRatio(window.devicePixelRatio);
+	renderer.setSize(width, height - 10);
+	this.renderer = renderer;
 
 	// orbit control
 	this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
@@ -88,6 +90,19 @@ function THREEWidget($container, id, gltf_uri) {
 	light_directional.position.set(-3000, 1000, -1000);
 	this.scene.add(light_directional);
 
+	// postprocessing
+	this.composer = new THREE.EffectComposer(this.renderer);
+	var render_pass = new THREE.RenderPass(this.scene, this.camera);
+	render_pass.clearAlpha = false;
+	this.composer.addPass(render_pass);
+	var outline = new THREE.OutlinePass(new THREE.Vector2(width, height), this.scene, this.camera);
+	outline.edgeStrength = 1;
+	outline.edgeGlow = 1;
+	outline.edgeThikness = 3.7;
+	outline.pulsePeriod = 2;
+	outline.visibleEdgeColor.set('#f50000');
+	this.composer.addPass(outline);
+
 	$container.append(this.renderer.domElement);
 	this.controls.update();
 
@@ -96,7 +111,6 @@ function THREEWidget($container, id, gltf_uri) {
 	this.loader = new THREE.GLTFLoader();
 	this.loader.load(gltf_uri, function(data) {
 		scene.add(data.scene);
-
 		// console. log(`gltf loaded: ${dumpObject(data.scene).join('\n')}`);
 	});
 
@@ -109,12 +123,12 @@ function THREEWidget($container, id, gltf_uri) {
 THREEWidget.prototype.render = function() {
 	this.controls.autoRotate = this.mouse.activity + 2 < clock.getElapsedTime();
 	this.controls.update();
-	this.renderer.render(this.scene, this.camera);
+	// this.renderer.render(this.scene, this.camera);
+	this.composer.render();
 }
 
 THREEWidget.prototype.interact = function() {
 	raycaster.setFromCamera(this.mouse, this.camera);
-
 	this.intersected = raycaster.intersectObjects([this.scene], true);
 
 	// $.each(raycaster.intersectObjects(this.scene.children), function(_, o) {
@@ -139,7 +153,13 @@ THREEWidget.prototype.handlers = {
 		}
 	},
 	click: function() {
-		console. log('click', this.intersected);
+		// console. log('click', this.intersected);
+		console. log('composer', this.composer);
+
+		if (this.intersected.length) {
+			// outlinepass
+			this.composer.passes[1].selectedObjects.push(this.intersected[0].object);
+		}
 	}
 };
 
