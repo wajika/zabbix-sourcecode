@@ -92,9 +92,7 @@ function THREEWidget($container, id, gltf_uri) {
 
 	// postprocessing
 	this.composer = new THREE.EffectComposer(this.renderer);
-	var render_pass = new THREE.RenderPass(this.scene, this.camera);
-	render_pass.clearAlpha = false;
-	this.composer.addPass(render_pass);
+	this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
 	var outline = new THREE.OutlinePass(new THREE.Vector2(width, height), this.scene, this.camera);
 	outline.edgeStrength = 1;
 	outline.edgeGlow = 1;
