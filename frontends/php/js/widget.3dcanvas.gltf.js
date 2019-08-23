@@ -53,14 +53,17 @@ function THREEWidget($container, id, gltf_uri) {
 		scene;
 
 	this.id = id;
-	this.mouse = {};
+	this.mouse = {
+		over: false,
+		activity: 0
+	};
 	this.intersected = [];
 	this.height = height;
 	this.width = width;
 
 	// camera
 	this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
-	this.camera.position.set(0, 0, 1000);
+	this.camera.position.set(0, 0, 20);
 	this.camera.lookAt(0, 0, 0);
 
 	// renderer
@@ -93,7 +96,8 @@ function THREEWidget($container, id, gltf_uri) {
 	this.loader = new THREE.GLTFLoader();
 	this.loader.load(gltf_uri, function(data) {
 		scene.add(data.scene);
-		console. log(`gltf loaded: ${dumpObject(data.scene).join('\n')}`);
+
+		// console. log(`gltf loaded: ${dumpObject(data.scene).join('\n')}`);
 	});
 
 	$container
@@ -110,7 +114,9 @@ THREEWidget.prototype.render = function() {
 
 THREEWidget.prototype.interact = function() {
 	raycaster.setFromCamera(this.mouse, this.camera);
-	this.intersected = raycaster.intersectObjects(this.scene.children);
+
+	this.intersected = raycaster.intersectObjects([this.scene], true);
+
 	// $.each(raycaster.intersectObjects(this.scene.children), function(_, o) {
 	// 	if (o.object && 'mouseclick' in o.object) {
 	// 		scene.intersected = o;
