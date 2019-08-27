@@ -36,9 +36,6 @@ class CScreenGraph extends CScreenBase {
 		$graphDims['graphHeight'] = (int) $this->screenitem['height'];
 		$graphDims['width'] = (int) $this->screenitem['width'];
 		$graph = getGraphByGraphId($resourceId);
-		$graphId = $graph['graphid'];
-		$legend = $graph['show_legend'];
-		$graph3d = $graph['show_3d'];
 		$src = null;
 
 		if ($this->screenitem['dynamic'] == SCREEN_DYNAMIC_ITEM && $this->hostid) {
@@ -95,6 +92,7 @@ class CScreenGraph extends CScreenBase {
 
 			// get url
 			if ($graph['graphtype'] == GRAPH_TYPE_PIE || $graph['graphtype'] == GRAPH_TYPE_EXPLODED) {
+<<<<<<< HEAD
 				$src = new CUrl('chart7.php');
 			}
 			else {
@@ -106,18 +104,50 @@ class CScreenGraph extends CScreenBase {
 					continue;
 				}
 				$src->setArgument($name, $value);
+=======
+				$this->screenitem['url'] = (new CUrl('chart7.php'))
+					->setArgument('name', $host['name'].NAME_DELIMITER.$graph['name'])
+					->setArgument('graphtype', $graph['graphtype'])
+					->setArgument('graph3d', $graph['show_3d'])
+					->setArgument('legend', $graph['show_legend']);
+			}
+			else {
+				$this->screenitem['url'] = (new CUrl('chart3.php'))
+					->setArgument('name', $host['name'].NAME_DELIMITER.$graph['name'])
+					->setArgument('ymin_type', $graph['ymin_type'])
+					->setArgument('ymax_type', $graph['ymax_type'])
+					->setArgument('ymin_itemid', $graph['ymin_itemid'])
+					->setArgument('ymax_itemid', $graph['ymax_itemid'])
+					->setArgument('legend', $graph['show_legend'])
+					->setArgument('showworkperiod', $graph['show_work_period'])
+					->setArgument('showtriggers', $graph['show_triggers'])
+					->setArgument('graphtype', $graph['graphtype'])
+					->setArgument('yaxismin', $graph['yaxismin'])
+					->setArgument('yaxismax', $graph['yaxismax'])
+					->setArgument('percent_left', $graph['percent_left'])
+					->setArgument('percent_right', $graph['percent_right']);
+>>>>>>> ..F....... [ZBX-16452] fixed inconsistency in show legend, working time and triggers for graphs in screens and dashboard
 			}
 
 			$newGraphItems = getSameGraphItemsForHost($graph['gitems'], $this->hostid, false);
-			foreach ($newGraphItems as $i => $newGraphItem) {
+			foreach ($newGraphItems as $i => &$newGraphItem) {
 				unset($newGraphItem['gitemid'], $newGraphItem['graphid']);
+<<<<<<< HEAD
 
 				foreach ($newGraphItem as $name => $value) {
 					$src->setArgument('items['.$i.']['.$name.']', $value);
 				}
+=======
+>>>>>>> ..F....... [ZBX-16452] fixed inconsistency in show legend, working time and triggers for graphs in screens and dashboard
 			}
+			unset($newGraphItem);
 
+<<<<<<< HEAD
 			$src->setArgument('name', $host['name'].NAME_DELIMITER.$graph['name']);
+=======
+			$this->screenitem['url']->setArgument('items', $newGraphItems);
+			$this->screenitem['url'] = $this->screenitem['url']->getUrl();
+>>>>>>> ..F....... [ZBX-16452] fixed inconsistency in show legend, working time and triggers for graphs in screens and dashboard
 		}
 
 		// get time control
@@ -139,7 +169,16 @@ class CScreenGraph extends CScreenBase {
 				$isDefault = true;
 			}
 
+<<<<<<< HEAD
 			$src->setArgument('graph3d', $graph3d);
+=======
+			$timeControlData['src'] = $this->screenitem['url'].'&width='.$this->screenitem['width'].
+				'&height='.$this->screenitem['height'].'&legend='.$graph['show_legend'].
+				'&graph3d='.$graph['show_3d'].$this->getProfileUrlParams();
+			$timeControlData['src'] .= ($this->mode == SCREEN_MODE_EDIT)
+				? '&from='.ZBX_PERIOD_DEFAULT_FROM.'&to='.ZBX_PERIOD_DEFAULT_TO
+				: '&from='.$this->timeline['from'].'&to='.$this->timeline['to'];
+>>>>>>> ..F....... [ZBX-16452] fixed inconsistency in show legend, working time and triggers for graphs in screens and dashboard
 		}
 		else {
 			if ($this->screenitem['dynamic'] == SCREEN_SIMPLE_ITEM || $src === null) {
@@ -150,13 +189,14 @@ class CScreenGraph extends CScreenBase {
 				$isDefault = true;
 			}
 
-			if ($this->mode != SCREEN_MODE_EDIT && $graphId) {
+			if ($this->mode != SCREEN_MODE_EDIT && $graph['graphid']) {
 				if ($this->mode == SCREEN_MODE_PREVIEW) {
 					$timeControlData['loadSBox'] = 1;
 				}
 			}
 		}
 
+<<<<<<< HEAD
 		$src
 			->setArgument('width', $this->screenitem['width'])
 			->setArgument('height', $this->screenitem['height'])
@@ -173,6 +213,13 @@ class CScreenGraph extends CScreenBase {
 			$src
 				->setArgument('from', $this->timeline['from'])
 				->setArgument('to', $this->timeline['to']);
+=======
+			$timeControlData['src'] = $this->screenitem['url'].'&width='.$this->screenitem['width'].
+				'&height='.$this->screenitem['height'].'&legend='.$graph['show_legend'].$this->getProfileUrlParams();
+			$timeControlData['src'] .= ($this->mode == SCREEN_MODE_EDIT)
+				? '&from='.ZBX_PERIOD_DEFAULT_FROM.'&to='.ZBX_PERIOD_DEFAULT_TO
+				: '&from='.$this->timeline['from'].'&to='.$this->timeline['to'];
+>>>>>>> ..F....... [ZBX-16452] fixed inconsistency in show legend, working time and triggers for graphs in screens and dashboard
 		}
 
 		$timeControlData['src'] = $src->getUrl();
