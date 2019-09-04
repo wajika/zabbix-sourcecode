@@ -21,7 +21,7 @@
 
 $widget = (new CWidget())->setTitle($data['title']);
 
-// append host summary to widget header
+// Append host summary to widget header.
 if ($data['hostid'] != 0) {
 	switch ($data['elements_field']) {
 		case 'group_itemid':
@@ -40,7 +40,7 @@ if ($data['hostid'] != 0) {
 	$widget->addItem(get_header_host_table($host_table_element, $data['hostid']));
 }
 
-// create form
+// Create form.
 $form = (new CForm())
 	->setName('elements_form')
 	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
@@ -62,17 +62,17 @@ $form_list->addRow(new CLabel(_('Target type'), 'copy_type'),
 
 // Append host groups selection tab.
 $form_list->addRow(
-	(new CLabel(_('Target'), 'copy_hostgroup_targetids__ms'))->setAsteriskMark(),
+	(new CLabel(_('Target'), 'copy_groupids__ms'))->setAsteriskMark(),
 	(new CMultiSelect([
-		'name' => 'copy_hostgroup_targetids[]',
+		'name' => 'copy_groupids[]',
 		'object_name' => 'hostGroup',
-		'data' => $data['copy_hostgroup_targetids'],
+		'data' => $data['copy_groupids'],
 		'popup' => [
 			'parameters' => [
 				'srctbl' => 'host_groups',
 				'srcfld1' => 'groupid',
 				'dstfrm' => $form->getName(),
-				'dstfld1' => 'copy_hostgroup_targetids_'
+				'dstfld1' => 'copy_groupids_'
 			]
 		]
 	]))
@@ -84,17 +84,17 @@ $form_list->addRow(
 
 // Append hosts selection tab.
 $form_list->addRow(
-	(new CLabel(_('Target'), 'copy_host_targetids__ms'))->setAsteriskMark(),
+	(new CLabel(_('Target'), 'copy_hostids__ms'))->setAsteriskMark(),
 	(new CMultiSelect([
-		'name' => 'copy_host_targetids[]',
+		'name' => 'copy_hostids[]',
 		'object_name' => 'hosts',
-		'data' => $data['copy_host_targetids'],
+		'data' => $data['copy_hostids'],
 		'popup' => [
 			'parameters' => [
 				'srctbl' => 'hosts',
 				'srcfld1' => 'hostid',
 				'dstfrm' => $form->getName(),
-				'dstfld1' => 'copy_host_targetids_'
+				'dstfld1' => 'copy_hostids_'
 			]
 		]
 	]))
@@ -106,18 +106,18 @@ $form_list->addRow(
 
 // Append templates selection tab.
 $form_list->addRow(
-	(new CLabel(_('Target'), 'copy_templates_targetids__ms'))->setAsteriskMark(),
+	(new CLabel(_('Target'), 'copy_templateids__ms'))->setAsteriskMark(),
 	(new CMultiSelect([
-		'name' => 'copy_templates_targetids[]',
+		'name' => 'copy_templateids[]',
 		'object_name' => 'templates',
-		'data' => $data['copy_templates_targetids'],
+		'data' => $data['copy_templateids'],
 		'popup' => [
 			'parameters' => [
 				'srctbl' => 'templates',
 				'srcfld1' => 'hostid',
 				'srcfld2' => 'host',
 				'dstfrm' => $form->getName(),
-				'dstfld1' => 'copy_templates_targetids_'
+				'dstfld1' => 'copy_templateids_'
 			]
 		]
 	]))
@@ -127,10 +127,10 @@ $form_list->addRow(
 	($data['copy_type'] == COPY_TYPE_TO_TEMPLATE) ? '' : 'hidden'
 );
 
-// append tabs to form
+// Append tabs to form.
 $tab_view = (new CTabView())->addTab('elements_tab', '', $form_list);
 
-// append buttons to form
+// Append buttons to form.
 $tab_view->setFooter(makeFormFooter(
 	new CSubmit('copy', _('Copy')),
 	[new CButtonCancel(url_param('groupid').url_param('hostid'))]

@@ -1382,9 +1382,9 @@ function getCopyElementsFormData($elements_field, $title = null) {
 		'elements_field' => $elements_field,
 		'elements' => getRequest($elements_field, []),
 		'copy_type' => getRequest('copy_type', COPY_TYPE_TO_HOST_GROUP),
-		'copy_hostgroup_targetids' => [],
-		'copy_host_targetids' => [],
-		'copy_templates_targetids' => [],
+		'copy_groupids' => [],
+		'copy_hostids' => [],
+		'copy_templateids' => [],
 		'hostid' => getRequest('hostid', 0)
 	];
 
@@ -1396,40 +1396,40 @@ function getCopyElementsFormData($elements_field, $title = null) {
 
 	switch ($data['copy_type']) {
 		case COPY_TYPE_TO_HOST_GROUP:
-			$data['copy_hostgroup_targetids'] = hasRequest('copy_hostgroup_targetids')
+			$data['copy_groupids'] = hasRequest('copy_groupids')
 				? API::HostGroup()->get([
 					'output' => ['groupid', 'name'],
-					'groupids' => getRequest('copy_hostgroup_targetids', []),
+					'groupids' => getRequest('copy_groupids', []),
 					'editable' => true
 				])
 				: [];
-			$data['copy_hostgroup_targetids'] = CArrayHelper::renameObjectsKeys($data['copy_hostgroup_targetids'],
+			$data['copy_groupids'] = CArrayHelper::renameObjectsKeys($data['copy_groupids'],
 				['groupid' => 'id']
 			);
 			break;
 
 		case COPY_TYPE_TO_HOST:
-			$data['copy_host_targetids'] = hasRequest('copy_host_targetids')
+			$data['copy_hostids'] = hasRequest('copy_hostids')
 				? API::Host()->get([
 					'output' => ['hostid', 'name'],
-					'hostids' => getRequest('copy_host_targetids', []),
+					'hostids' => getRequest('copy_hostids', []),
 					'editable' => true
 				])
 				: [];
-			$data['copy_host_targetids'] = CArrayHelper::renameObjectsKeys($data['copy_host_targetids'],
+			$data['copy_hostids'] = CArrayHelper::renameObjectsKeys($data['copy_hostids'],
 				['hostid' => 'id']
 			);
 			break;
 
 		case COPY_TYPE_TO_TEMPLATE:
-			$data['copy_templates_targetids'] = hasRequest('copy_templates_targetids')
+			$data['copy_templateids'] = hasRequest('copy_templateids')
 				? API::Template()->get([
 					'output' => ['templateid', 'name'],
-					'templateids' => getRequest('copy_templates_targetids', []),
+					'templateids' => getRequest('copy_templateids', []),
 					'editable' => true
 				])
 				: [];
-			$data['copy_templates_targetids'] = CArrayHelper::renameObjectsKeys($data['copy_templates_targetids'],
+			$data['copy_templateids'] = CArrayHelper::renameObjectsKeys($data['copy_templateids'],
 				['templateid' => 'id']
 			);
 			break;

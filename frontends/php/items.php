@@ -125,9 +125,9 @@ $fields = [
 		'(isset({add}) || isset({update})) && isset({value_type}) && {value_type} == 2'],
 	'preprocessing' =>			[T_ZBX_STR, O_OPT, P_NO_TRIM,	null,	null],
 	'group_itemid' =>			[T_ZBX_INT, O_OPT, null,	DB_ID,		null],
-	'copy_hostgroup_targetids' => [T_ZBX_INT, O_OPT, null,	DB_ID,		null],
-	'copy_host_targetids' =>	[T_ZBX_INT, O_OPT, null,	DB_ID,		null],
-	'copy_templates_targetids' => [T_ZBX_INT, O_OPT, null,	DB_ID,		null],
+	'copy_groupids' => 			[T_ZBX_INT, O_OPT, null,	DB_ID,		null],
+	'copy_hostids' =>			[T_ZBX_INT, O_OPT, null,	DB_ID,		null],
+	'copy_templateids' => 		[T_ZBX_INT, O_OPT, null,	DB_ID,		null],
 	'new_application' =>		[T_ZBX_STR, O_OPT, null,	null,		'isset({add}) || isset({update})'],
 	'visible' =>				[T_ZBX_STR, O_OPT, null,	null,		null],
 	'applications' =>			[T_ZBX_INT, O_OPT, null,	DB_ID,		null],
@@ -1238,18 +1238,18 @@ elseif (hasRequest('action') && getRequest('action') === 'item.masscopyto' && ha
 	if (hasRequest('copy_type')) {
 		switch (getRequest('copy_type')) {
 			case COPY_TYPE_TO_HOST:
-				$hostids = getRequest('copy_host_targetids', []);
+				$hostids = getRequest('copy_hostids', []);
 				break;
 
 			case COPY_TYPE_TO_TEMPLATE:
-				$hostids = getRequest('copy_templates_targetids', []);
+				$hostids = getRequest('copy_templateids', []);
 				break;
 
 			case COPY_TYPE_TO_HOST_GROUP:
-				$db_hosts = getRequest('copy_hostgroup_targetids', [])
+				$db_hosts = getRequest('copy_groupids', [])
 					? API::Host()->get([
 						'output' => ['hostid'],
-						'groupids' => getRequest('copy_hostgroup_targetids', []),
+						'groupids' => getRequest('copy_groupids', []),
 						'preservekeys' => true
 					])
 					: [];

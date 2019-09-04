@@ -60,9 +60,9 @@ $fields = [
 	'show_work_period' =>	[T_ZBX_INT, O_OPT, null,		IN('1'),		null],
 	'show_triggers' =>		[T_ZBX_INT, O_OPT, null,		IN('1'),		null],
 	'group_graphid' =>		[T_ZBX_INT, O_OPT, null,		DB_ID,			null],
-	'copy_host_targetids' => [T_ZBX_INT, O_OPT, null,		DB_ID,			null],
-	'copy_templates_targetids' => [T_ZBX_INT, O_OPT, null,	DB_ID,			null],
-	'copy_hostgroup_targetids' => [T_ZBX_INT, O_OPT, null,	DB_ID,			null],
+	'copy_hostids' => 		[T_ZBX_INT, O_OPT, null,		DB_ID,			null],
+	'copy_templateids' => 	[T_ZBX_INT, O_OPT, null,		DB_ID,			null],
+	'copy_groupids' => 		[T_ZBX_INT, O_OPT, null,		DB_ID,			null],
 	// actions
 	'action' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, IN('"graph.masscopyto","graph.massdelete"'),	null],
 	'add' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,			null],
@@ -339,18 +339,18 @@ elseif (hasRequest('action') && getRequest('action') === 'graph.masscopyto' && h
 	if (hasRequest('copy_type')) {
 		switch (getRequest('copy_type')) {
 			case COPY_TYPE_TO_HOST:
-				$hostids = getRequest('copy_host_targetids', []);
+				$hostids = getRequest('copy_hostids', []);
 				break;
 
 			case COPY_TYPE_TO_TEMPLATE:
-				$hostids = getRequest('copy_templates_targetids', []);
+				$hostids = getRequest('copy_templateids', []);
 				break;
 
 			case COPY_TYPE_TO_HOST_GROUP:
-				$db_hosts = getRequest('copy_hostgroup_targetids', [])
+				$db_hosts = getRequest('copy_groupids', [])
 					? API::Host()->get([
 						'output' => ['hostid'],
-						'groupids' => getRequest('copy_hostgroup_targetids', []),
+						'groupids' => getRequest('copy_groupids', []),
 						'preservekeys' => true
 					])
 					: [];
