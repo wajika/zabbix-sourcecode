@@ -1782,8 +1782,11 @@ ZBX_THREAD_ENTRY(active_checks_thread, args)
 	while (ZBX_IS_RUNNING())
 	{
 		time_now = zbx_time();
+		now = time(NULL);
 		zbx_update_env(time_now);
-		now = (int)time_now;
+
+		if ((int)time_now - now != 0)
+			zabbix_log(LOG_LEVEL_WARNING, "time_now:%d now:%d", (int)time_now, (int)now);
 
 		if (now >= nextsend)
 		{
