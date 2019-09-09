@@ -342,7 +342,9 @@ class CScreenHistory extends CScreenBase {
 						}
 					}
 
-					$row[] = (new CCol(new CPre(zbx_nl2br($data['value']))))->addClass($color);
+					$row[] = (new CCol(new CPre(zbx_nl2br($data['value']))))
+						->addClass($color)
+						->addClass(ZBX_STYLE_WORDWRAP);
 
 					$history_table->addRow($row);
 				}
