@@ -520,6 +520,8 @@ class CScreenHistory extends CScreenBase {
 
 			if ($this->action == HISTORY_VALUES) {
 				$flickerfreeData['page'] = getPageNumber();
+				$flickerfreeData['class'] = ZBX_STYLE_LIST_TABLE_SCROLLABLE;
+				insert_js('calcTableHeight();', true);
 			}
 
 			if ($this->graphid != 0) {

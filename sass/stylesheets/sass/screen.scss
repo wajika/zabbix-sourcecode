@@ -5728,6 +5728,11 @@ tr.cursor-move {
 	overflow: hidden;
 }
 
+.list-table-scrollable {
+	display: block;
+	overflow-x: auto;
+}
+
 .graph-wrapper {
 	display: inline;
 }

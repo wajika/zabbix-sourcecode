@@ -4019,6 +4019,10 @@ tr.cursor-move td * {
   position: relative;
   overflow: hidden; }
 
+.list-table-scrollable {
+  display: block;
+  overflow-x: auto; }
+
 .graph-wrapper {
   display: inline; }
 

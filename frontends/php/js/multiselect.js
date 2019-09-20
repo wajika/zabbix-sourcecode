@@ -355,6 +355,9 @@ jQuery(function($) {
 					'class': 'multiselect-button'
 				}).append(popupButton));
 			}
+			
+            // resize scrollable table after multiselect initialization
+			calcTableHeight();
 		});
 	};
 

@@ -342,3 +342,11 @@ jQuery(function($) {
 	// Initialize hintBox event handlers.
 	hintBox.bindEvents();
 });
+
+function calcTableHeight() {
+	var header = jQuery('header').length == 0 ? 0 : jQuery('header').height(),
+		title = jQuery('.header-title').length == 0 ? 0 : jQuery('.header-title').outerHeight(),
+		parts = header + title + jQuery('.filter-space').outerHeight() + 80;
+
+	jQuery('.list-table-scrollable').css('height', 'calc(100vh - ' + parts + 'px)');
+}

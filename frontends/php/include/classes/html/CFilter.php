@@ -358,6 +358,8 @@ class CFilter extends CDiv {
 					'multiselects.multiSelect("resize");'.
 				'}'.
 
+				'calcTableHeight();'.
+
 				'if (active) {'.
 					'jQuery("[autofocus=autofocus]", ui.newPanel).focus();'.
 				'}'.

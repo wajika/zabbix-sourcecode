@@ -387,7 +387,7 @@ class CScreenBase {
 		}
 
 		$div = (new CDiv($item))
-			->addClass('flickerfreescreen')
+			->addClass(array_key_exists('class', $flickerfreeData) ? $flickerfreeData['class'] : 'flickerfreescreen')
 			->setAttribute('data-timestamp', $this->timestamp)
 			->setId($this->getScreenId());
 
