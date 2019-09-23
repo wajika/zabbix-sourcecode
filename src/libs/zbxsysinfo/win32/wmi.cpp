@@ -207,20 +207,23 @@ extern "C" static int	parse_all(IEnumWbemClassObject *pEnumerator, zbx_vector_wm
 	VARIANT			*vtProp = NULL;
 	ULONG			obj_num = 0;
 	IWbemClassObject	*pclsObj = NULL;
+	HRESULT			hres = S_OK;
 
 	while (pEnumerator)
 	{
 		ULONG			uReturn = 0;
-		HRESULT			hres;
 		zbx_vector_wmi_prop_t	*inst_val = NULL;
 
 		if (NULL != pclsObj)
 			pclsObj->Release();
 
+		if (FAILED(hres))
+			break;
+
 		hres = pEnumerator->Next(WBEM_INFINITE, 1, &pclsObj, &uReturn);
 
 		if (FAILED(hres) || 0 == uReturn)
-			return ret;
+			break;
 
 		hres = pclsObj->BeginEnumeration(WBEM_FLAG_NONSYSTEM_ONLY);
 
