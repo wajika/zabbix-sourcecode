@@ -2003,6 +2003,13 @@ class C44XmlValidator {
 		return ['type' => XML_STRING, 'default' => CXmlConstantValue::NONE, 'in' => [CXmlConstantValue::NONE => CXmlConstantName::NONE, CXmlConstantValue::BASIC => CXmlConstantName::BASIC, CXmlConstantValue::NTLM => CXmlConstantName::NTLM, CXmlConstantValue::KERBEROS => CXmlConstantName::KERBEROS]];
 	}
 
+	/**
+	 * Get extended validation rules for map elements.
+	 *
+	 * @param array $data  Import data.
+	 *
+	 * @return array
+	 */
 	public function getMapElementsExtendedRules(array $data) {
 		if (array_key_exists('elementtype', $data)) {
 			switch ($data['elementtype']) {
