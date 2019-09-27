@@ -1584,7 +1584,7 @@ class C44XmlValidator {
 						'selement' =>				['type' => XML_ARRAY, 'rules' => [
 							// The tag 'elementtype' should be validated before the 'elements' because it is used in 'ex_required' and 'ex_validate' methods.
 							'elementtype' =>			['type' => XML_STRING | XML_REQUIRED],
-							'elements' =>				['type' => 0, 'ex_required' => [$this, 'requiredMapElement'], 'ex_validate' => [$this, 'validateMapElements']],
+							'elements' =>				['type' => 0, 'ex_required' => [$this, 'requiredMapElement'], 'ex_validate' => [$this, 'validateMapElements'], 'ex_rules' => [$this, 'getMapElementsExtendedRules']],
 							'label' =>					['type' => XML_STRING | XML_REQUIRED],
 							'label_location' =>			['type' => XML_STRING | XML_REQUIRED],
 							'x' =>						['type' => XML_STRING | XML_REQUIRED],
@@ -1756,43 +1756,9 @@ class C44XmlValidator {
 	 * @return array|string
 	 */
 	public function validateMapElements($data, array $parent_data = null, $path) {
-		if (zbx_is_int($parent_data['elementtype'])) {
-			switch ($parent_data['elementtype']) {
-				case SYSMAP_ELEMENT_TYPE_HOST:
-					$rules = ['type' => XML_INDEXED_ARRAY, 'prefix' => 'element', 'rules' => [
-						'element' => ['type' => XML_ARRAY, 'rules' => [
-							'host' =>					['type' => XML_STRING | XML_REQUIRED]
-						]]
-					]];
-					break;
+		$rules = $this->getMapElementsExtendedRules($parent_data);
 
-				case SYSMAP_ELEMENT_TYPE_MAP:
-				case SYSMAP_ELEMENT_TYPE_HOST_GROUP:
-					$rules = ['type' => XML_INDEXED_ARRAY, 'prefix' => 'element', 'rules' => [
-						'element' => ['type' => XML_ARRAY, 'rules' => [
-							'name' =>					['type' => XML_STRING | XML_REQUIRED]
-						]]
-					]];
-					break;
-
-				case SYSMAP_ELEMENT_TYPE_TRIGGER:
-					$rules = ['type' => XML_INDEXED_ARRAY, 'prefix' => 'element', 'rules' => [
-						'element' => ['type' => XML_ARRAY, 'rules' => [
-							'description' =>			['type' => XML_STRING | XML_REQUIRED],
-							'expression' =>				['type' => XML_STRING | XML_REQUIRED],
-							'recovery_expression' =>	['type' => XML_STRING | XML_REQUIRED]
-						]]
-					]];
-					break;
-
-				default:
-					$rules = ['type' => XML_ARRAY, 'rules' => []];
-			}
-
-			$data = (new CXmlValidatorGeneral($rules, $this->format))->validate($data, $path);
-		}
-
-		return $data;
+		return (new CXmlValidatorGeneral($rules, $this->format))->validate($data, $path);
 	}
 
 	/**
@@ -2035,6 +2001,45 @@ class C44XmlValidator {
 		}
 
 		return ['type' => XML_STRING, 'default' => CXmlConstantValue::NONE, 'in' => [CXmlConstantValue::NONE => CXmlConstantName::NONE, CXmlConstantValue::BASIC => CXmlConstantName::BASIC, CXmlConstantValue::NTLM => CXmlConstantName::NTLM, CXmlConstantValue::KERBEROS => CXmlConstantName::KERBEROS]];
+	}
+
+	public function getMapElementsExtendedRules(array $data) {
+		if (array_key_exists('elementtype', $data)) {
+			switch ($data['elementtype']) {
+				case SYSMAP_ELEMENT_TYPE_HOST:
+					return ['type' => XML_INDEXED_ARRAY, 'prefix' => 'element', 'rules' => [
+						'element' => ['type' => XML_ARRAY, 'rules' => [
+							'host' =>					['type' => XML_STRING | XML_REQUIRED]
+						]]
+					]];
+					// no break;
+
+				case SYSMAP_ELEMENT_TYPE_MAP:
+				case SYSMAP_ELEMENT_TYPE_HOST_GROUP:
+					return ['type' => XML_INDEXED_ARRAY, 'prefix' => 'element', 'rules' => [
+						'element' => ['type' => XML_ARRAY, 'rules' => [
+							'name' =>					['type' => XML_STRING | XML_REQUIRED]
+						]]
+					]];
+					// no break;
+
+				case SYSMAP_ELEMENT_TYPE_TRIGGER:
+					return ['type' => XML_INDEXED_ARRAY, 'prefix' => 'element', 'rules' => [
+						'element' => ['type' => XML_ARRAY, 'rules' => [
+							'description' =>			['type' => XML_STRING | XML_REQUIRED],
+							'expression' =>				['type' => XML_STRING | XML_REQUIRED],
+							'recovery_expression' =>	['type' => XML_STRING | XML_REQUIRED]
+						]]
+					]];
+					// no break;
+
+				case SYSMAP_ELEMENT_TYPE_IMAGE:
+					return ['type' => XML_ARRAY, 'rules' => []];
+					// no break;
+			}
+		}
+
+		return ['type' => XML_ARRAY, 'rules' => []];
 	}
 
 	/**

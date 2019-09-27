@@ -51,6 +51,10 @@ class CArrayKeysImportConverter extends CConverter {
 
 		if ($rules['type'] & XML_ARRAY) {
 			foreach ($rules['rules'] as $tag => $tag_rules) {
+				if (array_key_exists('ex_rules', $tag_rules)) {
+					$tag_rules = call_user_func($tag_rules['ex_rules'], $data);
+				}
+
 				if (array_key_exists($tag, $data)) {
 					$data[$tag] = $this->normalizeArrayKeys($data[$tag], $tag_rules);
 				}
