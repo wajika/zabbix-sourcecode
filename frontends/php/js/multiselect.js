@@ -454,7 +454,7 @@ jQuery(function($) {
 									});
 
 								delete ms.values.searchTimeout;
-							}, 200);
+							}, 500);
 						}
 					}
 					else {
@@ -1123,11 +1123,11 @@ jQuery(function($) {
 			: null;
 	}
 
-	function objectLength($obj) {
+	function objectLength(obj) {
 		var length = 0;
 
-		for (var key in $obj) {
-			if ($obj.hasOwnProperty(key)) {
+		for (var key in obj) {
+			if (obj.hasOwnProperty(key)) {
 				length++;
 			}
 		}
