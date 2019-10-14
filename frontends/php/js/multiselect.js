@@ -945,7 +945,6 @@ jQuery(function($) {
 		var ms = $obj.data('multiSelect'),
 			$available = ms.values.available_div;
 
-
 		clearSearchTimeout($obj);
 
 		if (!$available.parent().is(document.body)) {
