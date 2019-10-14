@@ -329,11 +329,6 @@ jQuery(function($) {
 
 						return false;
 					}
-				})
-				.on('focusout', function() {
-					setTimeout(function() {
-						hideAvailable($obj);
-					}, 200);
 				});
 
 			if (empty(ms.options.data)) {
@@ -949,6 +944,7 @@ jQuery(function($) {
 	function hideAvailable($obj) {
 		var ms = $obj.data('multiSelect'),
 			$available = ms.values.available_div;
+
 
 		clearSearchTimeout($obj);
 
