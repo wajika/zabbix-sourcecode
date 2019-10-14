@@ -698,20 +698,20 @@ jQuery(function($) {
 	function addAvailable($obj, item) {
 		var ms = $obj.data('multiSelect');
 
-		var li = $('<li>', {
+		var $li = $('<li>', {
 				'data-id': item.id,
 				'data-label': (item.prefix || '') + item.name
 			})
-				.click(function() {
+				.on('click', function() {
 					select($obj, item.id);
 				})
-				.hover(function() {
+				.on('hover', function() {
 					$('li.suggest-hover', ms.values.available_div).removeClass('suggest-hover');
-					li.addClass('suggest-hover');
+					$li.addClass('suggest-hover');
 				});
 
 		if (!empty(item.prefix)) {
-			li.append($('<span>', {
+			$li.append($('<span>', {
 				'class': 'grey',
 				text: item.prefix
 			}));
@@ -728,12 +728,12 @@ jQuery(function($) {
 			end = text.indexOf(search, end);
 
 			if (end > start) {
-				li.append($('<span>', {
+				$li.append($('<span>', {
 					text: item.name.substring(start, end)
 				}));
 			}
 
-			li.append($('<span>', {
+			$li.append($('<span>', {
 				'class': !is_new ? 'suggest-found' : null,
 				text: item.name.substring(end, end + search.length)
 			})).toggleClass('suggest-new', is_new);
@@ -743,12 +743,12 @@ jQuery(function($) {
 		}
 
 		if (end < item.name.length) {
-			li.append($('<span>', {
+			$li.append($('<span>', {
 				text: item.name.substring(end, item.name.length)
 			}));
 		}
 
-		$('ul', ms.values.available_div).append(li);
+		$('ul', ms.values.available_div).append($li);
 	}
 
 	function loadAvailable($obj) {
