@@ -207,7 +207,8 @@ jQuery(function($) {
 					/*
 					 * When modifying the "addNew" option, few things must be done:
 					 *   1. Search input must be reset.
-					 *   2. The already selected "(new)" items must be hidden and disabled, not to get submitted.
+					 *   2. The already selected "(new)" items must be either hidden and disabled or shown and enabled.
+					 *      Note: hidden and disabled items will not submit to the server.
 					 */
 
 					cleanSearch($obj);
