@@ -193,32 +193,35 @@ jQuery(function($) {
 		modify: function(options) {
 			return this.each(function() {
 				var $obj = $(this),
-					ms = $(this).data('multiSelect');
+					ms = $obj.data('multiSelect');
 
-				for (var ms_key in ms.options) {
-					if (ms_key in options) {
-						ms.options[ms_key] = options[ms_key];
+				var addNew_modified = ('addNew' in options) && options['addNew'] != ms.options['addNew'];
+
+				for (var key in ms.options) {
+					if (key in options) {
+						ms.options[key] = options[key];
 					}
+				}
 
+				if (addNew_modified) {
 					/*
-					 * When changing the option "addNew" few things need to happen:
-					 *   1) previous search results must be cleared, in case same search string is requested. So
-					 *      a new request is sent and new results are received. With or without "(new)".
-					 *   2) Already selected "(new)" items must be hidden and disabled, so that they are not sent
-					 *      when form is submitted.
-					 *   3) Already visible block with results must be hidden. It will reappear on new search.
+					 * When modifying the "addNew" option, few things must be done:
+					 *   1. Search input must be reset.
+					 *   2. The already selected "(new)" items must be hidden and disabled, not to get submitted.
 					 */
-					if (ms_key === 'addNew') {
-						cleanLastSearch($obj);
 
-						$('input[name*="[new]"]', $obj)
-							.prop('disabled', !ms.options[ms_key])
-							.each(function() {
-								$('.selected li[data-id="' + this.value + '"]', $obj).toggle(ms.options[ms_key]);
+					cleanSearch($obj);
+
+					$('input[name*="[new]"]', $obj)
+						.prop('disabled', !ms.options['addNew'])
+						.each(function() {
+							var id = this.value;
+							$('.selected li[data-id]', $obj).each(function() {
+								if ($(this).data('id') == id) {
+									$(this).toggle(ms.options['addNew']);
+								}
 							});
-
-						hideAvailable($obj);
-					}
+						});
 				}
 			});
 		}
