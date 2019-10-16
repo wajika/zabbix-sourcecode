@@ -216,7 +216,7 @@ jQuery(function($) {
 					$('input[name*="[new]"]', $obj)
 						.prop('disabled', !ms.options['addNew'])
 						.each(function() {
-							var id = this.value;
+							var id = $(this).val();
 							$('.selected li[data-id]', $obj).each(function() {
 								if ($(this).data('id') == id) {
 									$(this).toggle(ms.options['addNew']);
