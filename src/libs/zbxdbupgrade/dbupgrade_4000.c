@@ -254,12 +254,33 @@ static int	DBpatch_4000004(void)
 
 static int	DBpatch_4000005(void)
 {
+	return DBdrop_foreign_key("items", 1);
+}
+static int	DBpatch_4000006(void)
+{
+	return DBdrop_index("items", "items_1");
+}
+
+static int	DBpatch_4000007(void)
+{
 	const ZBX_FIELD	field = {"key_", "", NULL, NULL, 2048, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
 
 	return DBmodify_field_type("items", &field, NULL);
 }
 
-static int	DBpatch_4000006(void)
+static int	DBpatch_4000008(void)
+{
+	return DBcreate_index("items", "items_1", "hostid,key_(255)", 1);
+}
+
+static int	DBpatch_4000009(void)
+{
+	const ZBX_FIELD	field = {"hostid", NULL, "hosts", "hostid", 0, 0, 0, ZBX_FK_CASCADE_DELETE};
+
+	return DBadd_foreign_key("items", 1, &field);
+}
+
+static int	DBpatch_4000010(void)
 {
 	const ZBX_FIELD	field = {"key_", "", NULL, NULL, 2048, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
 
@@ -279,5 +300,9 @@ DBPATCH_ADD(4000003, 0, 0)
 DBPATCH_ADD(4000004, 0, 0)
 DBPATCH_ADD(4000005, 0, 0)
 DBPATCH_ADD(4000006, 0, 0)
+DBPATCH_ADD(4000007, 0, 0)
+DBPATCH_ADD(4000008, 0, 0)
+DBPATCH_ADD(4000009, 0, 0)
+DBPATCH_ADD(4000010, 0, 0)
 
 DBPATCH_END()
