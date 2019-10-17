@@ -252,6 +252,20 @@ static int	DBpatch_4000004(void)
 	return SUCCEED;
 }
 
+static int	DBpatch_4000005(void)
+{
+	const ZBX_FIELD	field = {"key_", "", NULL, NULL, 2048, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
+
+	return DBmodify_field_type("items", &field, NULL);
+}
+
+static int	DBpatch_4000006(void)
+{
+	const ZBX_FIELD	field = {"key_", "", NULL, NULL, 2048, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
+
+	return DBmodify_field_type("item_discovery", &field, NULL);
+}
+
 #endif
 
 DBPATCH_START(4000)
@@ -263,5 +277,7 @@ DBPATCH_ADD(4000001, 0, 0)
 DBPATCH_ADD(4000002, 0, 0)
 DBPATCH_ADD(4000003, 0, 0)
 DBPATCH_ADD(4000004, 0, 0)
+DBPATCH_ADD(4000005, 0, 0)
+DBPATCH_ADD(4000006, 0, 0)
 
 DBPATCH_END()
