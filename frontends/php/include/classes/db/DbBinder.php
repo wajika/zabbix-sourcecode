@@ -23,14 +23,15 @@ class DbBinder {
 
 	private $data = [];
 
-	public function dbConditionId($key, $fieldName, array $values, $notIn = false) {
-		return $this->dbConditionInt($key, $fieldName, $values, $notIn, true);
+	public function dbConditionId($key, $field_name, array $values, $not_in = false) {
+		return $this->dbConditionInt($key, $field_name, $values, $not_in, true);
 	}
 
-	public function dbConditionInt($key, $fieldName, array $values, $notIn = false, $zero_to_null = false) {
+	public function dbConditionInt($key, $field_name, array $values, $not_in = false, $zero_to_null = false) {
 		global $DB;
 
-		$MAX_EXPRESSIONS = 950;
+		$MAX_EXPRESSIONS = 950; // Maximum  number of values for using "IN (<id1>,<id2>,...,<idN>)".
+		$MIN_NUM_BETWEEN = 4; // Minimum number of consecutive values for using "BETWEEN <id1> AND <idN>".
 
 		if (is_bool(reset($values))) {
 			return '1=0';
@@ -49,52 +50,88 @@ class DbBinder {
 		natsort($values);
 		$values = array_values($values);
 
-		foreach ($values as &$value) {
-			if (!ctype_digit((string) $value) || bccomp($value, ZBX_MAX_UINT64) > 0) {
-				$value = zbx_dbstr($value);
-			}
-		}
-		unset($value);
+		$intervals = [];
+		$singles = [];
 
 		if ($DB['TYPE'] == ZBX_DB_ORACLE) {
-			// Replace with named placeholders.
-			$values = $this->bind($key, $values);
+			for ($i = 0, $size = count($values); $i < $size; $i++) {
+				if ($i + $MIN_NUM_BETWEEN < $size && bcsub($values[$i + $MIN_NUM_BETWEEN], $values[$i]) == $MIN_NUM_BETWEEN) {
+					// push interval first value
+					$intervals[] = dbQuoteInt($values[$i]);
+
+					for ($i += $MIN_NUM_BETWEEN; $i < $size && bcsub($values[$i], $values[$i - 1]) == 1; $i++);
+
+					// push interval last value
+					$intervals[] = dbQuoteInt($values[$i]);
+
+					$i--;
+				}
+				else {
+					$singles[] = dbQuoteInt($values[$i]);
+				}
+			}
+		}
+		else {
+			$singles = array_map(function($value) {
+				return dbQuoteInt($value);
+			}, $values);
 		}
 
 		// concatenate conditions
 		$condition = '';
-		$operatorAnd = $notIn ? ' AND ' : ' OR ';
+		$logic = $not_in ? ' AND ' : ' OR ';
 
-		$operatorNot = $notIn ? ' NOT' : '';
-		$chunks = array_chunk($values, $MAX_EXPRESSIONS);
-		$chunk_count = (int) $has_zero + count($chunks);
+		// process intervals
 
-		foreach ($chunks as $chunk) {
+		if ($DB['TYPE'] == ZBX_DB_ORACLE) {
+			$intervals = $this->bind($key, $intervals);
+		}
+
+		$interval_chunks = array_chunk($intervals, 2);
+		foreach ($interval_chunks as $interval) {
+			if ($condition !== '') {
+				$condition .= $logic;
+			}
+
+			$condition .= ($not_in ? 'NOT ' : '').$field_name.' BETWEEN '.$interval[0].' AND '.$interval[1];
+		}
+
+		// process individual values
+
+		if ($DB['TYPE'] == ZBX_DB_ORACLE) {
+			$singles = $this->bind($key, $singles);
+		}
+
+		$single_chunks = array_chunk($singles, $MAX_EXPRESSIONS);
+
+		foreach ($single_chunks as $chunk) {
+			if ($condition !== '') {
+				$condition .= $logic;
+			}
+
 			if (count($chunk) == 1) {
-				$operator = $notIn ? '!=' : '=';
-
-				$condition .= ($condition !== '' ? $operatorAnd : '').$fieldName.$operator.$chunk[0];
+				$condition .= $field_name.($not_in ? '!=' : '=').$chunk[0];
 			}
 			else {
-				$chunkIns = '';
-
-				foreach ($chunk as $value) {
-					$chunkIns .= ','.$value;
-				}
-
-				$chunkIns = $fieldName.$operatorNot.' IN ('.substr($chunkIns, 1).')';
-
-				$condition .= ($condition !== '') ? $operatorAnd.$chunkIns : $chunkIns;
+				$condition .= $field_name.($not_in ? ' NOT' : '').' IN ('.implode(',', $chunk).')';
 			}
 		}
 
 		if ($has_zero) {
-			$condition .= ($condition !== '') ? $operatorAnd : '';
-			$condition .= $fieldName;
-			$condition .= $notIn ? ' IS NOT NULL' : ' IS NULL';
+			if ($condition !== '') {
+				$condition .= $logic;
+			}
+
+			$condition .= $field_name.($not_in ? ' IS NOT NULL' : ' IS NULL');
 		}
 
-		return (!$notIn && $chunk_count > 1) ? '('.$condition.')' : $condition;
+		if (!$not_in) {
+			if ((int) $has_zero + count($interval_chunks) + count($single_chunks) > 1) {
+				$condition = '('.$condition.')';
+			}
+		}
+
+		return $condition;
 	}
 
 	public function getBinds() {
@@ -109,6 +146,10 @@ class DbBinder {
 	}
 
 	private function bind($key, array $values) {
+		if (!$values) {
+			return [];
+		}
+
 		$values = array_values($values);
 
 		foreach ($values as &$value) {
