@@ -312,15 +312,17 @@ class CApiService {
 
 		// create the map from a database table
 		if ($table) {
+			$db_binder = new DbBinder();
+
 			$res = DBselect(API::getApiService()->createSelectQuery($table, [
 				'output' => [$baseField, $foreignField],
 				'filter' => [$baseField => array_keys($objects)]
-			]));
+			], $db_binder), null, 0, $db_binder);
+
 			while ($relation = DBfetch($res)) {
 				$relationMap->addRelation($relation[$baseField], $relation[$foreignField]);
 			}
 		}
-
 		// create a map from the base objects
 		else {
 			foreach ($objects as $object) {
@@ -370,8 +372,8 @@ class CApiService {
 	 *
 	 * @return array
 	 */
-	protected function createSelectQuery($tableName, array $options) {
-		$sqlParts = $this->createSelectQueryParts($tableName, $this->tableAlias(), $options);
+	protected function createSelectQuery($tableName, array $options, $db_binder = null) {
+		$sqlParts = $this->createSelectQueryParts($tableName, $this->tableAlias(), $options, $db_binder);
 
 		return $this->createSelectQueryFromParts($sqlParts);
 	}
@@ -385,7 +387,7 @@ class CApiService {
 	 *
 	 * @return array		The resulting SQL parts array
 	 */
-	protected function createSelectQueryParts($tableName, $tableAlias, array $options) {
+	protected function createSelectQueryParts($tableName, $tableAlias, array $options, $db_binder = null) {
 		// extend default options
 		$options = zbx_array_merge($this->globalGetOptions, $options);
 
@@ -399,7 +401,7 @@ class CApiService {
 		];
 
 		// add filter options
-		$sqlParts = $this->applyQueryFilterOptions($tableName, $tableAlias, $options, $sqlParts);
+		$sqlParts = $this->applyQueryFilterOptions($tableName, $tableAlias, $options, $sqlParts, $db_binder);
 
 		// add output options
 		$sqlParts = $this->applyQueryOutputOptions($tableName, $tableAlias, $options, $sqlParts);
@@ -504,7 +506,7 @@ class CApiService {
 	 *
 	 * @return array		The resulting SQL parts array
 	 */
-	protected function applyQueryFilterOptions($tableName, $tableAlias, array $options, array $sqlParts) {
+	protected function applyQueryFilterOptions($tableName, $tableAlias, array $options, array $sqlParts, $db_binder = null) {
 		$pkOption = $this->pkOption($tableName);
 		$tableId = $this->tableId($tableName, $tableAlias);
 
@@ -516,7 +518,7 @@ class CApiService {
 
 		// filters
 		if (is_array($options['filter'])) {
-			$this->dbFilter($tableId, $options, $sqlParts);
+			$this->dbFilter($tableId, $options, $sqlParts, $db_binder);
 		}
 
 		// search
@@ -864,7 +866,7 @@ class CApiService {
 	 *
 	 * @return bool
 	 */
-	protected function dbFilter($table, $options, &$sqlParts) {
+	protected function dbFilter($table, $options, &$sqlParts, $db_binder = null) {
 		list($table, $tableShort) = explode(' ', $table);
 
 		$tableSchema = DB::getSchema($table);
@@ -883,12 +885,23 @@ class CApiService {
 			$fieldName = $this->fieldId($field, $tableShort);
 			switch ($tableSchema['fields'][$field]['type']) {
 				case DB::FIELD_TYPE_ID:
-					$filter[$field] = dbConditionId($fieldName, $value);
+					if ($db_binder) {
+						$filter[$field] = $db_binder->dbConditionId($field, $fieldName, $value);
+					}
+					else {
+						$filter[$field] = dbConditionId($fieldName, $value);
+					}
 					break;
 
 				case DB::FIELD_TYPE_INT:
 				case DB::FIELD_TYPE_UINT:
-					$filter[$field] = dbConditionInt($fieldName, $value);
+					if ($db_binder) {
+						$filter[$field] = $db_binder->dbConditionInt($field, $fieldName, $value);
+					}
+					else {
+						$filter[$field] = dbConditionInt($fieldName, $value);
+					}
+
 					break;
 
 				default:

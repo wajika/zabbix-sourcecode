@@ -342,7 +342,7 @@ function DBrollback() {
  *
  * @return resource or object, False if failed
  */
-function DBselect($query, $limit = null, $offset = 0) {
+function DBselect($query, $limit = null, $offset = 0, $db_binder = null) {
 	global $DB;
 
 	$result = false;
@@ -365,21 +365,45 @@ function DBselect($query, $limit = null, $offset = 0) {
 				error('Error in query ['.$query.'] ['.mysqli_error($DB['DB']).']', 'sql');
 			}
 			break;
+
 		case ZBX_DB_POSTGRESQL:
 			if (!$result = pg_query($DB['DB'], $query)) {
 				error('Error in query ['.$query.'] ['.pg_last_error().']', 'sql');
 			}
 			break;
+
 		case ZBX_DB_ORACLE:
+			$has_errors = false;
+
 			if (!$result = oci_parse($DB['DB'], $query)) {
-				$e = @oci_error();
+				$e = oci_error();
 				error('SQL error ['.$e['message'].'] in ['.$e['sqltext'].']', 'sql');
+
+				$has_errors = true;
 			}
-			elseif (!@oci_execute($result, ($DB['TRANSACTIONS'] ? OCI_DEFAULT : OCI_COMMIT_ON_SUCCESS))) {
+
+			if (!$has_errors && $db_binder) {
+				$binds = $db_binder->getBinds();
+				foreach (array_keys($binds) as $placeholder) {
+					// Please note that "oci_bind_by_name" takes a reference for variable.
+					if (!@oci_bind_by_name($result, $placeholder, $binds[$placeholder])) {
+						$e = oci_error($result);
+						error('SQL error ['.$e['message'].'] in ['.$e['sqltext'].']', 'sql');
+
+						$has_errors = true;
+
+						break;
+					}
+				}
+			}
+
+			if (!$has_errors && !@oci_execute($result, ($DB['TRANSACTIONS'] ? OCI_DEFAULT : OCI_COMMIT_ON_SUCCESS))) {
 				$e = oci_error($result);
 				error('SQL error ['.$e['message'].'] in ['.$e['sqltext'].']', 'sql');
 			}
+
 			break;
+
 		case ZBX_DB_DB2:
 			$options = [];
 			if ($DB['TRANSACTIONS']) {
