@@ -1072,8 +1072,8 @@ class CHostPrototype extends CHostBase {
 		}
 	}
 
-	protected function applyQueryFilterOptions($tableName, $tableAlias, array $options, array $sqlParts) {
-		$sqlParts = parent::applyQueryFilterOptions($tableName, $tableAlias, $options, $sqlParts);
+	protected function applyQueryFilterOptions($tableName, $tableAlias, array $options, array $sqlParts, $db_binder = null) {
+		$sqlParts = parent::applyQueryFilterOptions($tableName, $tableAlias, $options, $sqlParts, $db_binder);
 
 		// do not return host prototypes from discovered hosts
 		$sqlParts['from'][] = 'host_discovery hd';

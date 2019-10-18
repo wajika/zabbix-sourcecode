@@ -1206,7 +1206,7 @@ class CService extends CApiService {
 		checkServiceTime($serviceTime);
 	}
 
-	protected function applyQueryFilterOptions($tableName, $tableAlias, array $options, array $sqlParts) {
+	protected function applyQueryFilterOptions($tableName, $tableAlias, array $options, array $sqlParts, $db_binder = null) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
 			// if services with specific trigger IDs were requested, return only the ones accessible to the current user.
 			if ($options['filter']['triggerid']) {
@@ -1222,7 +1222,7 @@ class CService extends CApiService {
 			}
 		}
 
-		$sqlParts = parent::applyQueryFilterOptions($tableName, $tableAlias, $options, $sqlParts);
+		$sqlParts = parent::applyQueryFilterOptions($tableName, $tableAlias, $options, $sqlParts, $db_binder);
 
 		// parentids
 		if ($options['parentids'] !== null) {
