@@ -61,10 +61,10 @@ class DbBinder {
 
 					for ($i += $MIN_NUM_BETWEEN; $i < $size && bcsub($values[$i], $values[$i - 1]) == 1; $i++);
 
+					$i--;
+
 					// push interval last value
 					$intervals[] = dbQuoteInt($values[$i]);
-
-					$i--;
 				}
 				else {
 					$singles[] = dbQuoteInt($values[$i]);
