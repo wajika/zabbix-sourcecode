@@ -271,7 +271,7 @@ static int	DBpatch_4000007(void)
 static int	DBpatch_4000008(void)
 {
 #ifdef HAVE_MYSQL
-	return DBcreate_index("items", "items_1", "hostid,key_(255)", 1);
+	return DBcreate_index("items", "items_1", "hostid,key_(766)", 1);
 #else
 	return DBcreate_index("items", "items_1", "hostid,key_", 1);
 #endif
