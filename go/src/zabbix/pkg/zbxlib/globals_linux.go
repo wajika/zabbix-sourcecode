@@ -47,10 +47,9 @@ package zbxlib
 #include "common.h"
 #include "sysinfo.h"
 #include "comms.h"
+#include "log.h"
 #include "../src/zabbix_agent/metrics.h"
 #include "../src/zabbix_agent/logfiles/logfiles.h"
-
-#define ZBX_MESSAGE_BUF_SIZE	1024
 
 typedef ZBX_ACTIVE_METRIC* ZBX_ACTIVE_METRIC_LP;
 typedef zbx_vector_ptr_t * zbx_vector_ptr_lp_t;
@@ -107,13 +106,6 @@ int	zbx_procstat_get_util(const char *procname, const char *username, const char
 int	get_cpustat(AGENT_RESULT *result, int cpu_num, int state, int mode)
 {
 	return SYSINFO_RET_FAIL;
-}
-
-char	*zbx_strerror(int errnum)
-{
-	static char	utf8_string[ZBX_MESSAGE_BUF_SIZE];
-	zbx_snprintf(utf8_string, sizeof(utf8_string), "[%d] %s", errnum, strerror(errnum));
-	return utf8_string;
 }
 
 char	*strerror_from_system(unsigned long error)

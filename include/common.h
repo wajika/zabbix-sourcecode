@@ -1178,7 +1178,7 @@ void	uint64_array_remove(zbx_uint64_t *values, int *num, const zbx_uint64_t *rm_
 
 const char	*zbx_event_value_string(unsigned char source, unsigned char object, unsigned char value);
 
-#ifdef _WINDOWS
+#if defined(_WINDOWS) || defined(__MINGW64__)
 const OSVERSIONINFOEX	*zbx_win_getversion(void);
 void	zbx_wmi_get(const char *wmi_namespace, const char *wmi_query, char **utf8_value);
 wchar_t	*zbx_acp_to_unicode(const char *acp_string);
