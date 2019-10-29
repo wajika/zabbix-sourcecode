@@ -9,10 +9,22 @@
 			"revisionTime": "2019-06-22T08:41:38Z"
 		},
 		{
+			"checksumSHA1": "QGZg/i744CkeFY2cKSDU06e65AQ=",
+			"path": "github.com/natefinch/npipe",
+			"revision": "c1b8fa8bdccecb0b8db834ee0b92fdbcfa606dd6",
+			"revisionTime": "2016-06-21T03:49:01Z"
+		},
+		{
 			"checksumSHA1": "lzu5j2Gl33YUhIGbZOV/blOIug4=",
 			"path": "golang.org/x/sys/unix",
 			"revision": "9eafafc0a87e0fd0aeeba439a4573537970c44c7",
 			"revisionTime": "2019-08-12T07:25:24Z"
+		},
+		{
+			"checksumSHA1": "xemcI239zDhbsRK3byVvo7PPNHU=",
+			"path": "golang.org/x/sys/windows",
+			"revision": "b09406accb4736d857a32bf9444cd7edae2ffa79",
+			"revisionTime": "2019-10-10T09:17:53Z"
 		}
 	],
 	"rootPath": "zabbix"
