@@ -3,6 +3,7 @@ SUBDIRS = \
 	glexpr \
 	itemutil \
 	log \
+	pidfile \
 	plugin \
 	std \
 	tls \

@@ -1,4 +1,5 @@
 /*
+/*
 ** Zabbix
 ** Copyright (C) 2001-2019 Zabbix SIA
 **
@@ -1190,7 +1191,7 @@ int	_wis_uint(const wchar_t *wide_string);
 #endif
 void	zbx_strlower(char *str);
 void	zbx_strupper(char *str);
-#if defined(_WINDOWS) || defined(HAVE_ICONV)
+#if defined(_WINDOWS) ||defined(__MINGW64__) || defined(HAVE_ICONV)
 char	*convert_to_utf8(char *in, size_t in_size, const char *encoding);
 #endif	/* HAVE_ICONV */
 #define ZBX_MAX_BYTES_IN_UTF8_CHAR	4
@@ -1553,7 +1554,7 @@ char	*zbx_create_token(zbx_uint64_t seed);
 
 int	zbx_variant_to_value_type(zbx_variant_t *value, unsigned char value_type, char **errmsg);
 
-#ifdef _WINDOWS
+#if defined(_WINDOWS) || defined(__MINGW64__)
 #define ZBX_PCRE_RECURSION_LIMIT	2000	/* assume ~1 MB stack and ~500 bytes per recursion */
 #endif
 

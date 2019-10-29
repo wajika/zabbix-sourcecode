@@ -17,6 +17,22 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-package zbxcmd
+package pidfile
 
-const maxExecuteOutputLenB = 512 * 1024
+import (
+	"fmt"
+	"os"
+	"syscall"
+)
+
+func createPidFile(pid int, path string) (file *os.File, err error) {
+	if path == "" {
+		return nil, nil
+	}
+
+	if file, err = os.OpenFile(path, os.O_WRONLY|os.O_CREATE|syscall.O_CLOEXEC, 0644); nil != err {
+		return nil, fmt.Errorf("cannot open PID file [%s]: %s", path, err.Error())
+	}
+
+	return
+}

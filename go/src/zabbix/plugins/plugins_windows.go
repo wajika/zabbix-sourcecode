@@ -17,6 +17,12 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-package zbxcmd
+package plugins
 
-const maxExecuteOutputLenB = 512 * 1024
+import (
+	_ "zabbix/plugins/log"
+	_ "zabbix/plugins/systemrun"
+	_ "zabbix/plugins/zabbix/async"
+	_ "zabbix/plugins/zabbix/stats"
+	_ "zabbix/plugins/zabbix/sync"
+)

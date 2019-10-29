@@ -17,6 +17,41 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-package zbxcmd
+package pidfile
 
-const maxExecuteOutputLenB = 512 * 1024
+import (
+	"os"
+	"strconv"
+)
+
+type File struct {
+	file *os.File
+}
+
+func New(path string) (pidFile *File, err error) {
+	var pf File
+	pid := os.Getpid()
+	if pf.file, err = createPidFile(pid, path); err != nil {
+		return
+	}
+	if err = pf.file.Truncate(0); err != nil {
+		return
+	}
+	if _, err = pf.file.WriteString(strconv.Itoa(pid)); err != nil {
+		return
+	}
+	if err = pf.file.Sync(); err != nil {
+		return
+	}
+
+	return &pf, nil
+}
+
+func (f *File) Delete() {
+	if nil == f.file {
+		return
+	}
+	path := f.file.Name()
+	f.file.Close()
+	os.Remove(path)
+}

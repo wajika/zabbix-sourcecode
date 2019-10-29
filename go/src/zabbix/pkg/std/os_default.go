@@ -1,3 +1,5 @@
+// +build !linux
+
 /*
 ** Zabbix
 ** Copyright (C) 2001-2019 Zabbix SIA
@@ -17,6 +19,11 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-package zbxcmd
+// package std is used to create wrappers for standard Go functions to support
+// mocking in tests where necessary
+package std
 
-const maxExecuteOutputLenB = 512 * 1024
+// NewMockOs returns Os interface that replaces supported os package functionality with mock functions.
+func NewMockOs() Os {
+	return &sysOs{}
+}

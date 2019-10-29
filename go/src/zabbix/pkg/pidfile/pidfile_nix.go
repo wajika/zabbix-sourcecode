@@ -1,3 +1,5 @@
+// +build !windows
+
 /*
 ** Zabbix
 ** Copyright (C) 2001-2019 Zabbix SIA
@@ -17,6 +19,34 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-package zbxcmd
+package pidfile
 
-const maxExecuteOutputLenB = 512 * 1024
+import (
+	"fmt"
+	"io"
+	"os"
+	"syscall"
+)
+
+func createPidFile(pid int, path string) (file *os.File, err error) {
+	if path == "" {
+		return
+	}
+
+	flockT := syscall.Flock_t{
+		Type:   syscall.F_WRLCK,
+		Whence: io.SeekStart,
+		Start:  0,
+		Len:    0,
+		Pid:    int32(pid),
+	}
+	if file, err = os.OpenFile(path, os.O_WRONLY|os.O_CREATE|syscall.O_CLOEXEC, 0644); nil != err {
+		return nil, fmt.Errorf("cannot open PID file [%s]: %s", path, err.Error())
+	}
+	if err = syscall.FcntlFlock(file.Fd(), syscall.F_SETLK, &flockT); nil != err {
+		file.Close()
+		return nil, fmt.Errorf("Is this process already running? Could not lock PID file [%s]: %s",
+			path, err.Error())
+	}
+	return
+}

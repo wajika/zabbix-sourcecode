@@ -1982,6 +1982,7 @@ AC_OUTPUT([
 	go/src/zabbix/pkg/glexpr/Makefile
 	go/src/zabbix/pkg/itemutil/Makefile
 	go/src/zabbix/pkg/log/Makefile
+	go/src/zabbix/pkg/pidfile/Makefile
 	go/src/zabbix/pkg/plugin/Makefile
 	go/src/zabbix/pkg/std/Makefile
 	go/src/zabbix/pkg/tls/Makefile

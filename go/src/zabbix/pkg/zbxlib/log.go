@@ -52,23 +52,9 @@ void __zbx_zabbix_log(int level, const char *format, ...)
 	}
 }
 
-#define ZBX_MESSAGE_BUF_SIZE	1024
-
-char	*zbx_strerror(int errnum)
-{
-	static __thread char	utf8_string[ZBX_MESSAGE_BUF_SIZE];
-	zbx_snprintf(utf8_string, sizeof(utf8_string), "[%d] %s", errnum, strerror(errnum));
-	return utf8_string;
-}
-
 void	zbx_handle_log(void)
 {
 	// rotation is handled by go logger backend
-}
-
-char	*strerror_from_system(unsigned long error)
-{
-	return zbx_strerror(errno);
 }
 
 int	zbx_redirect_stdio(const char *filename)
