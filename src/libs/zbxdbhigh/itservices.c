@@ -219,6 +219,24 @@ static void	zbx_status_update_free(zbx_status_update_t *update)
 
 /******************************************************************************
  *                                                                            *
+ * Function: zbx_status_update_compare_func                                   *
+ *                                                                            *
+ * Purpose: status update compare function                                    *
+ *                                                                            *
+ * Parameters: d1 - [IN] status update item 1                                 *
+ *             d2 - [IN] status update item 2                                 *
+ *                                                                            *
+ ******************************************************************************/
+static int	zbx_status_update_compare_func(const void *d1, const void *d2)
+{
+	const zbx_status_update_t	*a1 = *(const zbx_status_update_t **)d1;
+	const zbx_status_update_t	*a2 = *(const zbx_status_update_t **)d2;
+
+	return a1->sourceid == a2->sourceid ? SUCCEED : FAIL;
+}
+
+/******************************************************************************
+ *                                                                            *
  * Function: its_itservices_load_children                                     *
  *                                                                            *
  * Purpose: loads all missing children of the specified services              *
@@ -570,6 +588,97 @@ static int	its_write_status_and_alarms(zbx_itservices_t *itservices, zbx_vector_
 
 	ret = SUCCEED;
 
+	/* remove alarms with negative duration to not affect SLA calculation */
+	if (0 != alarms->values_num)
+	{
+		zbx_vector_uint64_t	serviceids;
+
+		zbx_vector_uint64_create(&serviceids);
+
+		/* get all service IDs that got OK event */
+		for (i = 0; i < alarms->values_num; i++)
+		{
+			zbx_status_update_t	*update = (zbx_status_update_t *)alarms->values[i];
+
+			if (TRIGGER_SEVERITY_NOT_CLASSIFIED == update->status)
+			{
+				zbx_vector_uint64_append(&serviceids, update->sourceid);
+			}
+		}
+
+		if (0 != serviceids.values_num)
+		{
+			DB_RESULT		result;
+			DB_ROW			row;
+			zbx_uint64_t		servicealarmid;
+			zbx_status_update_t	alarm, *update;
+
+			sql_offset = 0;
+
+			/* get unresolved alarms start points */
+			zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset,
+					"select sa.servicealarmid,sa.serviceid,sa.clock "
+					"from service_alarms sa "
+					"where sa.value!=0 and sa.servicealarmid in "
+					"(select max(sa.servicealarmid) from service_alarms sa where");
+
+			DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "sa.serviceid", serviceids.values,
+					serviceids.values_num);
+
+			zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, " GROUP BY sa.serviceid)");
+
+			result = DBselect("%s", sql);
+
+			zbx_vector_uint64_clear(&serviceids);
+
+			while (NULL != (row = DBfetch(result)))
+			{
+				ZBX_STR2UINT64(servicealarmid, row[0]);
+				ZBX_STR2UINT64(alarm.sourceid, row[1]);
+
+				if (FAIL != (i = zbx_vector_ptr_search(alarms, &alarm, zbx_status_update_compare_func)))
+				{
+					int problem_start, problem_end;
+
+					update = (zbx_status_update_t *)alarms->values[i];
+					problem_start = atoi(row[2]);
+					problem_end = update->clock;
+
+					/* check if problem duration is negative */
+					if (0 > (problem_end - problem_start))
+					{
+						zabbix_log(LOG_LEVEL_WARNING, "the alarm of service (serviceid: "
+								ZBX_FS_UI64 ") was ignored "
+								"because the problem duration is negative "
+								"(from %d till %d)",
+								alarm.sourceid, problem_start, problem_end);
+
+						/* don't save alarm end point, because start point will be removed */
+						zbx_vector_ptr_remove(alarms, i);
+						zbx_vector_uint64_append(&serviceids, servicealarmid);
+					}
+				}
+			}
+			DBfree_result(result);
+
+			/* delete start points of alarms which have negative duration */
+			if (0 != serviceids.values_num)
+			{
+				sql_offset = 0;
+
+				zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset,
+						"delete from service_alarms where");
+
+				DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "servicealarmid",
+						serviceids.values, serviceids.values_num);
+
+				DBexecute("%s", sql);
+			}
+		}
+
+		zbx_vector_uint64_destroy(&serviceids);
+	}
+
 	/* write generated service alarms into database */
 	if (0 != alarms->values_num)
 	{
@@ -739,7 +848,7 @@ int	DBupdate_itservices(const zbx_vector_ptr_t *trigger_diff)
 			continue;
 
 		its_updates_append(&updates, diff->triggerid, TRIGGER_VALUE_PROBLEM == diff->value ?
-				diff->priority : 0, diff->lastchange);
+				diff->priority : TRIGGER_SEVERITY_NOT_CLASSIFIED, diff->lastchange);
 	}
 
 	if (0 != updates.values_num)
