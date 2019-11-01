@@ -1582,7 +1582,7 @@ const char	*zbx_event_value_string(unsigned char source, unsigned char object, u
 	return "unknown";
 }
 
-#if defined(_WINDOWS) || defined(__MINGW64__)
+#if defined(_WINDOWS) || defined(__MINGW__)
 static int	get_codepage(const char *encoding, unsigned int *codepage)
 {
 	typedef struct
@@ -1755,7 +1755,7 @@ void	zbx_strupper(char *str)
 		*str = toupper(*str);
 }
 
-#if defined(_WINDOWS) || defined(__MINGW64__)
+#if defined(_WINDOWS) || defined(__MINGW__)
 #include "log.h"
 char	*convert_to_utf8(char *in, size_t in_size, const char *encoding)
 {

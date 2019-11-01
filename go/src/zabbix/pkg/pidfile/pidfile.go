@@ -31,7 +31,7 @@ type File struct {
 func New(path string) (pidFile *File, err error) {
 	var pf File
 	pid := os.Getpid()
-	if pf.file, err = createPidFile(pid, path); err != nil {
+	if pf.file, err = createPidFile(pid, path); err != nil || pf.file == nil {
 		return
 	}
 	if err = pf.file.Truncate(0); err != nil {
@@ -48,7 +48,7 @@ func New(path string) (pidFile *File, err error) {
 }
 
 func (f *File) Delete() {
-	if nil == f.file {
+	if nil == f || nil == f.file {
 		return
 	}
 	path := f.file.Name()

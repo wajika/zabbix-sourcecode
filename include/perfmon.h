@@ -20,7 +20,7 @@
 #ifndef ZABBIX_PERFMON_H
 #define ZABBIX_PERFMON_H
 
-#if !defined(_WINDOWS) && !defined(__MINGW64__)
+#if !defined(_WINDOWS) && !defined(__MINGW__)
 #	error "This module is only available for Windows OS"
 #endif
 

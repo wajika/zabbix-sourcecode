@@ -39,6 +39,8 @@ ifneq ("$(OPENSSL)", "")
 endif
 
 ifneq ("$(PCRE)", "")
+	CFLAGS := $(CFLAGS) -I$(PCRE)\include
+	LDFLAGS := $(LDFLAGS) -L$(PCRE)\lib
 	CGO_CFLAGS := $(CGO_CFLAGS) -I$(PCRE)\include
 	CGO_LDFLAGS := $(CGO_LDFLAGS) -L$(PCRE)\lib
 endif

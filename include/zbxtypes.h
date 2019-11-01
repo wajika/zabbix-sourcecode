@@ -23,7 +23,7 @@
 #if defined(_WINDOWS)
 #	define ZBX_THREAD_LOCAL __declspec(thread)
 #else
-#	if defined(__GNUC__) || defined(__clang__) || defined(__MINGW32__)
+#	if defined(__GNUC__) || defined(__clang__) || defined(__MINGW__)
 #		define ZBX_THREAD_LOCAL __thread
 #	else
 #		define ZBX_THREAD_LOCAL

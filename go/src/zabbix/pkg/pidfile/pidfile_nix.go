@@ -22,6 +22,7 @@
 package pidfile
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -30,7 +31,7 @@ import (
 
 func createPidFile(pid int, path string) (file *os.File, err error) {
 	if path == "" {
-		return
+		return nil, errors.New("cannot create empty pid file")
 	}
 
 	flockT := syscall.Flock_t{
