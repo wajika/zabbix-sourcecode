@@ -23,6 +23,7 @@ OBJS = \
 	alias.o \
 	algodefs.o \
 	sysinfo_system.o \
+	eventlog.o
 
 CFLAGS := $(CFLAGS) -O2 -g -DUNICODE -DHAVE_STDINT_H=1 -I$(TOPDIR)\include -I$(TOPDIR)\build\win32\include
 GOPATH := $(GOPATH);$(TOPDIR)\go
@@ -33,7 +34,7 @@ ifeq ("$(ARCH)", "x86")
 	CGO_CFLAGS := $(CGO_CFLAGS) -m32
 	GOARCH := 386
 else
-	GOARCH := amd64
+	GOARCH :=
 endif
 
 ifneq ("$(OPENSSL)", "")
@@ -105,6 +106,9 @@ zbxregexp.o: $(TOPDIR)\src\libs\zbxregexp\zbxregexp.c
 logfiles.o: $(TOPDIR)\src\zabbix_agent\logfiles\logfiles.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
+eventlog.o: $(TOPDIR)\src\zabbix_agent\eventlog.c
+	$(CC) $(CFLAGS) -c $^ -I$(TOPDIR)\go\win64 -o $@
+
 
 .FORCE:
 $(TARGET): $(OBJS) .FORCE
@@ -116,4 +120,4 @@ $(TARGET): $(OBJS) .FORCE
 	go build
 
 clean:
-	del "$(TARGET)" $(OBJS) 2>NUL
+	del $(TOPDIR)\include\config.h "$(TARGET)" $(OBJS) 2>NUL

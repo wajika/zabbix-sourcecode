@@ -17,13 +17,17 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-package plugins
+#ifndef ZABBIX_WINMETA_H
+#define ZABBIX_WINMETA_H
 
-import (
-	_ "zabbix/plugins/log"
-	_ "zabbix/plugins/systemrun"
-	_ "zabbix/plugins/windows/eventlog"
-	_ "zabbix/plugins/zabbix/async"
-	_ "zabbix/plugins/zabbix/stats"
-	_ "zabbix/plugins/zabbix/sync"
-)
+#define WINEVENT_LEVEL_LOG_ALWAYS	0x0
+#define WINEVENT_LEVEL_CRITICAL		0x1
+#define WINEVENT_LEVEL_ERROR		0x2
+#define WINEVENT_LEVEL_WARNING		0x3
+#define WINEVENT_LEVEL_INFO		0x4
+#define WINEVENT_LEVEL_VERBOSE		0x5
+
+#define WINEVENT_KEYWORD_AUDIT_FAILURE	0x10000000000000
+#define WINEVENT_KEYWORD_AUDIT_SUCCESS	0x20000000000000
+
+#endif

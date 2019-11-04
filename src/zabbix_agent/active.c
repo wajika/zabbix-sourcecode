@@ -1134,152 +1134,24 @@ static int	need_meta_update(ZBX_ACTIVE_METRIC *metric, zbx_uint64_t lastlogsize_
 	return ret;
 }
 
-static int	process_eventlog_check(char *server, unsigned short port, ZBX_ACTIVE_METRIC *metric,
-		zbx_uint64_t *lastlogsize_sent, char **error)
+#if !defined(_WINDOWS) && !defined(__MINGW__)
+static int	process_eventlog_check(char *server, unsigned short port, zbx_vector_ptr_t *regexps,
+		ZBX_ACTIVE_METRIC *metric, zbx_process_value_func_t process_value_cb, zbx_uint64_t *lastlogsize_sent,
+		char **error)
 {
-	int 		ret = FAIL;
-
-#ifdef _WINDOWS
-	AGENT_REQUEST	request;
-	const char	*filename, *pattern, *maxlines_persec, *key_severity, *key_source, *key_logeventid, *skip;
-	int		rate;
-	OSVERSIONINFO	versionInfo;
-
-	init_request(&request);
-
-	if (SUCCEED != parse_item_key(metric->key, &request))
-	{
-		*error = zbx_strdup(*error, "Invalid item key format.");
-		goto out;
-	}
-
-	if (0 == get_rparams_num(&request))
-	{
-		*error = zbx_strdup(*error, "Invalid number of parameters.");
-		goto out;
-	}
-
-	if (7 < get_rparams_num(&request))
-	{
-		*error = zbx_strdup(*error, "Too many parameters.");
-		goto out;
-	}
-
-	if (NULL == (filename = get_rparam(&request, 0)) || '\0' == *filename)
-	{
-		*error = zbx_strdup(*error, "Invalid first parameter.");
-		goto out;
-	}
-
-	if (NULL == (pattern = get_rparam(&request, 1)))
-	{
-		pattern = "";
-	}
-	else if ('@' == *pattern && SUCCEED != zbx_global_regexp_exists(pattern + 1, &regexps))
-	{
-		*error = zbx_dsprintf(*error, "Global regular expression \"%s\" does not exist.", pattern + 1);
-		goto out;
-	}
-
-	if (NULL == (key_severity = get_rparam(&request, 2)))
-	{
-		key_severity = "";
-	}
-	else if ('@' == *key_severity && SUCCEED != zbx_global_regexp_exists(key_severity + 1, &regexps))
-	{
-		*error = zbx_dsprintf(*error, "Global regular expression \"%s\" does not exist.", key_severity + 1);
-		goto out;
-	}
-
-	if (NULL == (key_source = get_rparam(&request, 3)))
-	{
-		key_source = "";
-	}
-	else if ('@' == *key_source && SUCCEED != zbx_global_regexp_exists(key_source + 1, &regexps))
-	{
-		*error = zbx_dsprintf(*error, "Global regular expression \"%s\" does not exist.", key_source + 1);
-		goto out;
-	}
-
-	if (NULL == (key_logeventid = get_rparam(&request, 4)))
-	{
-		key_logeventid = "";
-	}
-	else if ('@' == *key_logeventid && SUCCEED != zbx_global_regexp_exists(key_logeventid + 1, &regexps))
-	{
-		*error = zbx_dsprintf(*error, "Global regular expression \"%s\" does not exist.", key_logeventid + 1);
-		goto out;
-	}
-
-	if (NULL == (maxlines_persec = get_rparam(&request, 5)) || '\0' == *maxlines_persec)
-	{
-		rate = CONFIG_MAX_LINES_PER_SECOND;
-	}
-	else if (MIN_VALUE_LINES > (rate = atoi(maxlines_persec)) || MAX_VALUE_LINES < rate)
-	{
-		*error = zbx_strdup(*error, "Invalid sixth parameter.");
-		goto out;
-	}
-
-	if (NULL == (skip = get_rparam(&request, 6)) || '\0' == *skip || 0 == strcmp(skip, "all"))
-	{
-		metric->skip_old_data = 0;
-	}
-	else if (0 != strcmp(skip, "skip"))
-	{
-		*error = zbx_strdup(*error, "Invalid seventh parameter.");
-		goto out;
-	}
-
-	versionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx(&versionInfo);
-
-	if (versionInfo.dwMajorVersion >= 6)	/* Windows Vista, 7 or Server 2008 */
-	{
-		__try
-		{
-			zbx_uint64_t	lastlogsize = metric->lastlogsize;
-			EVT_HANDLE	eventlog6_render_context = NULL;
-			EVT_HANDLE	eventlog6_query = NULL;
-			zbx_uint64_t	eventlog6_firstid = 0;
-			zbx_uint64_t	eventlog6_lastid = 0;
-
-			if (SUCCEED != initialize_eventlog6(filename, &lastlogsize, &eventlog6_firstid,
-					&eventlog6_lastid, &eventlog6_render_context, &eventlog6_query, error))
-			{
-				finalize_eventlog6(&eventlog6_render_context, &eventlog6_query);
-				goto out;
-			}
-
-			ret = process_eventslog6(server, port, filename, &eventlog6_render_context, &eventlog6_query,
-					lastlogsize, eventlog6_firstid, eventlog6_lastid, &regexps, pattern,
-					key_severity, key_source, key_logeventid, rate, process_value, metric,
-					lastlogsize_sent, error);
-
-			finalize_eventlog6(&eventlog6_render_context, &eventlog6_query);
-		}
-		__except (DelayLoadDllExceptionFilter(GetExceptionInformation()))
-		{
-			zabbix_log(LOG_LEVEL_WARNING, "failed to process eventlog");
-		}
-	}
-	else if (versionInfo.dwMajorVersion < 6)    /* Windows versions before Vista */
-	{
-		ret = process_eventslog(server, port, filename, &regexps, pattern, key_severity, key_source,
-				key_logeventid, rate, process_value, metric, lastlogsize_sent, error);
-	}
-out:
-	free_request(&request);
-#else	/* not _WINDOWS */
 	ZBX_UNUSED(server);
 	ZBX_UNUSED(port);
 	ZBX_UNUSED(metric);
+	ZBX_UNUSED(process_value_cb);
 	ZBX_UNUSED(lastlogsize_sent);
 	ZBX_UNUSED(error);
-#endif	/* _WINDOWS */
 
-	return ret;
+	return FAIL;
 }
+#else
+int	process_eventlog_check(char *server, unsigned short port, zbx_vector_ptr_t *regexps, ZBX_ACTIVE_METRIC *metric,
+		zbx_process_value_func_t process_value_cb, zbx_uint64_t *lastlogsize_sent, char **error);
+#endif
 
 static int	process_common_check(char *server, unsigned short port, ZBX_ACTIVE_METRIC *metric, char **error)
 {
@@ -1351,7 +1223,7 @@ static void	process_active_checks(char *server, unsigned short port)
 					&mtime_sent, &error);
 		}
 		else if (0 != (ZBX_METRIC_FLAG_LOG_EVENTLOG & metric->flags))
-			ret = process_eventlog_check(server, port, metric, &lastlogsize_sent, &error);
+			ret = process_eventlog_check(server, port, &regexps, metric, process_value, &lastlogsize_sent, &error);
 		else
 			ret = process_common_check(server, port, metric, &error);
 

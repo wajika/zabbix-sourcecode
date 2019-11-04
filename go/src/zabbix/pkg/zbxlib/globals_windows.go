@@ -41,11 +41,13 @@ package zbxlib
 #cgo LDFLAGS: ${SRCDIR}/../../../../win64/algodefs.o
 #cgo LDFLAGS: ${SRCDIR}/../../../../win64/logfiles.o
 #cgo LDFLAGS: ${SRCDIR}/../../../../win64/sysinfo_system.o
-#cgo LDFLAGS: -lpcre -lDbghelp -lpsapi -lws2_32
+#cgo LDFLAGS: ${SRCDIR}/../../../../win64/eventlog.o
+#cgo LDFLAGS: -lpcre -lDbghelp -lpsapi -lws2_32 -lWevtapi
 #cgo LDFLAGS: -Wl,--end-group
 
 int CONFIG_TIMEOUT = 3;
 int CONFIG_MAX_LINES_PER_SECOND = 20;
+int CONFIG_EVENTLOG_MAX_LINES_PER_SECOND = 20;
 char *CONFIG_HOSTNAME = NULL;
 int	CONFIG_UNSAFE_USER_PARAMETERS= 0;
 int	CONFIG_ENABLE_REMOTE_COMMANDS= 0;

@@ -1,5 +1,4 @@
 /*
-/*
 ** Zabbix
 ** Copyright (C) 2001-2019 Zabbix SIA
 **
@@ -28,6 +27,8 @@
 
 #if defined(__MINGW32__) || defined(__MINGW64__)
 #	define __MINGW__
+#	define __try
+#	define __except(x) if (0)
 #endif
 
 #ifndef va_copy

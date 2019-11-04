@@ -21,7 +21,7 @@
 #include "log.h"
 #include "threads.h"
 
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) || defined(__MINGW__)
 int	zbx_win_exception_filter(unsigned int code, struct _EXCEPTION_POINTERS *ep);
 
 static ZBX_THREAD_ENTRY(zbx_win_thread_entry, args)
@@ -36,18 +36,6 @@ static ZBX_THREAD_ENTRY(zbx_win_thread_entry, args)
 	{
 		zbx_thread_exit(EXIT_SUCCESS);
 	}
-}
-
-void CALLBACK	ZBXEndThread(ULONG_PTR dwParam)
-{
-	_endthreadex(SUCCEED);
-}
-
-#elif defined(__MINGW__)
-static ZBX_THREAD_ENTRY(zbx_win_thread_entry, args)
-{
-	zbx_thread_args_t	*thread_args = (zbx_thread_args_t *)args;
-	return thread_args->entry(thread_args);
 }
 
 void CALLBACK	ZBXEndThread(ULONG_PTR dwParam)
