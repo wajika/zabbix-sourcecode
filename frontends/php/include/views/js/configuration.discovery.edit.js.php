@@ -21,7 +21,7 @@
 			(new CInput('radio', 'uniqueness_criteria', '#{dcheckid}'))
 				->addClass(ZBX_STYLE_CHECKBOX_RADIO)
 				->setId('uniqueness_criteria_#{dcheckid}'),
-			(new CLabel([new CSpan(), '#{name}'], 'uniqueness_criteria_#{dcheckid}'))
+			(new CLabel([new CSpan(), '#{name}'], 'uniqueness_criteria_#{dcheckid}'))->addClass(ZBX_STYLE_WORDWRAP)
 				->addClass(ZBX_STYLE_WORDWRAP)
 		]))
 			->setId('uniqueness_criteria_row_#{dcheckid}')
@@ -53,7 +53,7 @@
 				)
 				->addRow(
 					(new CLabel(_('Key'), 'key_'))->setAsteriskMark(),
-					(new CTextBox('key_'))
+					(new CTextBox('key_', '', false, DB::getFieldLength('items', 'key_')))
 						->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
 						->setAriaRequired(),
 					'newCheckKeyRow'

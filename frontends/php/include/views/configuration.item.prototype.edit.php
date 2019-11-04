@@ -70,7 +70,7 @@ else {
 
 // append key to form list
 $key_controls = [
-	(new CTextBox('key', $this->data['key'], $readonly))
+	(new CTextBox('key', $this->data['key'], $readonly, DB::getFieldLength('item_discovery', 'key_')))
 		->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
 		->setAriaRequired()
 ];

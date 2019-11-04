@@ -141,7 +141,7 @@ foreach ($this->data['triggers'] as $trigger) {
 		$checkBox,
 		getSeverityCell($trigger['priority'], $this->data['config']),
 		$description,
-		$expression,
+		(new CDiv($expression))->addClass(ZBX_STYLE_WORDWRAP),
 		$status,
 		$data['tags'][$triggerid]
 	]);

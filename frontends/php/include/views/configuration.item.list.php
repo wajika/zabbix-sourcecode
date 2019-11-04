@@ -224,7 +224,7 @@ foreach ($data['items'] as $item) {
 		empty($this->data['filter_hostid']) ? $item['host'] : null,
 		$description,
 		$triggerInfo,
-		CHtml::encode($item['key_']),
+		(new CDiv(CHtml::encode($item['key_'])))->addClass(ZBX_STYLE_WORDWRAP),
 		$item['delay'],
 		$item['history'],
 		$item['trends'],
