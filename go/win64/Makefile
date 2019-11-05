@@ -28,6 +28,14 @@ CFLAGS := $(CFLAGS) -O2 -g -DUNICODE -DHAVE_STDINT_H=1 -I$(TOPDIR)\include -I$(T
 GOPATH := $(GOPATH);$(TOPDIR)\go
 CGO_CFLAGS := $(CGO_CFLAGS) $(CFLAGS) 
 
+ifeq ("$(ARCH)", "x86")
+	CFLAGS := $(CFLAGS) -m32
+	CGO_CFLAGS := $(CGO_CFLAGS) -m32
+	GOARCH := 386
+else
+	GOARCH := amd64
+endif
+
 ifneq ("$(OPENSSL)", "")
 	CFLAGS := $(CFLAGS) -DHAVE_OPENSSL=1 -DHAVE_OPENSSL_WITH_PSK=1
 	ifneq (,$(wildcard $(OPENSSL)))
@@ -103,6 +111,8 @@ $(TARGET): $(OBJS) .FORCE
 	cd $(TARGETDIR)
 	set CGO_CFLAGS=$(CGO_CFLAGS)
 	set CGO_LDFLAGS=$(CGO_LDFLAGS)
+	set GOARCH=$(GOARCH)
+	set CGO_ENABLED=1
 	go build
 
 clean:
