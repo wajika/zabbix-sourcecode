@@ -601,9 +601,7 @@ static int	its_write_status_and_alarms(zbx_itservices_t *itservices, zbx_vector_
 			zbx_status_update_t	*update = (zbx_status_update_t *)alarms->values[i];
 
 			if (TRIGGER_SEVERITY_NOT_CLASSIFIED == update->status)
-			{
 				zbx_vector_uint64_append(&serviceids, update->sourceid);
-			}
 		}
 
 		if (0 != serviceids.values_num)
@@ -612,7 +610,9 @@ static int	its_write_status_and_alarms(zbx_itservices_t *itservices, zbx_vector_
 			DB_ROW			row;
 			zbx_uint64_t		servicealarmid;
 			zbx_status_update_t	alarm, *update;
+			zbx_vector_uint64_t	false_alarms;
 
+			zbx_vector_uint64_create(&false_alarms);
 			sql_offset = 0;
 
 			/* get unresolved alarms start points */
@@ -629,6 +629,7 @@ static int	its_write_status_and_alarms(zbx_itservices_t *itservices, zbx_vector_
 
 			result = DBselect("%s", sql);
 
+			/* reuse vector for service PROBLEM state alarm ids */
 			zbx_vector_uint64_clear(&serviceids);
 
 			while (NULL != (row = DBfetch(result)))
@@ -647,14 +648,7 @@ static int	its_write_status_and_alarms(zbx_itservices_t *itservices, zbx_vector_
 					/* check if problem duration is negative */
 					if (0 > (problem_end - problem_start))
 					{
-						zabbix_log(LOG_LEVEL_WARNING, "the alarm of service (serviceid: "
-								ZBX_FS_UI64 ") was ignored "
-								"because the problem duration is negative "
-								"(from %d till %d)",
-								alarm.sourceid, problem_start, problem_end);
-
-						/* don't save alarm end point, because start point will be removed */
-						zbx_vector_ptr_remove(alarms, i);
+						zbx_vector_uint64_append(&false_alarms, update->sourceid);
 						zbx_vector_uint64_append(&serviceids, servicealarmid);
 					}
 				}
@@ -672,8 +666,29 @@ static int	its_write_status_and_alarms(zbx_itservices_t *itservices, zbx_vector_
 				DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "servicealarmid",
 						serviceids.values, serviceids.values_num);
 
-				DBexecute("%s", sql);
+				if (ZBX_DB_OK <= DBexecute("%s", sql))
+				{
+					int j;
+
+					for (i = 0; i < false_alarms.values_num; i++)
+					{
+						alarm.sourceid = false_alarms.values[i];
+
+						if (FAIL == (j = zbx_vector_ptr_search(alarms, &alarm,
+								zbx_status_update_compare_func)))
+							continue;
+
+						zabbix_log(LOG_LEVEL_WARNING, "the alarm of service "ZBX_FS_UI64
+							" was ignored, because problem duration is negative",
+							alarm.sourceid);
+
+						/* don't save alarm end point, it's start point was removed */
+						zbx_vector_ptr_remove_noorder(alarms, j);
+					}
+				}
 			}
+
+			zbx_vector_uint64_destroy(&false_alarms);
 		}
 
 		zbx_vector_uint64_destroy(&serviceids);
