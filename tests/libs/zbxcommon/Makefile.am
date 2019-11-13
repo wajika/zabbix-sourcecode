@@ -14,7 +14,8 @@ SERVER_tests = \
 	zbx_trim_float \
 	zbx_trim_integer \
 	zbx_variant_compare \
-	zbx_user_macro_parse
+	zbx_user_macro_parse \
+	zbx_truncate_itemkey
 endif
 
 noinst_PROGRAMS = $(SERVER_tests)
@@ -296,5 +297,19 @@ zbx_user_macro_parse_LDADD += @SERVER_LIBS@
 zbx_user_macro_parse_LDFLAGS = @SERVER_LDFLAGS@
 
 zbx_user_macro_parse_CFLAGS = $(COMMON_COMPILER_FLAGS)
+
+
+zbx_truncate_itemkey_SOURCES = \
+	zbx_truncate_itemkey.c \
+	$(COMMON_SRC_FILES)
+
+zbx_truncate_itemkey_LDADD = \
+	$(COMMON_LIB_FILES)
+
+zbx_truncate_itemkey_LDADD += @SERVER_LIBS@
+
+zbx_truncate_itemkey_LDFLAGS = @SERVER_LDFLAGS@
+
+zbx_truncate_itemkey_CFLAGS = $(COMMON_COMPILER_FLAGS)
 
 endif
