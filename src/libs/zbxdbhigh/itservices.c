@@ -219,24 +219,6 @@ static void	zbx_status_update_free(zbx_status_update_t *update)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_status_update_compare_func                                   *
- *                                                                            *
- * Purpose: status update compare function                                    *
- *                                                                            *
- * Parameters: d1 - [IN] status update item 1                                 *
- *             d2 - [IN] status update item 2                                 *
- *                                                                            *
- ******************************************************************************/
-static int	zbx_status_update_compare_func(const void *d1, const void *d2)
-{
-	const zbx_status_update_t	*a1 = *(const zbx_status_update_t **)d1;
-	const zbx_status_update_t	*a2 = *(const zbx_status_update_t **)d2;
-
-	return a1->sourceid == a2->sourceid ? SUCCEED : FAIL;
-}
-
-/******************************************************************************
- *                                                                            *
  * Function: its_itservices_load_children                                     *
  *                                                                            *
  * Purpose: loads all missing children of the specified services              *
@@ -600,7 +582,7 @@ static int	its_write_status_and_alarms(zbx_itservices_t *itservices, zbx_vector_
 		{
 			zbx_status_update_t	*update = (zbx_status_update_t *)alarms->values[i];
 
-			if (TRIGGER_SEVERITY_NOT_CLASSIFIED == update->status)
+			if (0 == update->status)
 				zbx_vector_uint64_append(&serviceids, update->sourceid);
 		}
 
@@ -617,10 +599,10 @@ static int	its_write_status_and_alarms(zbx_itservices_t *itservices, zbx_vector_
 
 			/* get unresolved alarms start points */
 			zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset,
-					"select sa.servicealarmid,sa.serviceid,sa.clock "
-					"from service_alarms sa "
-					"where sa.value!=0 and sa.servicealarmid in "
-					"(select max(sa.servicealarmid) from service_alarms sa where");
+					"select sa.servicealarmid,sa.serviceid,sa.clock"
+					" from service_alarms sa"
+					" where sa.value!=0 and sa.servicealarmid in"
+					" (select max(sa.servicealarmid) from service_alarms sa where");
 
 			DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "sa.serviceid", serviceids.values,
 					serviceids.values_num);
@@ -637,16 +619,13 @@ static int	its_write_status_and_alarms(zbx_itservices_t *itservices, zbx_vector_
 				ZBX_STR2UINT64(servicealarmid, row[0]);
 				ZBX_STR2UINT64(alarm.sourceid, row[1]);
 
-				if (FAIL != (i = zbx_vector_ptr_search(alarms, &alarm, zbx_status_update_compare_func)))
+				if (FAIL != (i = zbx_vector_ptr_search(alarms, &alarm,
+						(zbx_compare_func_t)its_updates_compare)))
 				{
-					int problem_start, problem_end;
-
 					update = (zbx_status_update_t *)alarms->values[i];
-					problem_start = atoi(row[2]);
-					problem_end = update->clock;
 
 					/* check if problem duration is negative */
-					if (0 > (problem_end - problem_start))
+					if (0 > (update->clock - atoi(row[2])))
 					{
 						zbx_vector_uint64_append(&false_alarms, update->sourceid);
 						zbx_vector_uint64_append(&serviceids, servicealarmid);
@@ -675,7 +654,7 @@ static int	its_write_status_and_alarms(zbx_itservices_t *itservices, zbx_vector_
 						alarm.sourceid = false_alarms.values[i];
 
 						if (FAIL == (j = zbx_vector_ptr_search(alarms, &alarm,
-								zbx_status_update_compare_func)))
+								(zbx_compare_func_t)its_updates_compare)))
 							continue;
 
 						zabbix_log(LOG_LEVEL_WARNING, "the alarm of service "ZBX_FS_UI64
@@ -683,6 +662,7 @@ static int	its_write_status_and_alarms(zbx_itservices_t *itservices, zbx_vector_
 							alarm.sourceid);
 
 						/* don't save alarm end point, it's start point was removed */
+						zbx_free(alarms->values[j]);
 						zbx_vector_ptr_remove_noorder(alarms, j);
 					}
 				}
