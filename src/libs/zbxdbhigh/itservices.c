@@ -662,7 +662,7 @@ static int	its_write_status_and_alarms(zbx_itservices_t *itservices, zbx_vector_
 							alarm.sourceid);
 
 						/* don't save alarm end point, it's start point was removed */
-						zbx_free(alarms->values[j]);
+						zbx_status_update_free(alarms->values[j]);
 						zbx_vector_ptr_remove_noorder(alarms, j);
 					}
 				}
@@ -843,7 +843,7 @@ int	DBupdate_itservices(const zbx_vector_ptr_t *trigger_diff)
 			continue;
 
 		its_updates_append(&updates, diff->triggerid, TRIGGER_VALUE_PROBLEM == diff->value ?
-				diff->priority : TRIGGER_SEVERITY_NOT_CLASSIFIED, diff->lastchange);
+				diff->priority : 0, diff->lastchange);
 	}
 
 	if (0 != updates.values_num)
