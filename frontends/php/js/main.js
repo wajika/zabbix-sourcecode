@@ -1007,6 +1007,7 @@ jQuery(function ($) {
 
 	if ((IE || ED) && typeof sessionStorage.scrollTop !== 'undefined') {
 		$(window).scrollTop(sessionStorage.scrollTop);
+		sessionStorage.removeItem('scrollTop');
 	}
 });
 

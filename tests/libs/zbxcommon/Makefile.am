@@ -15,6 +15,7 @@ SERVER_tests = \
 	zbx_trim_integer \
 	zbx_variant_compare \
 	zbx_user_macro_parse \
+	convert_to_utf8 \
 	zbx_truncate_itemkey
 endif
 
@@ -297,6 +298,20 @@ zbx_user_macro_parse_LDADD += @SERVER_LIBS@
 zbx_user_macro_parse_LDFLAGS = @SERVER_LDFLAGS@
 
 zbx_user_macro_parse_CFLAGS = $(COMMON_COMPILER_FLAGS)
+
+
+convert_to_utf8_SOURCES = \
+     convert_to_utf8.c \
+     $(COMMON_SRC_FILES)
+
+convert_to_utf8_LDADD = \
+     $(COMMON_LIB_FILES)
+
+convert_to_utf8_LDADD += @SERVER_LIBS@
+
+convert_to_utf8_LDFLAGS = @SERVER_LDFLAGS@
+
+convert_to_utf8_CFLAGS = $(COMMON_COMPILER_FLAGS)
 
 
 zbx_truncate_itemkey_SOURCES = \
