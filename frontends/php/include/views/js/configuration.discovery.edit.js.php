@@ -650,7 +650,9 @@
 			jQuery('#add_new_dcheck').prop('disabled', false);
 
 			if (validationErrors.length) {
-				var content = jQuery('<span>');
+				var content = jQuery('<div>')
+						.addClass('<?= ZBX_STYLE_WORDWRAP ?>')
+						.css({whiteSpace: 'normal'});
 
 				for (var i = 0; i < validationErrors.length; i++) {
 					if (content.html() !== '') {
