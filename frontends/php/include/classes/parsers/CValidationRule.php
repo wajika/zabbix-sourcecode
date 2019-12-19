@@ -73,6 +73,7 @@ class CValidationRule {
 									&& !$this->parseArrayId($buffer, $pos, $rule)		// array_id
 									&& !$this->parseArrayDB($buffer, $pos, $rule)		// array_db
 									&& !$this->parseArray($buffer, $pos, $rule)			// array
+									&& !$this->parseUniq($buffer, $pos, $rule)			// uniq
 									&& !$this->parseFlags($buffer, $pos, $rule)) {		// flags
 								// incorrect validation rule
 								break 3;
@@ -485,6 +486,22 @@ class CValidationRule {
 			'table' => $table,
 			'field' => $field
 		];
+
+		return true;
+	}
+
+	/**
+	 * uniq
+	 *
+	 * 'uniq' => true
+	 */
+	private function parseUniq($buffer, &$pos, &$rules) {
+		if (strncmp(substr($buffer, $pos), 'uniq', 4) != 0) {
+			return false;
+		}
+
+		$pos += 4;
+		$rules['uniq'] = true;
 
 		return true;
 	}

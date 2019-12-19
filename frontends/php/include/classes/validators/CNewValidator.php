@@ -26,6 +26,7 @@ class CNewValidator {
 	private $output = [];
 	private $errors = [];
 	private $errorsFatal = [];
+	private $values;
 
 	/**
 	 * Parser for validation rules.
@@ -74,6 +75,8 @@ class CNewValidator {
 			$this->addError(true, $this->validationRuleParser->getError());
 			return false;
 		}
+
+		$this->values = [];
 
 		$fatal = array_key_exists('fatal', $rules);
 
@@ -166,6 +169,24 @@ class CNewValidator {
 							);
 							return false;
 						}
+					}
+					break;
+
+				/*
+				 * This works with arrays. Each element in array must be unique. Values are reset before each new field.
+				 * 'uniq' => true
+				 */
+				case 'uniq':
+					foreach ($this->input[$field] as $value) {
+						if (array_key_exists($value, $this->values)) {
+							$this->addError($fatal,
+								_s('Invalid parameter "%1$s": %2$s.', $field, _s('value %1$s already exists', $value))
+							);
+
+							return false;
+						}
+
+						$this->values[$value] = true;
 					}
 					break;
 

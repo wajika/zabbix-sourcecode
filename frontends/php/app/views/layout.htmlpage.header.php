@@ -57,7 +57,8 @@ $pageHeader
 			'PHP_ZBX_FULL_DATE_TIME = "'.ZBX_FULL_DATE_TIME.'";'
 	)
 	->addJsFile((new CUrl('js/browsers.js'))->getUrl())
-	->addJsFile((new CUrl('jsLoader.php'))
+	->addJsFile((new CUrl('zabbix.php'))
+		->setArgument('action', 'jsloader')
 		->setArgument('lang', $data['user']['lang'])
 		->setArgument('ver', ZABBIX_VERSION)
 		->setArgument('showGuiMessaging', $show_gui_messaging)
@@ -65,7 +66,8 @@ $pageHeader
 	);
 
 if ($scripts) {
-	$pageHeader->addJsFile((new CUrl('jsLoader.php'))
+	$pageHeader->addJsFile((new CUrl('zabbix.php'))
+		->setArgument('action', 'jsloader')
 		->setArgument('ver', ZABBIX_VERSION)
 		->setArgument('lang', $data['user']['lang'])
 		->setArgument('files', $scripts)
