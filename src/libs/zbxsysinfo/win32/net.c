@@ -731,7 +731,7 @@ int	NET_IF_GET(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	for (i = 0; i < pIfTable->dwNumEntries; i++)
 	{
-		ULONG64	*luid_index;
+		ULONG64	luid_index;
 		ULONG64	in, out;
 
 		zbx_ifrow_set_index(&ifrow, pIfTable->table[i].dwIndex);
@@ -792,34 +792,6 @@ clean:
 	zbx_free(pIfTable);
 
 	return ret;
-}
-
-
-static char	*get_if_type_string(DWORD type)
-{
-	switch (type)
-	{
-		case IF_TYPE_OTHER:			return "Other";
-		case IF_TYPE_ETHERNET_CSMACD:		return "Ethernet";
-		case IF_TYPE_ISO88025_TOKENRING:	return "Token Ring";
-		case IF_TYPE_PPP:			return "PPP";
-		case IF_TYPE_SOFTWARE_LOOPBACK:		return "Software Loopback";
-		case IF_TYPE_ATM:			return "ATM";
-		case IF_TYPE_IEEE80211:			return "IEEE 802.11 Wireless";
-		case IF_TYPE_TUNNEL:			return "Tunnel type encapsulation";
-		case IF_TYPE_IEEE1394:			return "IEEE 1394 Firewire";
-		default:				return "unknown";
-	}
-}
-
-static char	*get_if_adminstatus_string(DWORD status)
-{
-	switch (status)
-	{
-		case 0:		return "disabled";
-		case 1:		return "enabled";
-		default:	return "unknown";
-	}
 }
 
 int	NET_IF_LIST(AGENT_REQUEST *request, AGENT_RESULT *result)
