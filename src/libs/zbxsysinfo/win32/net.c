@@ -710,9 +710,9 @@ int	NET_IF_GET(AGENT_REQUEST *request, AGENT_RESULT *result)
 	dwSize = sizeof(MIB_IFTABLE);
 	pIfTable = (MIB_IFTABLE *)zbx_malloc(pIfTable, dwSize);
 
-	/* Before calling GetIfEntry, we call GetIfTable to make
-	   sure there are entries to get and retrieve the interface index.
-	   Make an initial call to GetIfTable to get the necessary size into dwSize */
+	/* Before calling GetIfEntry, we call GetIfTable to make */
+	/* sure there are entries to get and retrieve the interface index. */
+	/* Make an initial call to GetIfTable to get the necessary size into dwSize */
 	if (ERROR_INSUFFICIENT_BUFFER == GetIfTable(pIfTable, &dwSize, 0))
 		pIfTable = (MIB_IFTABLE *)zbx_realloc(pIfTable, dwSize);
 
