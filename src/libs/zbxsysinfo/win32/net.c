@@ -473,6 +473,37 @@ static char	*get_if_adminstatus_string(DWORD status)
 	}
 }
 
+static char	*get_oper_status_string(const zbx_ifrow_t *pIfRow, DWORD oper_status)
+{
+	if (NULL != pIfRow->ifRow2)
+	{
+		switch (oper_status)
+		{
+			case IfOperStatusUp:			return "up";
+			case IfOperStatusDown:			return "down";
+			case IfOperStatusTesting:		return "testing";
+			case IfOperStatusUnknown:		return "unknown";
+			case IfOperStatusDormant:		return "dormant";
+			case IfOperStatusNotPresent:		return "not present";
+			case IfOperStatusLowerLayerDown:	return "lower layer down";
+			default:				return "unknown";
+		}
+	}
+	else
+	{
+		switch (oper_status)
+		{
+			case IF_OPER_STATUS_NON_OPERATIONAL:	return "non operational";
+			case IF_OPER_STATUS_UNREACHABLE:	return "unreachable";
+			case IF_OPER_STATUS_DISCONNECTED:	return "disconnected";
+			case IF_OPER_STATUS_CONNECTING:		return "connecting";
+			case IF_OPER_STATUS_CONNECTED:		return "connected";
+			case IF_OPER_STATUS_OPERATIONAL:	return "operational";
+			default:				return "unknown";
+		}
+	}
+}
+
 int	NET_IF_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char		*if_name, *mode;
@@ -753,7 +784,8 @@ int	NET_IF_GET(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (NULL != (utf8_alias = zbx_ifrow_get_utf8_alias(&ifrow)))
 			zbx_json_addstring(&j, "alias", utf8_alias, ZBX_JSON_TYPE_STRING);
 
-		zbx_json_adduint64(&j, "oper_status", zbx_ifrow_get_oper_status(&ifrow));
+		zbx_json_addstring(&j, "oper_status", get_oper_status_string(&ifrow, zbx_ifrow_get_oper_status(&ifrow)),
+				ZBX_JSON_TYPE_STRING);
 		zbx_json_adduint64(&j, "speed", zbx_ifrow_get_speed(&ifrow));
 		zbx_json_addstring(&j, "if_type", get_if_type_string(zbx_ifrow_get_type(&ifrow)), ZBX_JSON_TYPE_STRING);
 
