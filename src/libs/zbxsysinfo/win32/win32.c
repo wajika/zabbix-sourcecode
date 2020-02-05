@@ -36,6 +36,7 @@ ZBX_METRIC	parameters_specific[] =
 	{"net.if.total",	CF_HAVEPARAMS,	NET_IF_TOTAL,		"MS TCP Loopback interface,bytes"},
 	{"net.if.discovery",	0,		NET_IF_DISCOVERY,	NULL},
 	{"net.if.list",		0,		NET_IF_LIST,		NULL},
+	{"net.if.get",		0,		NET_IF_GET,		NULL},
 
 	{"vm.memory.size",	CF_HAVEPARAMS,	VM_MEMORY_SIZE,		"free"},
 

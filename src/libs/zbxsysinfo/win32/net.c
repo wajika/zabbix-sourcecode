@@ -260,6 +260,49 @@ static ULONG64	zbx_ifrow_get_out_discards(const zbx_ifrow_t *pIfRow)
 		return pIfRow->ifRow->dwOutDiscards;
 }
 
+static int	zbx_ifrow_get_luid_index(const zbx_ifrow_t *pIfRow, ULONG64 *luid_index)
+{
+	int ret = FAIL;
+
+	if (NULL != pIfRow->ifRow2)
+	{
+		*luid_index = pIfRow->ifRow2->InterfaceLuid.Info.NetLuidIndex;
+		ret = SUCCEED;
+	}
+
+	return ret;
+}
+
+static char	*zbx_ifrow_get_utf8_alias(const zbx_ifrow_t *pIfRow)
+{
+	if (NULL != pIfRow->ifRow2)
+		return zbx_unicode_to_utf8(pIfRow->ifRow2->Alias);
+	else
+		return NULL;
+}
+
+static DWORD	zbx_ifrow_get_oper_status(const zbx_ifrow_t *pIfRow)
+{
+	if (NULL != pIfRow->ifRow2)
+		return pIfRow->ifRow2->OperStatus;
+	else
+		return pIfRow->ifRow->dwOperStatus;
+}
+
+static ULONG64	zbx_ifrow_get_speed(const zbx_ifrow_t *pIfRow)
+{
+	if (NULL != pIfRow->ifRow2)
+	{
+		ULONG64 tx_speed, rx_speed;
+
+		tx_speed = pIfRow->ifRow2->TransmitLinkSpeed;
+		rx_speed = pIfRow->ifRow2->ReceiveLinkSpeed;
+		return (tx_speed > rx_speed) ? tx_speed : rx_speed;
+	}
+	else
+		return pIfRow->ifRow->dwSpeed;
+}
+
 /******************************************************************************
  *                                                                            *
  * Function: zbx_ifrow_get_utf8_description                                   *
@@ -392,6 +435,42 @@ clean:
 	zbx_free(pIPAddrTable);
 
 	return ret;
+}
+
+static void zbx_json_add_netif(struct zbx_json *j, const char *name, ULONG64 in, ULONG64 out)
+{
+	zbx_json_addobject(j, name);
+	zbx_json_adduint64(j, "in", in);
+	zbx_json_adduint64(j, "out", out);
+	zbx_json_adduint64(j, "total", in + out);
+	zbx_json_close(j);
+}
+
+static char	*get_if_type_string(DWORD type)
+{
+	switch (type)
+	{
+		case IF_TYPE_OTHER:			return "Other";
+		case IF_TYPE_ETHERNET_CSMACD:		return "Ethernet";
+		case IF_TYPE_ISO88025_TOKENRING:	return "Token Ring";
+		case IF_TYPE_PPP:			return "PPP";
+		case IF_TYPE_SOFTWARE_LOOPBACK:		return "Software Loopback";
+		case IF_TYPE_ATM:			return "ATM";
+		case IF_TYPE_IEEE80211:			return "IEEE 802.11 Wireless";
+		case IF_TYPE_TUNNEL:			return "Tunnel type encapsulation";
+		case IF_TYPE_IEEE1394:			return "IEEE 1394 Firewire";
+		default:				return "unknown";
+	}
+}
+
+static char	*get_if_adminstatus_string(DWORD status)
+{
+	switch (status)
+	{
+		case 0:		return "disabled";
+		case 1:		return "enabled";
+		default:	return "unknown";
+	}
 }
 
 int	NET_IF_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
@@ -614,6 +693,107 @@ clean:
 
 	return ret;
 }
+
+int	NET_IF_GET(AGENT_REQUEST *request, AGENT_RESULT *result)
+{
+	DWORD		dwSize, dwRetVal, i;
+	int		ret = SYSINFO_RET_FAIL;
+
+	/* variables used for GetIfTable and GetIfEntry */
+	MIB_IFTABLE	*pIfTable = NULL;
+	zbx_ifrow_t	ifrow = {NULL, NULL};
+
+	struct zbx_json	j;
+	char 		*utf8_descr, *utf8_alias;
+
+	/* Allocate memory for our pointers. */
+	dwSize = sizeof(MIB_IFTABLE);
+	pIfTable = (MIB_IFTABLE *)zbx_malloc(pIfTable, dwSize);
+
+	/* Before calling GetIfEntry, we call GetIfTable to make
+	   sure there are entries to get and retrieve the interface index.
+	   Make an initial call to GetIfTable to get the necessary size into dwSize */
+	if (ERROR_INSUFFICIENT_BUFFER == GetIfTable(pIfTable, &dwSize, 0))
+		pIfTable = (MIB_IFTABLE *)zbx_realloc(pIfTable, dwSize);
+
+	/* Make a second call to GetIfTable to get the actual data we want. */
+	if (NO_ERROR != (dwRetVal = GetIfTable(pIfTable, &dwSize, 0)))
+	{
+		zabbix_log(LOG_LEVEL_DEBUG, "GetIfTable failed with error: %s", strerror_from_system(dwRetVal));
+		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s",
+				strerror_from_system(dwRetVal)));
+		goto clean;
+	}
+
+	zbx_json_initarray(&j, ZBX_JSON_STAT_BUF_LEN);
+
+	zbx_ifrow_init(&ifrow);
+
+	for (i = 0; i < pIfTable->dwNumEntries; i++)
+	{
+		ULONG64	*luid_index;
+		ULONG64	in, out;
+
+		zbx_ifrow_set_index(&ifrow, pIfTable->table[i].dwIndex);
+		if (NO_ERROR != (dwRetVal = zbx_ifrow_call_get_if_entry(&ifrow)))
+		{
+			zabbix_log(LOG_LEVEL_DEBUG, "zbx_ifrow_call_get_if_entry failed with error: %s",
+					strerror_from_system(dwRetVal));
+			continue;
+		}
+
+		zbx_json_addobject(&j, NULL);
+
+		utf8_descr = zbx_ifrow_get_utf8_description(&ifrow);
+		zbx_json_addstring(&j, "ifname", utf8_descr, ZBX_JSON_TYPE_STRING);
+
+		if (SUCCEED == zbx_ifrow_get_luid_index(&ifrow, &luid_index))
+			zbx_json_adduint64(&j,"luid_index", luid_index);
+
+		if (NULL != (utf8_alias = zbx_ifrow_get_utf8_alias(&ifrow)))
+			zbx_json_addstring(&j, "alias", utf8_alias, ZBX_JSON_TYPE_STRING);
+
+		zbx_json_adduint64(&j, "oper_status", zbx_ifrow_get_oper_status(&ifrow));
+		zbx_json_adduint64(&j, "speed", zbx_ifrow_get_speed(&ifrow));
+		zbx_json_addstring(&j, "if_type", get_if_type_string(zbx_ifrow_get_type(&ifrow)), ZBX_JSON_TYPE_STRING);
+
+		in = zbx_ifrow_get_in_octets(&ifrow);
+		out = zbx_ifrow_get_out_octets(&ifrow);
+		zbx_json_add_netif(&j, "bytes", in, out);
+
+		in = zbx_ifrow_get_in_ucast_pkts(&ifrow) + zbx_ifrow_get_in_nucast_pkts(&ifrow);
+		out = zbx_ifrow_get_out_ucast_pkts(&ifrow) + zbx_ifrow_get_out_nucast_pkts(&ifrow);
+		zbx_json_add_netif(&j, "packets", in, out);
+
+		in = zbx_ifrow_get_in_errors(&ifrow);
+		out = zbx_ifrow_get_out_errors(&ifrow);
+		zbx_json_add_netif(&j, "errors", in, out);
+
+		in = zbx_ifrow_get_in_discards(&ifrow) + zbx_ifrow_get_in_unknown_protos(&ifrow);
+		out = zbx_ifrow_get_out_discards(&ifrow);
+		zbx_json_add_netif(&j, "dropped", in, out);
+
+		zbx_free(utf8_descr);
+		zbx_free(utf8_alias);
+
+		zbx_json_close(&j);
+	}
+
+	zbx_ifrow_clean(&ifrow);
+
+	zbx_json_close(&j);
+
+	SET_STR_RESULT(result, strdup(j.buffer));
+
+	zbx_json_free(&j);
+
+	ret = SYSINFO_RET_OK;
+clean:
+	zbx_free(pIfTable);
+
+	return ret;
+}
+
 
 static char	*get_if_type_string(DWORD type)
 {

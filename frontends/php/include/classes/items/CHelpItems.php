@@ -101,6 +101,9 @@ class CHelpItems {
 					'description' => _('Network interface list (includes interface type, status, IPv4 address, description). Returns text')
 				],
 				[
+					'key' => 'net.if.get',
+					'description' => _('Network interface data collector (includes interface type, speed, LUID, description and traffic). Returns JSON')
+				],[
 					'key' => 'net.if.out[if,<mode>]',
 					'description' => _('Outgoing traffic statistics on network interface. Returns integer')
 				],
@@ -417,6 +420,10 @@ class CHelpItems {
 				[
 					'key' => 'net.if.list',
 					'description' => _('Network interface list (includes interface type, status, IPv4 address, description). Returns text')
+				],
+				[
+					'key' => 'net.if.get',
+					'description' => _('Network interface data collector (includes interface type, speed, LUID, description and traffic). Returns JSON')
 				],
 				[
 					'key' => 'net.if.out[if,<mode>]',
