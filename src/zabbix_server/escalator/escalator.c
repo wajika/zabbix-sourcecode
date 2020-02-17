@@ -82,6 +82,69 @@ static void	add_message_alert(const DB_EVENT *event, const DB_EVENT *r_event, zb
 		zbx_uint64_t userid, zbx_uint64_t mediatypeid, const char *subject, const char *message,
 		zbx_uint64_t ackid);
 
+
+/**
+ * Force multiple problem generation triggers to have only one recovery escalation/
+ * cancellation notification per action.
+ *
+ * This is done by caching of processed escalation data and skipping escalation recovery
+ * operations/cancellation notifications if another escalation created by the same trigger
+ * and action was processed.
+ */
+
+#define ZBX_ESCALATION_REGISTRY_TTL	(SEC_PER_HOUR + SEC_PER_MIN)
+
+typedef struct
+{
+	zbx_uint64_t	triggerid;
+	zbx_uint64_t	r_eventid;
+	zbx_uint64_t	actionid;
+	time_t		ttl;
+}
+zbx_esc_registry_t;
+
+static zbx_hash_t	esc_hash_func(const void *d)
+{
+	const zbx_esc_registry_t	*er = (const zbx_esc_registry_t *)d;
+	zbx_hash_t	hash;
+
+	hash = ZBX_DEFAULT_UINT64_HASH_FUNC(&er->actionid);
+	hash = ZBX_DEFAULT_STRING_HASH_ALGO(&er->r_eventid, sizeof(er->r_eventid), hash);
+	return ZBX_DEFAULT_STRING_HASH_ALGO(&er->triggerid, sizeof(er->triggerid), hash);
+}
+
+static int	esc_compare_func(const void *d1, const void *d2)
+{
+	const zbx_esc_registry_t	*er1 = (const zbx_esc_registry_t *)d1;
+	const zbx_esc_registry_t	*er2 = (const zbx_esc_registry_t *)d2;
+
+	ZBX_RETURN_IF_NOT_EQUAL(er1->actionid, er2->actionid);
+	ZBX_RETURN_IF_NOT_EQUAL(er1->triggerid, er2->triggerid);
+	ZBX_RETURN_IF_NOT_EQUAL(er1->r_eventid, er2->r_eventid);
+	return 0;
+}
+
+static int	esc_register(zbx_hashset_t *esc_registry, zbx_uint64_t actionid, zbx_uint64_t triggerid,
+		zbx_uint64_t r_eventid, int ttl)
+{
+	zbx_esc_registry_t	er_local;
+
+	if (NULL == esc_registry)
+		return SUCCEED;
+
+	er_local.actionid = actionid;
+	er_local.triggerid = triggerid;
+	er_local.r_eventid = r_eventid;
+
+	if (NULL != zbx_hashset_search(esc_registry, &er_local))
+		return FAIL;
+
+	er_local.ttl = time(NULL) + ttl;
+	zbx_hashset_insert(esc_registry, &er_local, sizeof(er_local));
+
+	return SUCCEED;
+}
+
 /******************************************************************************
  *                                                                            *
  * Function: check_perm2system                                                *
@@ -1958,7 +2021,7 @@ static void	escalation_log_cancel_warning(const DB_ESCALATION *escalation, const
  *                                                                            *
  ******************************************************************************/
 static void	escalation_cancel(DB_ESCALATION *escalation, const DB_ACTION *action, const DB_EVENT *event,
-		const char *error)
+		const char *error, zbx_hashset_t *esc_registry)
 {
 	const char	*__function_name = "escalation_cancel";
 	ZBX_USER_MSG	*user_msg = NULL;
@@ -1968,13 +2031,23 @@ static void	escalation_cancel(DB_ESCALATION *escalation, const DB_ACTION *action
 
 	if (0 != escalation->esc_step)
 	{
-		char	*message;
+		if (EVENT_SOURCE_TRIGGERS != event->source || SUCCEED == esc_register(esc_registry,
+					escalation->actionid, event->trigger.triggerid, 0, ZBX_ESCALATION_REGISTRY_TTL))
+		{
+			char	*message;
 
-		message = zbx_dsprintf(NULL, "NOTE: Escalation cancelled: %s\n%s", error, action->longdata);
-		add_sentusers_msg(&user_msg, action->actionid, event, NULL, action->shortdata, message, NULL);
-		flush_user_msg(&user_msg, escalation->esc_step, event, NULL, action->actionid);
+			message = zbx_dsprintf(NULL, "NOTE: Escalation cancelled: %s\n%s", error, action->longdata);
+			add_sentusers_msg(&user_msg, action->actionid, event, NULL, action->shortdata, message, NULL);
+			flush_user_msg(&user_msg, escalation->esc_step, event, NULL, action->actionid);
 
-		zbx_free(message);
+			zbx_free(message);
+		}
+		else
+		{
+			zabbix_log(LOG_LEVEL_DEBUG, "%s() skipping cancellation message because it was already sent"
+					" for escalation created by action " ZBX_FS_UI64 " and trigger " ZBX_FS_UI64,
+					__function_name, escalation->actionid, event->trigger.triggerid);
+		}
 	}
 
 	escalation_log_cancel_warning(escalation, error);
@@ -2012,21 +2085,36 @@ static void	escalation_execute(DB_ESCALATION *escalation, const DB_ACTION *actio
  *                                                                            *
  * Purpose: process escalation recovery                                       *
  *                                                                            *
- * Parameters: escalation - [IN/OUT] the escalation to recovery               *
- *             action     - [IN]     the action                               *
- *             event      - [IN]     the event                                *
- *             r_event    - [IN]     the recovery event                       *
+ * Parameters: escalation   - [IN/OUT] the escalation to recovery             *
+ *             action       - [IN]     the action                             *
+ *             event        - [IN]     the event                              *
+ *             r_event      - [IN]     the recovery event                     *
+ *             esc_registry - [IN/OUT] the processed escalations              *
  *                                                                            *
  ******************************************************************************/
 static void	escalation_recover(DB_ESCALATION *escalation, const DB_ACTION *action, const DB_EVENT *event,
-		const DB_EVENT *r_event)
+		const DB_EVENT *r_event, zbx_hashset_t *esc_registry)
 {
 	const char	*__function_name = "escalation_recover";
 
 	zabbix_log(LOG_LEVEL_DEBUG, "In %s() escalationid:" ZBX_FS_UI64 " status:%s",
 			__function_name, escalation->escalationid, zbx_escalation_status_string(escalation->status));
 
-	escalation_execute_recovery_operations(event, r_event, action);
+	/* recovery escalation updates done by one event cannot be split over multiple */
+	/* escalation processing loops - so the processed escalation can be removed    */
+	/* from registry after the processing loop is done.                            */
+	if (EVENT_SOURCE_TRIGGERS != event->source || SUCCEED == esc_register(esc_registry,
+			escalation->actionid, event->trigger.triggerid, r_event->eventid, 0))
+	{
+		escalation_execute_recovery_operations(event, r_event, action);
+	}
+	else
+	{
+		zabbix_log(LOG_LEVEL_DEBUG, "%s() skipping recovery operations because escalation created by action "
+				ZBX_FS_UI64 " and trigger " ZBX_FS_UI64 " has been already recovered by event "
+				ZBX_FS_UI64, __function_name, escalation->actionid, event->trigger.triggerid,
+				r_event->eventid);
+	}
 
 	escalation->status = ESCALATION_STATUS_COMPLETED;
 
@@ -2187,7 +2275,7 @@ static void	add_ack_escalation_r_eventids(zbx_vector_ptr_t *escalations, zbx_vec
 }
 
 static int	process_db_escalations(int now, int *nextcheck, zbx_vector_ptr_t *escalations,
-		zbx_vector_uint64_t *eventids, zbx_vector_uint64_t *actionids)
+		zbx_vector_uint64_t *eventids, zbx_vector_uint64_t *actionids, zbx_hashset_t *esc_registry)
 {
 	int				i, ret;
 	zbx_vector_uint64_t		escalationids;
@@ -2272,7 +2360,7 @@ static int	process_db_escalations(int now, int *nextcheck, zbx_vector_ptr_t *esc
 		switch (check_escalation(escalation, action, event, &error))
 		{
 			case ZBX_ESCALATION_CANCEL:
-				escalation_cancel(escalation, action, event, error);
+				escalation_cancel(escalation, action, event, error, esc_registry);
 				zbx_free(error);
 				ZBX_FALLTHROUGH;
 			case ZBX_ESCALATION_DELETE:
@@ -2324,7 +2412,7 @@ static int	process_db_escalations(int now, int *nextcheck, zbx_vector_ptr_t *esc
 			if (0 == escalation->esc_step)
 				escalation_execute(escalation, action, event);
 
-			escalation_recover(escalation, action, event, r_event);
+			escalation_recover(escalation, action, event, r_event, esc_registry);
 		}
 		else if (escalation->nextcheck <= now)
 		{
@@ -2478,7 +2566,8 @@ out:
  *           in process_actions().                                            *
  *                                                                            *
  ******************************************************************************/
-static int	process_escalations(int now, int *nextcheck, unsigned int escalation_source)
+static int	process_escalations(int now, int *nextcheck, unsigned int escalation_source,
+		zbx_hashset_t *esc_registry)
 {
 	const char		*__function_name = "process_escalations";
 
@@ -2588,7 +2677,8 @@ static int	process_escalations(int now, int *nextcheck, unsigned int escalation_
 
 		if (escalations.values_num >= ZBX_ESCALATIONS_PER_STEP)
 		{
-			ret += process_db_escalations(now, nextcheck, &escalations, &eventids, &actionids);
+			ret += process_db_escalations(now, nextcheck, &escalations, &eventids, &actionids,
+					esc_registry);
 			zbx_vector_ptr_clear_ext(&escalations, zbx_ptr_free);
 			zbx_vector_uint64_clear(&actionids);
 			zbx_vector_uint64_clear(&eventids);
@@ -2598,7 +2688,7 @@ static int	process_escalations(int now, int *nextcheck, unsigned int escalation_
 
 	if (0 < escalations.values_num)
 	{
-		ret += process_db_escalations(now, nextcheck, &escalations, &eventids, &actionids);
+		ret += process_db_escalations(now, nextcheck, &escalations, &eventids, &actionids, esc_registry);
 		zbx_vector_ptr_clear_ext(&escalations, zbx_ptr_free);
 	}
 
@@ -2609,6 +2699,35 @@ static int	process_escalations(int now, int *nextcheck, unsigned int escalation_
 	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __function_name);
 
 	return ret; /* performance metric */
+}
+
+/******************************************************************************
+ *                                                                            *
+ * Function: esc_registry_cleanup                                             *
+ *                                                                            *
+ * Purpose: remove expired escalation registry records                        *
+ *                                                                            *
+ ******************************************************************************/
+static void	esc_registry_cleanup(zbx_hashset_t *esc_registry)
+{
+	zbx_hashset_iter_t	iter;
+	zbx_esc_registry_t	*esc;
+	time_t			now;
+	int			num;
+
+	if (0 == (num = esc_registry->num_data))
+		return;
+
+	now = time(NULL);
+	zbx_hashset_iter_reset(esc_registry, &iter);
+	while (NULL != (esc = (zbx_esc_registry_t *)zbx_hashset_iter_next(&iter)))
+	{
+		if (esc->ttl <= now)
+			zbx_hashset_iter_remove(&iter);
+	}
+
+	zabbix_log(LOG_LEVEL_DEBUG, "escalation registry cleanup: removed:%d left:%d", num - esc_registry->num_data,
+			esc_registry->num_data);
 }
 
 /******************************************************************************
@@ -2628,9 +2747,11 @@ static int	process_escalations(int now, int *nextcheck, unsigned int escalation_
  ******************************************************************************/
 ZBX_THREAD_ENTRY(escalator_thread, args)
 {
-	int	now, nextcheck, sleeptime = -1, escalations_count = 0, old_escalations_count = 0;
-	double	sec, total_sec = 0.0, old_total_sec = 0.0;
-	time_t	last_stat_time;
+	int		now, nextcheck, sleeptime = -1, escalations_count = 0, old_escalations_count = 0;
+	double		sec, total_sec = 0.0, old_total_sec = 0.0;
+	time_t		last_stat_time, last_cleanup_time;
+	zbx_hashset_t	esc_registry;
+
 
 	process_type = ((zbx_thread_args_t *)args)->process_type;
 	server_num = ((zbx_thread_args_t *)args)->server_num;
@@ -2641,12 +2762,16 @@ ZBX_THREAD_ENTRY(escalator_thread, args)
 
 #define STAT_INTERVAL	5	/* if a process is busy and does not sleep then update status not faster than */
 				/* once in STAT_INTERVAL seconds */
+#define CLEANUP_INTERVAL	SEC_PER_MIN
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 	zbx_tls_init_child();
 #endif
 	zbx_setproctitle("%s #%d [connecting to the database]", get_process_type_string(process_type), process_num);
-	last_stat_time = time(NULL);
+	last_cleanup_time = last_stat_time = time(NULL);
+
+
+	zbx_hashset_create(&esc_registry, 0, esc_hash_func, esc_compare_func);
 
 	DBconnect(ZBX_DB_CONNECT_NORMAL);
 
@@ -2663,15 +2788,22 @@ ZBX_THREAD_ENTRY(escalator_thread, args)
 		}
 
 		nextcheck = time(NULL) + CONFIG_ESCALATOR_FREQUENCY;
-		escalations_count += process_escalations(time(NULL), &nextcheck, ZBX_ESCALATION_SOURCE_TRIGGER);
-		escalations_count += process_escalations(time(NULL), &nextcheck, ZBX_ESCALATION_SOURCE_ITEM);
-		escalations_count += process_escalations(time(NULL), &nextcheck, ZBX_ESCALATION_SOURCE_DEFAULT);
+		escalations_count += process_escalations(time(NULL), &nextcheck, ZBX_ESCALATION_SOURCE_TRIGGER,
+				&esc_registry);
+		escalations_count += process_escalations(time(NULL), &nextcheck, ZBX_ESCALATION_SOURCE_ITEM, NULL);
+		escalations_count += process_escalations(time(NULL), &nextcheck, ZBX_ESCALATION_SOURCE_DEFAULT, NULL);
 
 		total_sec += zbx_time() - sec;
 
 		sleeptime = calculate_sleeptime(nextcheck, CONFIG_ESCALATOR_FREQUENCY);
 
 		now = time(NULL);
+
+		if (CLEANUP_INTERVAL <= now - last_cleanup_time)
+		{
+			esc_registry_cleanup(&esc_registry);
+			last_cleanup_time = now;
+		}
 
 		if (0 != sleeptime || STAT_INTERVAL <= now - last_stat_time)
 		{
