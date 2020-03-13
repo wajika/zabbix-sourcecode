@@ -92,9 +92,16 @@ class CBrandHelper {
 	 * @return CImg|CDiv
 	 */
 	public static function getLogo() {
-		$logo = self::getValue('BRAND_LOGO', null);
+		return self::getValue('BRAND_LOGO');
+	}
 
-		return ($logo !== null) ? new CImg($logo) : new CDiv();
+	/**
+	 * Get compact logo.
+	 *
+	 * @return CImg|CDiv
+	 */
+	public static function getCompactLogo() {
+		return self::getValue('BRAND_LOGO_COMPACT');
 	}
 
 	/**

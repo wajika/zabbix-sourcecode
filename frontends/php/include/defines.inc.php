@@ -1703,6 +1703,7 @@ define('ZBX_STYLE_SETUP_TITLE', 'setup-title');
 define('ZBX_STYLE_SIGNIN_CONTAINER', 'signin-container');
 define('ZBX_STYLE_SIGNIN_LINKS', 'signin-links');
 define('ZBX_STYLE_SIGNIN_LOGO', 'signin-logo');
+define('ZBX_STYLE_ZABBIX_LOGO', 'zabbix-logo');
 define('ZBX_STYLE_SIGN_IN_TXT', 'sign-in-txt');
 define('ZBX_STYLE_STATUS_AVERAGE_BG', 'status-average-bg');
 define('ZBX_STYLE_STATUS_CONTAINER', 'status-container');

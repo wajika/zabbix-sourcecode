@@ -163,8 +163,8 @@ class ZBase {
 
 		$this->setMaintenanceMode();
 
-		ini_set('display_errors', 'Off');
-		set_error_handler('zbx_err_handler');
+//		ini_set('display_errors', 'Off');
+//		set_error_handler('zbx_err_handler');
 
 		switch ($mode) {
 			case self::EXEC_MODE_DEFAULT:
@@ -590,7 +590,6 @@ class ZBase {
 	 * Initialize menu for main navigation. Register instance as component with 'menu.main' key.
 	 */
 	private function initComponents() {
-
 		$this->component_registry->register('menu.main', getMainMenu());
 		$this->component_registry->register('menu.user', getUserMenu());
 	}

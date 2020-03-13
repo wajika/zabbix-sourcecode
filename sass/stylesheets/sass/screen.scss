@@ -22,6 +22,12 @@ $ui-transition-duration: .3s !default;
 @import "components/menu-user";
 @import "components/message-box";
 
+.zabbix-logo {
+	width: 114px;
+	height: 30px;
+	background: url(../img/icon-sprite.svg) no-repeat 0 -864px;
+}
+
 .link-action {
 	border-bottom: 1px dotted;
 	cursor: pointer;
@@ -2787,7 +2793,7 @@ $form-icon-btn: (
 	}
 }
 
-// Sign in, Installation.
+// Installation.
 .setup-container {
 	background-color: $ui-bg-color;
 	width: 766px;
@@ -2805,14 +2811,20 @@ $form-icon-btn: (
 		padding: 0;
 	}
 
-	.signin-logo {
-		margin: 0 0 37px;
+	.setup-logo {
+		margin-bottom: 40px;
+
+		img,
+		span {
+			display: block;
+			max-width: 70%;
+		}
 	}
 }
 
 .setup-left {
 	float: left;
-	width: 198px;
+	width: 200px;
 	padding-right: 10px;
 
 	ul {
@@ -2832,7 +2844,7 @@ $form-icon-btn: (
 
 .setup-right {
 	width: auto;
-	margin-left: 198px;
+	margin-left: 200px;
 }
 
 .setup-right-body {
@@ -2943,11 +2955,14 @@ $form-icon-btn: (
 }
 
 .signin-logo {
-	margin: 0 auto;
 	margin-bottom: 21px;
-	width: 114px;
-	height: 30px;
-	background: url(../img/icon-sprite.svg) no-repeat 0 -864px;
+
+	img,
+	span {
+		display: block;
+		max-width: 70%;
+		margin: 0 auto;
+	}
 }
 
 .signin-links {
