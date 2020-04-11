@@ -66,6 +66,7 @@ ZBX_METRIC	parameters_common[] =
 
 	{"vfs.dir.size",	CF_HAVEPARAMS,	VFS_DIR_SIZE,		VFS_TEST_DIR},
 	{"vfs.dir.count",	CF_HAVEPARAMS,	VFS_DIR_COUNT,		VFS_TEST_DIR},
+	{"vfs.dir.exists",	CF_HAVEPARAMS,	VFS_DIR_EXISTS,		VFS_TEST_DIR},
 
 	{"net.dns",		CF_HAVEPARAMS,	NET_DNS,		",zabbix.com"},
 	{"net.dns.record",	CF_HAVEPARAMS,	NET_DNS_RECORD,		",zabbix.com"},
