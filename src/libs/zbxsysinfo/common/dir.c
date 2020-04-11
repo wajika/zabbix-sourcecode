@@ -1179,3 +1179,54 @@ int	VFS_DIR_COUNT(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	return zbx_execute_threaded_metric(vfs_dir_count, request, result);
 }
+
+/******************************************************************************
+ *                                                                            *
+ * Function: vfs_dir_exists                                                   *
+ *                                                                            *
+ * Purpose: checks if a given dir exists                                      *
+ *                                                                            *
+ * Return value: boolean failure flag                                         *
+ *                                                                            *
+ * Comments: under Widows we only support entry types "dir"                   *
+ *                                                                            *
+ *****************************************************************************/
+int	VFS_DIR_EXISTS(AGENT_REQUEST *request, AGENT_RESULT *result)
+{
+	zbx_stat_t	buf;
+	char		*dirname;
+	int			ret = SYSINFO_RET_FAIL, dir_exists;
+
+	if (1 < request->nparam)
+	{
+		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		goto err;
+	}
+
+	dirname = get_rparam(request, 0);
+
+	if (NULL == dirname || '\0' == *dirname)
+	{
+		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		goto err;
+	}
+
+	if (0 == zbx_stat(dirname, &buf))
+	{
+		dir_exists = S_ISDIR(buf.st_mode) ? 1 : 0;
+	}
+	else if (errno == ENOENT)
+	{
+		dir_exists = 0;
+	}
+	else
+	{
+		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain directory information: %s", zbx_strerror(errno)));
+		goto err;
+	}
+
+	SET_UI64_RESULT(result, dir_exists);
+	ret = SYSINFO_RET_OK;
+err:
+	return ret;
+}
