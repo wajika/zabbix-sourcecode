@@ -53,6 +53,7 @@ int	SYSTEM_SWAP_OUT(AGENT_REQUEST *request, AGENT_RESULT *result);
 int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result);
 int	VFS_DIR_COUNT(AGENT_REQUEST *request, AGENT_RESULT *result);
 int	VFS_DIR_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result);
+int VFS_DIR_EXISTS(AGENT_REQUEST *request, AGENT_RESULT *result);
 int	VFS_FS_INODE(AGENT_REQUEST *request, AGENT_RESULT *result);
 int	VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result);
 */
@@ -74,6 +75,8 @@ func resolveMetric(key string) (cfunc unsafe.Pointer) {
 		cfunc = unsafe.Pointer(C.VFS_DIR_COUNT)
 	case "vfs.dir.size":
 		cfunc = unsafe.Pointer(C.VFS_DIR_SIZE)
+	case "vfs.dir.exists":
+		cfunc = unsafe.Pointer(C.VFS_DIR_EXISTS)
 	}
 	return
 }

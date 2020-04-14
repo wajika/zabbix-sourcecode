@@ -36,6 +36,7 @@ func getMetrics() []string {
 		"system.swap.size", "Swap space size in bytes or in percentage from total.",
 		"vfs.dir.count", "Directory entry count.",
 		"vfs.dir.size", "Directory size (in bytes).",
+		"vfs.dir.exists", "Checks if directory exists.",
 		"vfs.fs.inode", "Number or percentage of inodes.",
 		"vfs.fs.size", "Disk space in bytes or in percentage from total.",
 		"vfs.fs.get", "List of mounted filesystems with statistics.",
