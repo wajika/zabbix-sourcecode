@@ -2229,7 +2229,7 @@
 			return;
 		}
 
-		var	fields = $('form', data.dialogue['body']).serializeJSON(),
+		var fields = $('form', data.dialogue['body']).serializeJSON(),
 			type = fields['type'],
 			name = fields['name'],
 			view_mode = (fields['show_header'] == 1) ? ZBX_WIDGET_VIEW_MODE_NORMAL : ZBX_WIDGET_VIEW_MODE_HIDDEN_HEADER,
@@ -2364,29 +2364,19 @@
 
 					if (pos['y'] + pos['height'] > data['options']['rows']) {
 						resizeDashboardGrid($obj, data, pos['y'] + pos['height']);
-
-						// Body height should be adjusted to animate scrollTop work.
-						$('body').css('height', Math.max(
-							$('body').height(), (pos['y'] + pos['height']) * data['options']['widget-height']
-						));
 					}
 
-					// 5px shift is widget padding.
-					$('html, body')
-						.animate({scrollTop: pos['y'] * data['options']['widget-height']
-							+ $('.dashbrd-grid-container').position().top - 5})
-						.promise()
-						.then(function() {
-							methods.addWidget.call($obj, widget_data);
+					// Add new widget.
+					methods.addWidget.call($obj, widget_data);
 
-							// New widget is last element in data['widgets'] array.
-							widget = data['widgets'].slice(-1)[0];
-							setWidgetModeEdit($obj, data, widget);
-							updateWidgetContent($obj, data, widget);
+					// New widget is last element in data['widgets'] array.
+					widget = data['widgets'].slice(-1)[0];
 
-							// Remove height attribute set for scroll animation.
-							$('body').css('height', '');
-						});
+					// Scroll page to widget.
+					widget.container[0].scrollIntoView({behavior: 'smooth'});
+
+					setWidgetModeEdit($obj, data, widget);
+					updateWidgetContent($obj, data, widget);
 				}
 				else if (widget['type'] === type) {
 					// In case of EDIT widget, if type has not changed, update the widget.
@@ -3545,7 +3535,7 @@
 		 */
 		updateWidgetConfigDialogue: function() {
 			return this.each(function() {
-				var	$this = $(this),
+				var $this = $(this),
 					data = $this.data('dashboardGrid'),
 					body = data.dialogue['body'],
 					footer = $('.overlay-dialogue-footer', data.dialogue['div']),
