@@ -2364,19 +2364,29 @@
 
 					if (pos['y'] + pos['height'] > data['options']['rows']) {
 						resizeDashboardGrid($obj, data, pos['y'] + pos['height']);
+
+						// Wrapper height should be adjusted to animate scrollTop work.
+						$('.wrapper').css('height', Math.max(
+							$('.wrapper').height(), (pos['y'] + pos['height']) * data['options']['widget-height']
+						));
 					}
 
-					// Add new widget.
-					methods.addWidget.call($obj, widget_data);
+					// 5px shift is widget padding.
+					$('.wrapper')
+						.animate({scrollTop: pos['y'] * data['options']['widget-height']
+							+ $('.dashbrd-grid-container').position().top - 5})
+						.promise()
+						.then(function() {
+							methods.addWidget.call($obj, widget_data);
 
-					// New widget is last element in data['widgets'] array.
-					widget = data['widgets'].slice(-1)[0];
+							// New widget is last element in data['widgets'] array.
+							widget = data['widgets'].slice(-1)[0];
+							setWidgetModeEdit($obj, data, widget);
+							updateWidgetContent($obj, data, widget);
 
-					// Scroll page to widget.
-					widget.container[0].scrollIntoView({behavior: 'smooth'});
-
-					setWidgetModeEdit($obj, data, widget);
-					updateWidgetContent($obj, data, widget);
+							// Remove height attribute set for scroll animation.
+							$('.wrapper').css('height', '');
+						});
 				}
 				else if (widget['type'] === type) {
 					// In case of EDIT widget, if type has not changed, update the widget.
