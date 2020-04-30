@@ -459,7 +459,7 @@ class CScreenHistory extends CScreenBase {
 					]);
 
 					$table_header[] = (new CColHeader($item['name_expanded']))
-						->addClass('vertical_rotation')
+						->rotateVertical()
 						->setTitle($item['name_expanded']);
 					$history_data_index = 0;
 

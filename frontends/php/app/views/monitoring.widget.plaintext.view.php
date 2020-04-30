@@ -35,7 +35,7 @@ else {
 			$table_header[] = (new CColHeader(
 				($data['same_host'] ? '' : $item['hosts'][0]['name'].NAME_DELIMITER).$item['name_expanded']
 			))
-				->addClass('vertical_rotation')
+				->rotateVertical()
 				->setTitle($item['name_expanded']);
 		}
 	}

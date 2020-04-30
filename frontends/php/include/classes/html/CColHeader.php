@@ -21,8 +21,31 @@
 
 class CColHeader extends CCol {
 
+	protected $vertical = false;
+
 	public function __construct($item = null) {
 		$this->tag = 'th';
 		parent::__construct($item);
+	}
+
+	public function rotateVertical() {
+		$this->vertical = true;
+
+		return $this;
+	}
+
+	public function toString($destroy = true) {
+
+		if ($this->vertical) {
+			$item = (new CDiv())
+				->setAttribute('class', 'vertical-table-test')
+				->addItem($this->items);
+
+			$this
+				->cleanItems()
+				->addItem($item);
+		}
+
+		return parent::toString($destroy);
 	}
 }

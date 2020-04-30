@@ -922,7 +922,7 @@ function getTriggersOverview(array $hosts, array $triggers, $pageFile, $viewMode
 
 		foreach ($host_names as $host_name) {
 			$header[] = (new CColHeader($host_name))
-				->addClass('vertical_rotation')
+				->rotateVertical()
 				->setTitle($host_name);
 		}
 		$triggerTable->setHeader($header);
@@ -949,7 +949,7 @@ function getTriggersOverview(array $hosts, array $triggers, $pageFile, $viewMode
 		foreach ($data as $trigger_name => $trigger_data) {
 			foreach ($trigger_data as $trigger_hosts) {
 				$header[] = (new CColHeader($trigger_name))
-					->addClass('vertical_rotation')
+					->rotateVertical()
 					->setTitle($trigger_name);
 			}
 		}

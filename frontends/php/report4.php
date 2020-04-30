@@ -144,7 +144,7 @@ else {
 	foreach ($db_users as $user_data) {
 		$full_name = getUserFullname($user_data);
 		$header[] = (new CColHeader($full_name))
-			->addClass('vertical_rotation')
+			->rotateVertical()
 			->setTitle($full_name);
 		$users[] = $user_data['userid'];
 	}
