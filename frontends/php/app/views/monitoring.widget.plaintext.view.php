@@ -29,8 +29,6 @@ else {
 	$names_at_top = ($data['style'] == STYLE_TOP && count($data['items']) > 1);
 
 	if ($names_at_top) {
-		$table->makeVerticalRotation();
-
 		foreach ($data['items'] as $item) {
 			$table_header[] = (new CColHeader(
 				($data['same_host'] ? '' : $item['hosts'][0]['name'].NAME_DELIMITER).$item['name_expanded']

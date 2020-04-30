@@ -1157,8 +1157,6 @@ function getItemsDataOverview(array $groupids, $application, $viewMode,
 	if (!$host_names) {
 		return $table;
 	}
-	$table->makeVerticalRotation();
-
 	order_result($host_names);
 
 	if ($viewMode == STYLE_TOP) {

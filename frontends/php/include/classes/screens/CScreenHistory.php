@@ -389,7 +389,6 @@ class CScreenHistory extends CScreenBase {
 			 */
 			elseif ($this->action === HISTORY_LATEST) {
 				$history_table = (new CTableInfo())
-					->makeVerticalRotation()
 					->setHeader([(new CColHeader(_('Timestamp')))->addClass(ZBX_STYLE_CELL_WIDTH), _('Value')]);
 
 				$items_by_type = [];
@@ -493,7 +492,7 @@ class CScreenHistory extends CScreenBase {
 				$url = (new CUrl($this->page_file))->formatGetArguments();
 				// Array $history_data will be modified according page and rows on page.
 				$pagination = getPagingLine($history_data, ZBX_SORT_UP, $url);
-				$history_table = (new CTableInfo())->makeVerticalRotation()->setHeader($table_header);
+				$history_table = (new CTableInfo())->setHeader($table_header);
 
 				foreach ($history_data as $history_data_row) {
 					$row = [(new CCol(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $history_data_row['clock'])))

@@ -912,8 +912,6 @@ function getTriggersOverview(array $hosts, array $triggers, $pageFile, $viewMode
 		return $triggerTable;
 	}
 
-	$triggerTable->makeVerticalRotation();
-
 	order_result($host_names);
 
 	if ($viewMode == STYLE_TOP) {

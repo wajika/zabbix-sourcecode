@@ -127,9 +127,7 @@ class CScreenDiscovery extends CScreenBase {
 		}
 
 		// create table
-		$table = (new CTableInfo())
-			->makeVerticalRotation()
-			->setHeader($header);
+		$table = (new CTableInfo())->setHeader($header);
 
 		foreach ($drules as $drule) {
 			$discovery_info = [];
