@@ -1138,6 +1138,11 @@ output {
 	}
 }
 
+.vertical-table-test {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
 .table-paging {
 	text-align: center;
 	background-color: $ui-bg-color;

@@ -736,6 +736,10 @@ output {
     color: #768d99;
     text-align: right; }
 
+.vertical-table-test {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg); }
+
 .table-paging {
   text-align: center;
   background-color: #fff;
