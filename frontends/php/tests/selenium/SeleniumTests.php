@@ -69,6 +69,7 @@ require_once dirname(__FILE__).'/testPageUserGroups.php';
 require_once dirname(__FILE__).'/testPageUsers.php';
 require_once dirname(__FILE__).'/dashboard/testProblemsBySeverityWidget.php';
 require_once dirname(__FILE__).'/dashboard/testHostAvailabilityWidget.php';
+require_once dirname(__FILE__).'/dashboard/testGraphPrototypeWidget.php';
 require_once dirname(__FILE__).'/testFormAction.php';
 require_once dirname(__FILE__).'/testFormAdministrationAuthenticationHttp.php';
 require_once dirname(__FILE__).'/testFormAdministrationAuthenticationLdap.php';
@@ -200,6 +201,7 @@ class SeleniumTests {
 		$suite->addTestSuite('testPageWeb');
 		$suite->addTestSuite('testProblemsBySeverityWidget');
 		$suite->addTestSuite('testHostAvailabilityWidget');
+		$suite->addTestSuite('testGraphPrototypeWidget');
 		$suite->addTestSuite('testFormAction');
 		$suite->addTestSuite('testFormAdministrationAuthenticationHttp');
 		$suite->addTestSuite('testFormAdministrationAuthenticationLdap');
