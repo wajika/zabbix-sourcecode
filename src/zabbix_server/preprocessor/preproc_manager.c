@@ -18,7 +18,6 @@
 **/
 
 #include "common.h"
-
 #include "dbcache.h"
 #include "daemon.h"
 #include "zbxself.h"

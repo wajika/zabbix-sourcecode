@@ -274,21 +274,54 @@ static int	item_preproc_delta_float(zbx_variant_t *value, const zbx_timespec_t *
  *               FAIL - otherwise                                             *
  *                                                                            *
  ******************************************************************************/
-static int	item_preproc_delta_uint64(zbx_variant_t *value, const zbx_timespec_t *ts, unsigned char op_type,
+static int	item_preproc_delta_uint64(zbx_uint64_t itemid, zbx_variant_t *value, const zbx_timespec_t *ts, unsigned char op_type,
 		const zbx_variant_t *history_value, const zbx_timespec_t *history_ts)
 {
 	if (0 == history_ts->sec || history_value->data.ui64 > value->data.ui64)
+	{
+		if (0 == history_ts->sec)
+		{
+			zabbix_log(LOG_LEVEL_WARNING, "cannot calculate delta with zero history timestamp for"
+					" itemid:" ZBX_FS_UI64 " value:" ZBX_FS_UI64 " @ %d.%09d",
+					itemid, value->data.ui64, ts->sec, ts->ns);
+		}
+		else
+		{
+			zabbix_log(LOG_LEVEL_WARNING, "cannot calculate negative delta for itemid:" ZBX_FS_UI64
+					" value:" ZBX_FS_UI64 " @ %d.%09d, history:" ZBX_FS_UI64 " @ %d.%09d",
+					itemid, value->data.ui64, ts->sec, ts->ns,
+					history_value->data.ui64, history_ts->sec, history_ts->ns);
+		}
+
 		return FAIL;
+	}
 
 	switch (op_type)
 	{
 		case ZBX_PREPROC_DELTA_SPEED:
 			if (0 <= zbx_timespec_compare(history_ts, ts))
+			{
+				zabbix_log(LOG_LEVEL_WARNING, "cannot calculate delta with negative timestamp"
+						" difference for itemid:" ZBX_FS_UI64 " value:" ZBX_FS_UI64
+						" @ %d.%09d, history:" ZBX_FS_UI64 " @ %d.%09d",
+						itemid, value->data.ui64, ts->sec, ts->ns,
+						history_value->data.ui64, history_ts->sec, history_ts->ns);
 				return FAIL;
+			}
 
 			value->data.ui64 = (value->data.ui64 - history_value->data.ui64) /
 					((ts->sec - history_ts->sec) +
 						(double)(ts->ns - history_ts->ns) / 1000000000);
+
+			if (value->data.ui64 * 8 > 1e10)
+			{
+				zabbix_log(LOG_LEVEL_WARNING, "abnormal delta value calculated for itemid:" ZBX_FS_UI64
+						" value:" ZBX_FS_UI64
+						" @ %d.%09d, history:" ZBX_FS_UI64 " @ %d.%09d",
+						itemid, value->data.ui64, ts->sec, ts->ns,
+						history_value->data.ui64, history_ts->sec, history_ts->ns);
+			}
+
 			break;
 		case ZBX_PREPROC_DELTA_VALUE:
 			value->data.ui64 = value->data.ui64 - history_value->data.ui64;
@@ -316,7 +349,7 @@ static int	item_preproc_delta_uint64(zbx_variant_t *value, const zbx_timespec_t 
  *               FAIL - otherwise                                             *
  *                                                                            *
  ******************************************************************************/
-static int	item_preproc_delta(unsigned char value_type, zbx_variant_t *value, const zbx_timespec_t *ts,
+static int	item_preproc_delta(zbx_uint64_t itemid, unsigned char value_type, zbx_variant_t *value, const zbx_timespec_t *ts,
 		unsigned char op_type, zbx_variant_t *history_value, zbx_timespec_t *history_ts, char **errmsg)
 {
 	int				ret = FAIL;
@@ -341,11 +374,16 @@ static int	item_preproc_delta(unsigned char value_type, zbx_variant_t *value, co
 		{
 			zbx_variant_convert(value, ZBX_VARIANT_UI64);
 			zbx_variant_convert(history_value, ZBX_VARIANT_UI64);
-			ret = item_preproc_delta_uint64(value, ts, op_type, history_value, history_ts);
+			ret = item_preproc_delta_uint64(itemid, value, ts, op_type, history_value, history_ts);
 		}
 
 		if (SUCCEED != ret)
 			zbx_variant_clear(value);
+	}
+	else
+	{
+		zabbix_log(LOG_LEVEL_WARNING, "cannot calculate delta with no history for itemid:" ZBX_FS_UI64
+				" value:" ZBX_FS_UI64 " @ %d.%09d", itemid, value_num.data.ui64, ts->sec, ts->ns);
 	}
 
 	*history_ts = *ts;
@@ -373,12 +411,12 @@ static int	item_preproc_delta(unsigned char value_type, zbx_variant_t *value, co
  *               FAIL - otherwise                                             *
  *                                                                            *
  ******************************************************************************/
-static int	item_preproc_delta_value(unsigned char value_type, zbx_variant_t *value, const zbx_timespec_t *ts,
+static int	item_preproc_delta_value(zbx_uint64_t itemid, unsigned char value_type, zbx_variant_t *value, const zbx_timespec_t *ts,
 		zbx_variant_t *history_value, zbx_timespec_t *history_ts, char **errmsg)
 {
 	char	*err = NULL;
 
-	if (SUCCEED == item_preproc_delta(value_type, value, ts, ZBX_PREPROC_DELTA_VALUE, history_value, history_ts,
+	if (SUCCEED == item_preproc_delta(itemid, value_type, value, ts, ZBX_PREPROC_DELTA_VALUE, history_value, history_ts,
 			&err))
 	{
 		return SUCCEED;
@@ -409,12 +447,12 @@ static int	item_preproc_delta_value(unsigned char value_type, zbx_variant_t *val
  *               FAIL - otherwise                                             *
  *                                                                            *
  ******************************************************************************/
-static int	item_preproc_delta_speed(unsigned char value_type, zbx_variant_t *value, const zbx_timespec_t *ts,
+static int	item_preproc_delta_speed(zbx_uint64_t itemid, unsigned char value_type, zbx_variant_t *value, const zbx_timespec_t *ts,
 		zbx_variant_t *history_value, zbx_timespec_t *history_ts, char **errmsg)
 {
 	char	*err = NULL;
 
-	if (SUCCEED == item_preproc_delta(value_type, value, ts, ZBX_PREPROC_DELTA_SPEED, history_value, history_ts,
+	if (SUCCEED == item_preproc_delta(itemid, value_type, value, ts, ZBX_PREPROC_DELTA_SPEED, history_value, history_ts,
 			&err))
 	{
 		return SUCCEED;
@@ -2100,7 +2138,7 @@ static int	item_preproc_str_replace(zbx_variant_t *value, const char *params, ch
  *           returned with error set.                                         *
  *                                                                            *
  ******************************************************************************/
-int	zbx_item_preproc(unsigned char value_type, zbx_variant_t *value, const zbx_timespec_t *ts,
+int	zbx_item_preproc(zbx_uint64_t itemid, unsigned char value_type, zbx_variant_t *value, const zbx_timespec_t *ts,
 		const zbx_preproc_op_t *op, zbx_variant_t *history_value, zbx_timespec_t *history_ts, char **error)
 {
 	int	ret;
@@ -2132,10 +2170,10 @@ int	zbx_item_preproc(unsigned char value_type, zbx_variant_t *value, const zbx_t
 			ret = item_preproc_hex2dec(value, error);
 			break;
 		case ZBX_PREPROC_DELTA_VALUE:
-			ret = item_preproc_delta_value(value_type, value, ts, history_value, history_ts, error);
+			ret = item_preproc_delta_value(itemid, value_type, value, ts, history_value, history_ts, error);
 			break;
 		case ZBX_PREPROC_DELTA_SPEED:
-			ret = item_preproc_delta_speed(value_type, value, ts, history_value, history_ts, error);
+			ret = item_preproc_delta_speed(itemid, value_type, value, ts, history_value, history_ts, error);
 			break;
 		case ZBX_PREPROC_XPATH:
 			ret = item_preproc_xpath(value, op->params, error);
@@ -2264,7 +2302,7 @@ int	zbx_item_preproc_test(unsigned char value_type, zbx_variant_t *value, const 
 
 		zbx_preproc_history_pop_value(history_in, i, &history_value, &history_ts);
 
-		if (FAIL == (ret = zbx_item_preproc(value_type, value, ts, op, &history_value, &history_ts, error)))
+		if (FAIL == (ret = zbx_item_preproc(0, value_type, value, ts, op, &history_value, &history_ts, error)))
 		{
 			results[i].action = op->error_handler;
 			results[i].error = zbx_strdup(NULL, *error);
