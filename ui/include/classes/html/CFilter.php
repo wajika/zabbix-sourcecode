@@ -103,6 +103,8 @@ class CFilter extends CDiv {
 
 		$this->form = (new CForm('get'))
 			->cleanItems()
+			->addClass('js-submit-lock')
+			->setAttribute('onsubmit', 'return false;')
 			->setAttribute('name', $this->name);
 	}
 

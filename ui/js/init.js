@@ -440,4 +440,6 @@ jQuery(function($) {
 
 		debug_click_handler.call(button, true);
 	});
+
+	$('.js-submit-lock').removeAttr('onsubmit');
 });
