@@ -34,49 +34,51 @@ abstract class CTriggerGeneral extends CApiService {
 	abstract public function get(array $options = []);
 
 	/**
-	 * Updates the children of the trigger on the given hosts and propagates the inheritance to all child hosts.
-	 * If the given trigger was assigned to a different template or a host, all of the child triggers, that became
+	 * Updates the children of the triggers on the given hosts and propagates the inheritance to all child hosts.
+	 * If the given triggers was assigned to a different template or a host, all of the child triggers, that became
 	 * obsolete will be deleted.
 	 *
-	 * @param array  $trigger
-	 * @param string $trigger['triggerid']
-	 * @param string $trigger['description']
-	 * @param string $trigger['expression']                  exploded expression
-	 * @param int    $trigger['recovery mode']
-	 * @param string $trigger['recovery_expression']         exploded recovery expression
-	 * @param array  $trigger['dependencies']                (optional)
-	 * @param string $trigger['dependencies'][]['triggerid']
+	 * @param array  $triggers
+	 * @param string $triggers[]['triggerid']
+	 * @param string $triggers[]['description']
+	 * @param string $triggers[]['expression']                  exploded expression
+	 * @param int    $triggers[]['recovery mode']
+	 * @param string $triggers[]['recovery_expression']         exploded recovery expression
+	 * @param array  $triggers[]['dependencies']                (optional)
+	 * @param string $triggers[]['dependencies'][]['triggerid']
 	 * @param array  $hostids
 	 */
-	protected function inherit(array $trigger, array $hostids = null) {
-		$templates = API::Template()->get([
-			'output' => [],
-			'triggerids' => [$trigger['triggerid']],
-			'preservekeys' => true,
-			'nopermissions' => true
-		]);
+	protected function inherit(array $triggers, array $hostids = null) {
+		foreach ($triggers as $trigger) {
+			$templates = API::Template()->get([
+				'output' => [],
+				'triggerids' => [$trigger['triggerid']],
+				'preservekeys' => true,
+				'nopermissions' => true
+			]);
 
-		if (!$templates) {
-			// nothing to inherit, just exit
-			return;
-		}
+			if (!$templates) {
+				// nothing to inherit, just exit
+				return;
+			}
 
-		// fetch all of the child hosts
-		$childHosts = API::Host()->get([
-			'output' => ['hostid', 'host'],
-			'hostids' => $hostids,
-			'templateids' => array_keys($templates),
-			'preservekeys' => true,
-			'nopermissions' => true,
-			'templated_hosts' => true
-		]);
+			// fetch all of the child hosts
+			$childHosts = API::Host()->get([
+				'output' => ['hostid', 'host'],
+				'hostids' => $hostids,
+				'templateids' => array_keys($templates),
+				'preservekeys' => true,
+				'nopermissions' => true,
+				'templated_hosts' => true
+			]);
 
-		foreach ($childHosts as $childHost) {
-			// update the child trigger on the child host
-			$new_trigger = $this->inheritOnHost($trigger, $childHost);
+			foreach ($childHosts as $childHost) {
+				// update the child trigger on the child host
+				$new_trigger = $this->inheritOnHost($trigger, $childHost);
 
-			// propagate the trigger inheritance to all child hosts
-			$this->inherit($new_trigger);
+				// propagate the trigger inheritance to all child hosts
+				$this->inherit([$new_trigger]);
+			}
 		}
 	}
 
@@ -1646,8 +1648,6 @@ abstract class CTriggerGeneral extends CApiService {
 			['sources' => ['expression', 'recovery_expression']]
 		);
 
-		foreach ($triggers as $trigger) {
-			$this->inherit($trigger, $data['hostids']);
-		}
+		$this->inherit($triggers, $data['hostids']);
 	}
 }
