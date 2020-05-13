@@ -36,6 +36,7 @@
 #define ZBX_DBCONFIG_IMPL
 #include "dbconfig.h"
 #include "dbsync.h"
+#include "user_macros.h"
 
 int	sync_in_progress = 0;
 
@@ -86,7 +87,7 @@ typedef int (*zbx_value_validator_func_t)(const char *macro, const char *value, 
 
 ZBX_DC_CONFIG	*config = NULL;
 zbx_rwlock_t	config_lock = ZBX_RWLOCK_NULL;
-static zbx_mem_info_t	*config_mem;
+zbx_mem_info_t	*config_mem;
 
 extern unsigned char	program_type;
 extern int		CONFIG_TIMER_FORKS;
@@ -583,7 +584,7 @@ static int	__config_strpool_compare(const void *d1, const void *d2)
 	return strcmp((char *)d1 + REFCOUNT_FIELD_SIZE, (char *)d2 + REFCOUNT_FIELD_SIZE);
 }
 
-static const char	*zbx_strpool_intern(const char *str)
+const char	*zbx_strpool_intern(const char *str)
 {
 	void		*record;
 	zbx_uint32_t	*refcount;
@@ -5891,6 +5892,21 @@ static int	__config_data_session_compare(const void *d1, const void *d2)
 	return strcmp(s1->token, s2->token);
 }
 
+static	zbx_hash_t	__config_user_macro_hash(const void *data)
+{
+	const zbx_um_macro_t	*macro = *(const zbx_um_macro_t **)data;
+	return ZBX_DEFAULT_UINT64_HASH_FUNC(&macro->macroid);
+}
+
+static int	__config_user_macro_compare(const void *d1, const void *d2)
+{
+	const zbx_um_macro_t	*h1 = *(const zbx_um_macro_t **)d1;
+	const zbx_um_macro_t	*h2 = *(const zbx_um_macro_t **)d2;
+
+	ZBX_RETURN_IF_NOT_EQUAL(h1->macroid, h2->macroid);
+	return 0;
+}
+
 /******************************************************************************
  *                                                                            *
  * Function: init_configuration_cache                                         *
@@ -5985,6 +6001,11 @@ int	init_configuration_cache(char **error)
 	CREATE_HASHSET_EXT(config->interfaces_ht, 10, __config_interface_ht_hash, __config_interface_ht_compare);
 	CREATE_HASHSET_EXT(config->interface_snmpaddrs, 0, __config_interface_addr_hash, __config_interface_addr_compare);
 	CREATE_HASHSET_EXT(config->regexps, 0, __config_regexp_hash, __config_regexp_compare);
+
+	/* user macros */
+	CREATE_HASHSET_EXT(config->host_macros, 0, __config_user_macro_hash, __config_user_macro_compare);
+	CREATE_HASHSET_EXT(config->global_macros, 0, __config_user_macro_hash, __config_user_macro_compare);
+	config->user_macro_manager = NULL;
 
 	CREATE_HASHSET_EXT(config->strpool, 100, __config_strpool_hash, __config_strpool_compare);
 
@@ -12254,6 +12275,14 @@ void	zbx_dc_get_item_tags_by_functionids(const zbx_uint64_t *functionids, size_t
 	}
 
 	UNLOCK_CACHE;
+}
+
+// WDN
+void	sync_macros(zbx_dbsync_t *gmacros, zbx_dbsync_t *hmacros, zbx_dbsync_t *htmpls)
+{
+	DCsync_htmpls(htmpls);
+	DCsync_gmacros(gmacros);
+	DCsync_hmacros(hmacros);
 }
 
 #ifdef HAVE_TESTS

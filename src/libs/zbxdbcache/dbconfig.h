@@ -723,6 +723,14 @@ typedef struct
 }
 zbx_dc_timer_trigger_t;
 
+/* user macro manager */
+typedef struct
+{
+	zbx_hashset_t	hosts;
+	unsigned int	refcount;
+}
+zbx_um_manager_t;
+
 typedef struct
 {
 	/* timestamp of the last host availability diff sent to sever, used only by proxies */
@@ -796,6 +804,9 @@ typedef struct
 	zbx_hashset_t		maintenances;
 	zbx_hashset_t		maintenance_periods;
 	zbx_hashset_t		maintenance_tags;
+	zbx_hashset_t		host_macros;
+	zbx_hashset_t		global_macros;
+	zbx_um_manager_t	*user_macro_manager;
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 	zbx_hashset_t		psks;			/* for keeping PSK-identity and PSK pairs and for searching */
 							/* by PSK identity */
@@ -851,6 +862,7 @@ void	DCdump_configuration(void);
 void	*DCfind_id(zbx_hashset_t *hashset, zbx_uint64_t id, size_t size, int *found);
 
 /* string pool */
+const char	*zbx_strpool_intern(const char *str);
 void	zbx_strpool_release(const char *str);
 int	DCstrpool_replace(int found, const char **curr, const char *new_str);
 
