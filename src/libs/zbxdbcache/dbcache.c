@@ -2136,9 +2136,6 @@ static void	dc_add_proxy_history(ZBX_DC_HISTORY *history, int history_num)
 	{
 		const ZBX_DC_HISTORY	*h = &history[i];
 
-		if (0 != (h->flags & ZBX_DC_FLAG_NOHISTORY))
-			continue;
-
 		if (0 != (h->flags & ZBX_DC_FLAG_UNDEF))
 			continue;
 
@@ -2206,9 +2203,6 @@ static void	dc_add_proxy_history_meta(ZBX_DC_HISTORY *history, int history_num)
 	{
 		unsigned int		flags = PROXY_HISTORY_FLAG_META;
 		const ZBX_DC_HISTORY	*h = &history[i];
-
-		if (0 != (h->flags & ZBX_DC_FLAG_NOHISTORY))
-			continue;
 
 		if (ITEM_STATE_NOTSUPPORTED == h->state)
 			continue;
@@ -2281,9 +2275,6 @@ static void	dc_add_proxy_history_log(ZBX_DC_HISTORY *history, int history_num)
 		int			mtime;
 		const ZBX_DC_HISTORY	*h = &history[i];
 
-		if (0 != (h->flags & ZBX_DC_FLAG_NOHISTORY))
-			continue;
-
 		if (ITEM_STATE_NOTSUPPORTED == h->state)
 			continue;
 
@@ -2345,9 +2336,6 @@ static void	dc_add_proxy_history_notsupported(ZBX_DC_HISTORY *history, int histo
 	{
 		const ZBX_DC_HISTORY	*h = &history[i];
 
-		if (0 != (h->flags & ZBX_DC_FLAG_NOHISTORY))
-			continue;
-
 		if (ITEM_STATE_NOTSUPPORTED != h->state)
 			continue;
 
@@ -2380,9 +2368,6 @@ static void	DCmass_proxy_add_history(ZBX_DC_HISTORY *history, int history_num)
 	for (i = 0; i < history_num; i++)
 	{
 		const ZBX_DC_HISTORY	*h = &history[i];
-
-		if (0 != (h->flags & ZBX_DC_FLAG_NOHISTORY))
-			continue;
 
 		if (ITEM_STATE_NOTSUPPORTED == h->state)
 		{
@@ -2742,15 +2727,8 @@ static void	proxy_prepare_history(ZBX_DC_HISTORY *history, int history_num)
 		if (0 != items[i].inventory_link)
 			continue;
 
-		if (0 != (history[i].flags & ZBX_DC_FLAG_META))
-		{
-			/* meta data updates must be kept in history, so just don't store the value */
-			history[i].flags |= ZBX_DC_FLAG_NOVALUE;
-			continue;
-		}
-
-		/* all checks passed, item must not be stored in proxy history/sent to server */
-		history[i].flags |= ZBX_DC_FLAG_NOHISTORY;
+		/* all checks passed, item value must not be stored in proxy history/sent to server */
+		history[i].flags |= ZBX_DC_FLAG_NOVALUE;
 	}
 
 	DCconfig_clean_items(items, errcodes, history_num);
