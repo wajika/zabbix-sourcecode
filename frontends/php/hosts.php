@@ -959,7 +959,7 @@ elseif (hasRequest('form')) {
 		// Host
 		'host' => getRequest('host', ''),
 		'visiblename' => getRequest('visiblename', ''),
-		'interfaces' => getRequest('interfaces', []),
+		'interfaces' => [],
 		'mainInterfaces' => getRequest('mainInterfaces', []),
 		'description' => getRequest('description', ''),
 		'proxy_hostid' => getRequest('proxy_hostid', 0),
@@ -1124,13 +1124,21 @@ elseif (hasRequest('form')) {
 			$data['original_templates'] = array_combine($templateids, $templateids);
 		}
 
+		$interfaces = getRequest('interfaces', []);
+
 		foreach ([INTERFACE_TYPE_AGENT, INTERFACE_TYPE_SNMP, INTERFACE_TYPE_JMX, INTERFACE_TYPE_IPMI] as $type) {
 			if (array_key_exists($type, $data['mainInterfaces'])) {
 				$interfaceid = $data['mainInterfaces'][$type];
-				$data['interfaces'][$interfaceid]['main'] = '1';
+				$interfaces[$interfaceid]['main'] = '1';
 			}
 		}
-		$data['interfaces'] = array_values($data['interfaces']);
+
+		foreach ($interfaces as $interface) {
+			$data['interfaces'][] = [
+				'locked' => ($interface['locked'] === '1'),
+				'items' => ($interface['items'] === '1')
+			] + $interface;
+		}
 
 		$groups = getRequest('groups', []);
 	}

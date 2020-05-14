@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zabbix 4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-12 01:44+0300\n"
+"POT-Creation-Date: 2020-04-19 14:13+0300\n"
 "PO-Revision-Date: 2020-02-10 08:07+0300\n"
 "Last-Translator: Anonymous Pootle User\n"
 "Language-Team: Zabbix translation team\n"
@@ -200,7 +200,7 @@ msgstr[0] "ostáva %1$s pokus"
 msgstr[1] "ostávajú %1$s pokusy"
 msgstr[2] "ostáva %1$s pokusov"
 
-#: app/views/administration.user.edit.php:365
+#: app/views/administration.user.edit.php:373
 #: include/classes/widgets/CWidgetConfig.php:160
 #: include/classes/widgets/CWidgetConfig.php:161 jsLoader.php:294
 #: jsLoader.php:295
@@ -418,7 +418,7 @@ msgstr ""
 #: app/views/administration.mediatype.edit.php:93
 #: app/views/administration.mediatype.edit.php:145
 #: app/views/administration.mediatype.list.php:70
-#: app/views/administration.user.edit.php:214
+#: app/views/administration.user.edit.php:222
 #: app/views/dashboard.sharing.edit.php:24
 #: app/views/dashboard.sharing.edit.php:45
 #: app/views/monitoring.widget.actionlog.view.php:30
@@ -596,8 +596,8 @@ msgstr "Aktívny do"
 #: app/views/administration.proxy.edit.php:126
 #: app/views/administration.script.edit.js.php:34
 #: app/views/administration.script.edit.php:121
-#: app/views/administration.user.edit.php:287
-#: app/views/administration.user.edit.php:459
+#: app/views/administration.user.edit.php:295
+#: app/views/administration.user.edit.php:467
 #: app/views/dashboard.sharing.edit.php:28
 #: app/views/dashboard.sharing.edit.php:49
 #: app/views/hostmacros.list.html.php:204
@@ -914,8 +914,8 @@ msgstr "Všetky"
 msgid "All dashboards"
 msgstr ""
 
-#: app/views/administration.user.edit.php:323
-#: app/views/administration.user.edit.php:329
+#: app/views/administration.user.edit.php:331
+#: app/views/administration.user.edit.php:337
 #: include/views/administration.usergroups.edit.php:109
 msgid "All groups"
 msgstr ""
@@ -1352,7 +1352,7 @@ msgstr ""
 msgid "Auto registration"
 msgstr "Automatická registrácia"
 
-#: app/views/administration.user.edit.php:176
+#: app/views/administration.user.edit.php:184
 msgid "Auto-login"
 msgstr "Automatické prihlásenie"
 
@@ -1360,7 +1360,7 @@ msgstr "Automatické prihlásenie"
 msgid "Auto-login and auto-logout options cannot be enabled together."
 msgstr ""
 
-#: app/views/administration.user.edit.php:181
+#: app/views/administration.user.edit.php:189
 msgid "Auto-logout"
 msgstr ""
 
@@ -1617,9 +1617,9 @@ msgstr ""
 #: app/views/administration.mediatype.edit.php:309
 #: app/views/administration.proxy.edit.php:122
 #: app/views/administration.script.edit.php:118
-#: app/views/administration.user.edit.php:453
-#: app/views/administration.user.edit.php:460
-#: app/views/administration.user.edit.php:467
+#: app/views/administration.user.edit.php:461
+#: app/views/administration.user.edit.php:468
+#: app/views/administration.user.edit.php:475
 #: app/views/monitoring.acknowledge.edit.php:88
 #: app/views/monitoring.dashboard.view.php:100
 #: include/classes/html/CButtonCancel.php:25
@@ -3117,7 +3117,7 @@ msgstr ""
 
 #: app/views/administration.authentication.edit.php:72
 #: app/views/administration.mediatype.edit.php:127
-#: app/views/administration.user.edit.php:117
+#: app/views/administration.user.edit.php:125
 msgid "Change password"
 msgstr "Zmeniť heslo"
 
@@ -4554,7 +4554,7 @@ msgstr "Oneskorené o"
 #: app/views/administration.proxy.list.php:167
 #: app/views/administration.script.edit.php:131
 #: app/views/administration.script.list.php:113
-#: app/views/administration.user.edit.php:447
+#: app/views/administration.user.edit.php:455
 #: app/views/administration.user.list.php:202
 #: app/views/monitoring.dashboard.list.php:76
 #: include/classes/html/CButtonDelete.php:25
@@ -4818,7 +4818,7 @@ msgstr "Zmazať označené prototypy spúšťačov?"
 msgid "Delete selected triggers?"
 msgstr "Zmazať označené spúšťače?"
 
-#: app/views/administration.user.edit.php:449
+#: app/views/administration.user.edit.php:457
 msgid "Delete selected user?"
 msgstr "Zmazať označeného používateľa?"
 
@@ -5079,7 +5079,7 @@ msgstr "Zakázať označené scenáre?"
 
 #: app/views/administration.mediatype.list.php:48
 #: app/views/administration.mediatype.list.php:122
-#: app/views/administration.user.edit.php:224
+#: app/views/administration.user.edit.php:232
 #: app/views/administration.user.list.php:189
 #: app/views/administration.user.list.php:191 auditlogs.php:147
 #: include/discovery.inc.php:108 include/hosts.inc.php:1321
@@ -5515,7 +5515,7 @@ msgstr "Každá URL by mala mať jedinečné meno. Prosim uistite sa, že existu
 msgid "Each item"
 msgstr ""
 
-#: app/views/administration.user.edit.php:272
+#: app/views/administration.user.edit.php:280
 #: include/views/configuration.action.edit.php:500
 #: include/views/configuration.action.edit.php:521
 #: include/views/configuration.action.edit.php:1304
@@ -5842,7 +5842,7 @@ msgstr ""
 #: app/views/administration.mediatype.edit.php:257
 #: app/views/administration.mediatype.list.php:47
 #: app/views/administration.mediatype.list.php:118
-#: app/views/administration.user.edit.php:218
+#: app/views/administration.user.edit.php:226
 #: app/views/administration.user.list.php:188
 #: app/views/administration.user.list.php:192 app/views/popup.media.php:74
 #: app/views/popup.triggerwizard.php:128 auditlogs.php:144
@@ -6507,7 +6507,7 @@ msgstr "Frontend prístup"
 msgid "Frontend access updated"
 msgstr "Frontend prístup aktualizovaný"
 
-#: app/views/administration.user.edit.php:353
+#: app/views/administration.user.edit.php:361
 msgid "Frontend messaging"
 msgstr "Povoliť frontend správy"
 
@@ -7259,7 +7259,7 @@ msgstr[2] "Hosty povolené"
 
 #: app/views/administration.script.edit.php:79
 #: app/views/administration.script.list.php:61
-#: app/views/administration.user.edit.php:320
+#: app/views/administration.user.edit.php:328
 #: app/views/monitoring.widget.problemhosts.view.php:27
 #: app/views/monitoring.widget.problemsbysv.view.php:40
 #: app/views/monitoring.widget.web.view.php:26 app/views/search.php:129
@@ -10023,7 +10023,7 @@ msgstr "Popisok"
 msgid "Label location"
 msgstr "Umiestnenie popisku"
 
-#: app/views/administration.user.edit.php:159
+#: app/views/administration.user.edit.php:167
 msgid "Language"
 msgstr "Jazyk"
 
@@ -10468,7 +10468,7 @@ msgstr "MD5 kontrolný súčet súboru. Vráti reťazec (MD5 hash súboru)"
 msgid "Macro"
 msgstr "Makro"
 
-#: include/classes/api/services/CUserMacro.php:888
+#: include/classes/api/services/CUserMacro.php:894
 #, c-format
 msgid "Macro \"%1$s\" already exists on \"%2$s\"."
 msgstr "Makro \"%1$s\" už existuje na \"%2$s\"."
@@ -10478,12 +10478,12 @@ msgstr "Makro \"%1$s\" už existuje na \"%2$s\"."
 msgid "Macro \"%1$s\" already exists."
 msgstr "Makro \"%1$s\" už existuje."
 
-#: include/classes/api/services/CUserMacro.php:804
+#: include/classes/api/services/CUserMacro.php:810
 #, c-format
 msgid "Macro \"%1$s\" is not unique."
 msgstr "Makro \"%1$s\" nie je jedinečné."
 
-#: include/classes/api/services/CUserMacro.php:911
+#: include/classes/api/services/CUserMacro.php:917
 #, c-format
 msgid "Macro with hostmacroid \"%1$s\" does not exist."
 msgstr "Makro s hostmacroid \"%1$s\" neexistuje."
@@ -10819,8 +10819,8 @@ msgid "May"
 msgstr "Máj"
 
 #: app/controllers/CControllerPopupMedia.php:175
-#: app/views/administration.user.edit.php:284
-#: app/views/administration.user.edit.php:299 app/views/popup.media.php:54
+#: app/views/administration.user.edit.php:292
+#: app/views/administration.user.edit.php:307 app/views/popup.media.php:54
 msgid "Media"
 msgstr "Médiá"
 
@@ -10942,8 +10942,8 @@ msgstr "Správa"
 msgid "Message format"
 msgstr ""
 
-#: app/views/administration.user.edit.php:358
 #: app/views/administration.user.edit.php:366
+#: app/views/administration.user.edit.php:374
 msgid "Message timeout"
 msgstr "Časový limit správy"
 
@@ -10955,7 +10955,7 @@ msgstr ""
 msgid "Messages"
 msgstr "Správy"
 
-#: app/views/administration.user.edit.php:438
+#: app/views/administration.user.edit.php:446
 msgid "Messaging"
 msgstr "Správy"
 
@@ -11935,7 +11935,7 @@ msgstr "Žiadne oprávnenia pre prístup do systému."
 #: include/classes/api/services/CUserGroup.php:876
 #: include/classes/api/services/CUserMacro.php:375
 #: include/classes/api/services/CUserMacro.php:462
-#: include/classes/api/services/CUserMacro.php:768
+#: include/classes/api/services/CUserMacro.php:774
 #: include/classes/api/services/CUser.php:422
 #: include/classes/api/services/CUser.php:979
 #: include/classes/api/services/CValueMap.php:240
@@ -12414,7 +12414,7 @@ msgstr "Zapnuté"
 msgid "On status change triggers blink for"
 msgstr "Pri zmena stavu spúšťača blikať po dobu"
 
-#: app/views/administration.user.edit.php:364
+#: app/views/administration.user.edit.php:372
 msgid "Once"
 msgstr "Raz"
 
@@ -13084,8 +13084,8 @@ msgstr "Pasívny"
 
 #: app/controllers/CControllerUserUpdateGeneral.php:98
 #: app/views/administration.mediatype.edit.php:194
-#: app/views/administration.user.edit.php:107
-#: app/views/administration.user.edit.php:116 disc_prototypes.php:278
+#: app/views/administration.user.edit.php:108
+#: app/views/administration.user.edit.php:124 disc_prototypes.php:278
 #: host_discovery.php:218 httpconf.php:65
 #: include/classes/setup/CSetupWizard.php:248
 #: include/views/configuration.action.edit.php:944
@@ -13116,11 +13116,11 @@ msgstr "Pasívny"
 msgid "Password"
 msgstr "Heslo"
 
-#: app/views/administration.user.edit.php:108
+#: app/views/administration.user.edit.php:115
 msgid "Password (once again)"
 msgstr "Heslo (ešte raz)"
 
-#: app/views/administration.user.edit.php:113
+#: app/views/administration.user.edit.php:121
 msgid "Password is not mandatory for non internal authentication type."
 msgstr ""
 
@@ -13180,9 +13180,9 @@ msgstr "Typ periódy"
 msgid "Periods"
 msgstr "Periódy"
 
-#: app/views/administration.user.edit.php:320
-#: app/views/administration.user.edit.php:340
-#: app/views/administration.user.edit.php:347
+#: app/views/administration.user.edit.php:328
+#: app/views/administration.user.edit.php:348
+#: app/views/administration.user.edit.php:355
 #: app/views/dashboard.sharing.edit.php:24
 #: app/views/dashboard.sharing.edit.php:45
 #: include/views/administration.usergroups.edit.php:103
@@ -13198,7 +13198,7 @@ msgstr "Periódy"
 msgid "Permissions"
 msgstr "Oprávnenia"
 
-#: app/views/administration.user.edit.php:345
+#: app/views/administration.user.edit.php:353
 msgid "Permissions can be assigned for user groups only."
 msgstr "Oprávnenia môžu byť priradené len používateľskej skupine, nie k používateľovi."
 
@@ -13219,12 +13219,12 @@ msgstr "Algoritmus umiestňovania"
 msgid "Plain text"
 msgstr "Jednoduchý text"
 
-#: app/views/administration.user.edit.php:382
-#: app/views/administration.user.edit.php:414
+#: app/views/administration.user.edit.php:390
+#: app/views/administration.user.edit.php:422
 msgid "Play"
 msgstr "Prehrať"
 
-#: app/views/administration.user.edit.php:362
+#: app/views/administration.user.edit.php:370
 msgid "Play sound"
 msgstr "Prehrávať zvuk"
 
@@ -13785,7 +13785,7 @@ msgstr "Prijímateľ (vzostupne)"
 msgid "Recipient (descending)"
 msgstr "Prijímateľ (zostupne)"
 
-#: app/views/administration.user.edit.php:376
+#: app/views/administration.user.edit.php:384
 #: include/classes/screens/CScreenProblem.php:1102
 #: include/views/configuration.item.list.php:169
 #: include/views/configuration.trigger.prototype.list.php:131
@@ -13825,7 +13825,7 @@ msgstr ""
 msgid "Rectangle"
 msgstr ""
 
-#: app/views/administration.user.edit.php:191
+#: app/views/administration.user.edit.php:199
 msgid "Refresh"
 msgstr ""
 
@@ -13911,7 +13911,7 @@ msgstr "Vzdialený príkaz"
 #: app/views/administration.mediatype.edit.php:100
 #: app/views/administration.mediatype.edit.php:159
 #: app/views/administration.mediatype.edit.php:178
-#: app/views/administration.user.edit.php:275
+#: app/views/administration.user.edit.php:283
 #: app/views/hostmacros.list.html.php:114
 #: app/views/hostmacros.list.html.php:128
 #: app/views/hostmacros.list.html.php:136
@@ -14376,7 +14376,7 @@ msgstr "Rozsah riadkov"
 msgid "Rows"
 msgstr "Riadky"
 
-#: app/views/administration.user.edit.php:196
+#: app/views/administration.user.edit.php:204
 msgid "Rows per page"
 msgstr "Počet riadkov na stránku"
 
@@ -14991,7 +14991,7 @@ msgstr "Poslať správu používateľom"
 msgid "Send only to"
 msgstr "Poslať len na"
 
-#: app/views/administration.user.edit.php:214 app/views/popup.media.php:57
+#: app/views/administration.user.edit.php:222 app/views/popup.media.php:57
 #: app/views/popup.media.php:64 app/views/popup.mediatypetest.edit.php:53
 msgid "Send to"
 msgstr "Posielať na"
@@ -15342,7 +15342,7 @@ msgstr ""
 msgid "Show selected"
 msgstr "Zobraziť označené"
 
-#: app/views/administration.user.edit.php:432
+#: app/views/administration.user.edit.php:440
 #: app/views/monitoring.problem.view.php:299
 #: include/classes/widgets/forms/CWidgetFormDataOver.php:48
 #: include/classes/widgets/forms/CWidgetFormProblemHosts.php:76
@@ -15799,8 +15799,8 @@ msgstr "Krok s menom \"%1$s\" už existuje."
 msgid "Steps"
 msgstr "Kroky"
 
-#: app/views/administration.user.edit.php:387
-#: app/views/administration.user.edit.php:419
+#: app/views/administration.user.edit.php:395
+#: app/views/administration.user.edit.php:427
 msgid "Stop"
 msgstr "Zastaviť"
 
@@ -15923,7 +15923,7 @@ msgstr "Prepnutie autentifikačnej metódy spôsobí ukončenie všetkých seden
 msgid "System boot time. Returns integer (Unix timestamp)"
 msgstr "Čas štartu systému. Vráti celé číslo (Unix časová pečiatka)"
 
-#: app/views/administration.user.edit.php:169 include/users.inc.php:83
+#: app/views/administration.user.edit.php:177 include/users.inc.php:83
 msgid "System default"
 msgstr "Predvolené nastavenie systémom"
 
@@ -16391,7 +16391,7 @@ msgstr "Požadovaná vzdialená procedúra neexistuje / nie je dostupná"
 msgid "The web scenario application belongs to a different host than the web scenario host."
 msgstr "Aplikácia web scenára patrí k inému hostovi, ako je host web scenára."
 
-#: app/views/administration.user.edit.php:168
+#: app/views/administration.user.edit.php:176
 msgid "Theme"
 msgstr "Téma"
 
@@ -16884,7 +16884,7 @@ msgstr ""
 msgid "Trigger severities"
 msgstr "Závažnosti spúšťačov"
 
-#: app/views/administration.user.edit.php:431 include/actions.inc.php:45
+#: app/views/administration.user.edit.php:439 include/actions.inc.php:45
 msgid "Trigger severity"
 msgstr "Závažnosť spúšťača"
 
@@ -16975,7 +16975,7 @@ msgstr ""
 #: app/views/administration.mediatype.list.php:66
 #: app/views/administration.script.edit.php:42
 #: app/views/administration.script.list.php:57
-#: app/views/administration.user.edit.php:214
+#: app/views/administration.user.edit.php:222
 #: app/views/dashboard.sharing.edit.php:73
 #: app/views/monitoring.widget.actionlog.view.php:31
 #: app/views/popup.generic.php:87 app/views/popup.media.php:55
@@ -17088,7 +17088,7 @@ msgstr "NEZNÁMY"
 msgid "URL"
 msgstr "URL"
 
-#: app/views/administration.user.edit.php:201
+#: app/views/administration.user.edit.php:209
 msgid "URL (after login)"
 msgstr "URL (po prihlásení)"
 
@@ -17370,8 +17370,8 @@ msgstr "Dostupný"
 #: app/views/administration.mediatype.edit.php:320
 #: app/views/administration.proxy.edit.php:132
 #: app/views/administration.script.edit.php:129
-#: app/views/administration.user.edit.php:445
-#: app/views/administration.user.edit.php:466
+#: app/views/administration.user.edit.php:453
+#: app/views/administration.user.edit.php:474
 #: app/views/dashboard.sharing.edit.php:100
 #: app/views/monitoring.acknowledge.edit.php:87
 #: app/views/popup.httpstep.php:177 app/views/popup.media.php:111
@@ -17506,7 +17506,7 @@ msgstr "Používať hromadné SNMP dopyty"
 msgid "Use custom event status colours"
 msgstr ""
 
-#: app/views/administration.user.edit.php:214 app/views/popup.media.php:73
+#: app/views/administration.user.edit.php:222 app/views/popup.media.php:73
 msgid "Use if severity"
 msgstr "Použiť pri závažnosti"
 
@@ -17518,7 +17518,7 @@ msgstr "Používané v akciách"
 msgid "Used in items"
 msgstr "Použité v položkách"
 
-#: app/views/administration.user.edit.php:205 httpconf.php:59
+#: app/views/administration.user.edit.php:213 httpconf.php:59
 #: include/actions.inc.php:1752 include/actions.inc.php:1806
 #: include/actions.inc.php:2021 include/audit.inc.php:24
 #: include/classes/setup/CSetupWizard.php:245 include/hosts.inc.php:61
@@ -17573,7 +17573,7 @@ msgstr "Používateľ pridaný"
 msgid "User agent string"
 msgstr "User agent reťazec"
 
-#: app/views/administration.user.edit.php:311
+#: app/views/administration.user.edit.php:319
 msgid "User can't change type for himself"
 msgstr "Používateľ si nemôže sám sebe zmeniť typ"
 
@@ -17739,8 +17739,8 @@ msgstr "Používateľské zdieľanie je chýbajúci parameter: %1$s pre obrazovk
 msgid "User sharing is missing parameters: %1$s for screen \"%2$s\"."
 msgstr "Používateľské zdieľanie je chýbajúci parameter: %1$s pre obrazovku \"%2$s\"."
 
-#: app/views/administration.user.edit.php:310
-#: app/views/administration.user.edit.php:315
+#: app/views/administration.user.edit.php:318
+#: app/views/administration.user.edit.php:323
 #: app/views/administration.user.list.php:61
 #: app/views/administration.user.list.php:86
 msgid "User type"
@@ -18366,7 +18366,7 @@ msgid "Welcome to"
 msgstr "Vitajte"
 
 #: app/controllers/CControllerPopupMedia.php:115
-#: app/views/administration.user.edit.php:214 app/views/popup.media.php:68
+#: app/views/administration.user.edit.php:222 app/views/popup.media.php:68
 msgid "When active"
 msgstr "Iba v dňoch/časoch"
 
@@ -18662,7 +18662,7 @@ msgstr "Včera"
 msgid "You are logged in as \"%1$s\"."
 msgstr "Ste prihlásený ako \"%1$s\"."
 
-#: app/views/administration.user.edit.php:155
+#: app/views/administration.user.edit.php:163
 msgid "You are not able to choose some of the languages, because locales for them are not installed on the web server."
 msgstr "Nemôžete si vybrať niektoré jazyky pretože locales pre ne nie sú nainštalované na web servery."
 
@@ -19435,7 +19435,7 @@ msgstr "obrázok"
 msgid "in"
 msgstr "v"
 
-#: app/views/administration.user.edit.php:330
+#: app/views/administration.user.edit.php:338
 #: include/views/administration.usergroups.edit.php:116
 msgid "including subgroups"
 msgstr ""
@@ -19756,7 +19756,7 @@ msgstr ""
 msgid "of"
 msgstr "z"
 
-#: app/views/administration.user.edit.php:249
+#: app/views/administration.user.edit.php:257
 #: include/classes/setup/CFrontendSetup.php:253
 #: include/classes/setup/CFrontendSetup.php:312
 #: include/classes/setup/CFrontendSetup.php:329
@@ -19784,7 +19784,7 @@ msgstr "off"
 msgid "old event tag name"
 msgstr ""
 
-#: app/views/administration.user.edit.php:249
+#: app/views/administration.user.edit.php:257
 #: include/classes/setup/CFrontendSetup.php:312
 #: include/classes/setup/CFrontendSetup.php:329
 #: include/classes/setup/CFrontendSetup.php:350
