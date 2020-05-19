@@ -150,6 +150,8 @@ class testGraphPrototypeWidget extends CWebTest {
 	}
 
 	/**
+	 * Test for checking new Graph prototype widget creation.
+	 *
 	 * @dataProvider getWidgetData
 	 */
 	public function testGraphPrototypeWidget_Create($data) {
@@ -158,12 +160,28 @@ class testGraphPrototypeWidget extends CWebTest {
 	}
 
 	/**
+	 * Test for checking existing Graph prototype widget update.
+	 *
 	 * @dataProvider getWidgetData
 	 */
 	public function testGraphPrototypeWidget_Update($data) {
 		$new_widget_count = 0;
 		$update = true;
 		$this->checkGraphPrototypeWidget($data, $new_widget_count, $update);
+	}
+
+	/**
+	 * Test for checking Graph prototype widget update without any changes.
+	 */
+	public function testGraphPrototypeWidget_SimpleUpdate() {
+		$this->checkWidgetSimpleActions('Apply');
+	}
+
+	/**
+	 * Test for checking Graph prototype edit pressing Cancel button.
+	 */
+	public function testGraphPrototypeWidget_Cancel() {
+		$this->checkWidgetSimpleActions('Cancel');
 	}
 
 	public function checkGraphPrototypeWidget($data, $new_widget_count, $update = false) {
@@ -239,13 +257,13 @@ class testGraphPrototypeWidget extends CWebTest {
 		}
 	}
 
-	public function testGraphPrototypeWidget_SimpleUpdate() {
+	public function checkWidgetSimpleActions($action) {
 		$initial_values = CDBHelper::getHash($this->sql);
-		// Open a dashboard widget and then save it without applying any changes
 		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::DASHBOARD_ID);
 		$dashboard = CDashboardElement::find()->one();
-		$form = $dashboard->getWidget(self::$previous_widget_name)->edit();
-		$form->submit();
+		$dashboard->getWidget(self::$previous_widget_name)->edit();
+		$dialog = $this->query('id:overlay_dialogue')->one();
+		$dialog->query('button:'.$action)->one()->click();
 		$this->page->waitUntilReady();
 
 		$dashboard->getWidget(self::$previous_widget_name);
