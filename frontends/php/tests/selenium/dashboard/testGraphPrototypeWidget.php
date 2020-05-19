@@ -233,12 +233,11 @@ class testGraphPrototypeWidget extends CWebTest {
 				[
 					'fields' => [
 						'Columns' => '16',
-						'Rows' => '2'
+						'Rows' => '3'
 					],
-					'screenshot_id' => '16x2'
+					'screenshot_id' => '16x3'
 				]
-			],
-
+			]
 		];
 	}
 
@@ -261,13 +260,17 @@ class testGraphPrototypeWidget extends CWebTest {
 					]);
 		$dialog = $this->query('id:overlay_dialogue')->one();
 		$this->page->removeFocus();
-		$this->assertScreenshot($dialog);
+//		$this->assertScreenshot($dialog);
 		if (array_key_exists('fields', $data)){
 			$form->fill($data['fields']);
 		}
 		$form->submit();
+		$dashboard->getWidget('Screenshot Widget');
+		$dashboard->save();
+		$this->page->waitUntilReady();
 		$widget = $dashboard->query('class:dashbrd-grid-iterator-container')->waitUntilVisible()->one();
 		$this->assertScreenshot($widget, $data['screenshot_id']);
+		$dashboard->edit();
 		$widget->query('class:btn-widget-delete')->one()->click(true);
 		$dashboard->save();
 		$this->page->waitUntilReady();
