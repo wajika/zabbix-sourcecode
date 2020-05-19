@@ -185,14 +185,92 @@ class testGraphPrototypeWidget extends CWebTest {
 		$this->checkWidgetSimpleActions('Cancel');
 	}
 
-	public function testGraphPrototypeWidget_Screenshots() {
+
+	public static function getWidgetScreenshotData() {
+		return [
+			[
+				[
+					'screenshot_id' => 'default'
+				]
+			],
+			[
+				[
+					'fields' => [
+						'Columns' => '3',
+						'Rows' => '1'
+					],
+					'screenshot_id' => '3x1'
+				]
+			],
+			[
+				[
+					'fields' => [
+						'Columns' => '2',
+						'Rows' => '2'
+					],
+					'screenshot_id' => '2x2'
+				]
+			],
+			[
+				[
+					'fields' => [
+						'Columns' => '16',
+						'Rows' => '1'
+					],
+					'screenshot_id' => '16x1'
+				]
+			],
+			[
+				[
+					'fields' => [
+						'Columns' => '16',
+						'Rows' => '2'
+					],
+					'screenshot_id' => '16x2'
+				]
+			],
+			[
+				[
+					'fields' => [
+						'Columns' => '16',
+						'Rows' => '2'
+					],
+					'screenshot_id' => '16x2'
+				]
+			],
+
+		];
+	}
+
+	/**
+	 * Test for checking new Graph prototype widget creation.
+	 *
+	 * @dataProvider getWidgetScreenshotData
+	 */
+	public function testGraphPrototypeWidget_Screenshots($data) {
 		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::SCREENSHOT_DASHBOARD_ID);
 		$dashboard = CDashboardElement::find()->one();
 		$form = $dashboard->edit()->addWidget()->asForm();
-		$form->fill(['Type' => 'Graph prototype']);
+		$form->fill([
+						'Name' => 'Screenshot Widget',
+						'Type' => 'Graph prototype',
+						'Graph prototype' => [
+							'values' => ['testFormGraphPrototype1'],
+							'context' => ['Group' => 'Zabbix servers', 'Host' => 'Simple form test host']
+						]
+					]);
 		$dialog = $this->query('id:overlay_dialogue')->one();
-		$this->assertScreenshotExcept($dialog);
+		$this->page->removeFocus();
+//		$this->assertScreenshot($dialog);
+		if (array_key_exists('fields', $data)){
+			$form->fill($data['fields']);
+		}
 		$form->submit();
+		$widget = $dashboard->query('class:dashbrd-grid-iterator-container')->waitUntilVisible()->one();
+//		$this->assertScreenshot($widget, $data['screenshot_id']);
+		$widget->query('class:btn-widget-delete')->one()->click(true);
+		$dashboard->save();
+		$this->page->waitUntilReady();
 	}
 
 	public function checkGraphPrototypeWidget($data, $new_widget_count, $update = false) {
@@ -216,7 +294,6 @@ class testGraphPrototypeWidget extends CWebTest {
 
 		switch ($data['expected']) {
 			case TEST_GOOD:
-				$this->page->waitUntilReady();
 				// Make sure that the widget is present before saving the dashboard.
 				$type = CTestArrayHelper::get($data['fields'], 'Source') === 'Simple graph prototype'
 					? 'Item prototype' : 'Graph prototype';
@@ -237,7 +314,7 @@ class testGraphPrototypeWidget extends CWebTest {
 
 				// Compare placeholders count in data and created widget.
 				$expected_placeholders_count =
-					CTestArrayHelper::get($data['fields'], 'Columns')
+					CTestArrayHelper::get($data['fields'], 'Columns') && CTestArrayHelper::get($data['fields'], 'Rows')
 					? $data['fields']['Columns'] * $data['fields']['Rows']
 					: 2;
 				$placeholders_count = $widget->query('class:dashbrd-grid-iterator-placeholder')->count();
