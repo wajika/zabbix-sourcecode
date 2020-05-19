@@ -274,9 +274,12 @@ class testGraphPrototypeWidget extends CWebTest {
 			$form->fill($data['fields']);
 		}
 		$form->submit();
-		$widget = $dashboard->query('class:dashbrd-grid-iterator-container')->waitUntilVisible()->one();
-		$this->assertScreenshot($widget, $data['screenshot_id']);
-		$widget->query('class:btn-widget-delete')->one()->click(true);
+		$dashboard->getWidget('Screenshot Widget');
+		$dashboard->save();
+		$screenshot_area = $this->query('class:dashbrd-grid-container')->one();
+		$this->assertScreenshot($screenshot_area, $data['screenshot_id']);
+		$dashboard->edit();
+		$this->query('class:btn-widget-delete')->one()->click(true);
 		$dashboard->save();
 		$this->page->waitUntilReady();
 	}
