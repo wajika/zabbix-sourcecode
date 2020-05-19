@@ -261,13 +261,13 @@ class testGraphPrototypeWidget extends CWebTest {
 					]);
 		$dialog = $this->query('id:overlay_dialogue')->one();
 		$this->page->removeFocus();
-//		$this->assertScreenshot($dialog);
+		$this->assertScreenshot($dialog);
 		if (array_key_exists('fields', $data)){
 			$form->fill($data['fields']);
 		}
 		$form->submit();
 		$widget = $dashboard->query('class:dashbrd-grid-iterator-container')->waitUntilVisible()->one();
-//		$this->assertScreenshot($widget, $data['screenshot_id']);
+		$this->assertScreenshot($widget, $data['screenshot_id']);
 		$widget->query('class:btn-widget-delete')->one()->click(true);
 		$dashboard->save();
 		$this->page->waitUntilReady();
