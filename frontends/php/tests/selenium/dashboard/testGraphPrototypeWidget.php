@@ -249,7 +249,6 @@ class testGraphPrototypeWidget extends CWebTest {
 		$dashboard = CDashboardElement::find()->one();
 		$form = $dashboard->edit()->addWidget()->asForm();
 		$form->fill(['Type' => 'Graph prototype']);
-		$this->page->removeFocus();
 		$dialog = $this->query('id:overlay_dialogue')->one();
 		$this->assertScreenshot($dialog);
 	}
