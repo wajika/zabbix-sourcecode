@@ -38,6 +38,7 @@ class testGraphPrototypeWidget extends CWebTest {
 			' ON w.widgetid=wf.widgetid ORDER BY wf.widgetid, wf.name, wf.value_int, wf.value_groupid';
 
 	const DASHBOARD_ID = 105;
+	const SCREENSHOT_DASHBOARD_ID = 106;
 
 	private static $previous_widget_name = 'Graph prototype for update';
 
@@ -182,6 +183,16 @@ class testGraphPrototypeWidget extends CWebTest {
 	 */
 	public function testGraphPrototypeWidget_Cancel() {
 		$this->checkWidgetSimpleActions('Cancel');
+	}
+
+	public function testGraphPrototypeWidget_Screenshots() {
+		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::SCREENSHOT_DASHBOARD_ID);
+		$dashboard = CDashboardElement::find()->one();
+		$form = $dashboard->edit()->addWidget()->asForm();
+		$form->fill(['Type' => 'Graph prototype']);
+		$dialog = $this->query('id:overlay_dialogue')->one();
+		$this->assertScreenshotExcept($dialog);
+		$form->submit();
 	}
 
 	public function checkGraphPrototypeWidget($data, $new_widget_count, $update = false) {

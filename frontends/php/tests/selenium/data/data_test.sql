@@ -2338,3 +2338,5 @@ INSERT INTO problem_tag (problemtagid, eventid, tag, value) VALUES (201, 9003, '
 INSERT INTO dashboard (dashboardid, name, userid, private) VALUES (105, 'Dashboard for Graph Prototype widget', 1, 1);
 INSERT INTO widget (widgetid, dashboardid, type, name, x, y, width, height) VALUES (199, 105, 'graphprototype', 'Graph prototype for update', 0, 0, 16, 5);
 INSERT INTO widget_field (widget_fieldid, widgetid, type, name, value_graphid) VALUES (90044, 199, 7, 'graphid', 600003);
+
+INSERT INTO dashboard (dashboardid, name, userid, private) VALUES (106, 'Dashboard for Sceenshoting Graph Prototype widgets', 1, 1);
