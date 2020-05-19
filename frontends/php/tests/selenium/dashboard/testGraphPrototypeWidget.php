@@ -276,7 +276,6 @@ class testGraphPrototypeWidget extends CWebTest {
 		$form->submit();
 		$widget = $dashboard->query('class:dashbrd-grid-iterator-container')->waitUntilVisible()->one();
 		$this->assertScreenshot($widget, $data['screenshot_id']);
-		$dashboard->edit();
 		$widget->query('class:btn-widget-delete')->one()->click(true);
 		$dashboard->save();
 		$this->page->waitUntilReady();
