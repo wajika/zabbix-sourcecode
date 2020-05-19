@@ -242,11 +242,24 @@ class testGraphPrototypeWidget extends CWebTest {
 	}
 
 	/**
-	 * Test for checking new Graph prototype widget creation.
+	 * Test for comparing widgets form screenshot.
+	 */
+	public function testGraphPrototypeWidget_FormScreenshot() {
+		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::SCREENSHOT_DASHBOARD_ID);
+		$dashboard = CDashboardElement::find()->one();
+		$form = $dashboard->edit()->addWidget()->asForm();
+		$form->fill(['Type' => 'Graph prototype']);
+		$this->page->removeFocus();
+		$dialog = $this->query('id:overlay_dialogue')->one();
+		$this->assertScreenshot($dialog);
+	}
+
+	/**
+	 * Test for comparing widgets grid screenshots.
 	 *
 	 * @dataProvider getWidgetScreenshotData
 	 */
-	public function testGraphPrototypeWidget_Screenshots($data) {
+	public function testGraphPrototypeWidget_GridScreenshots($data) {
 		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::SCREENSHOT_DASHBOARD_ID);
 		$dashboard = CDashboardElement::find()->one();
 		$form = $dashboard->edit()->addWidget()->asForm();
@@ -258,16 +271,10 @@ class testGraphPrototypeWidget extends CWebTest {
 							'context' => ['Group' => 'Zabbix servers', 'Host' => 'Simple form test host']
 						]
 					]);
-		$dialog = $this->query('id:overlay_dialogue')->one();
-		$this->page->removeFocus();
-//		$this->assertScreenshot($dialog);
 		if (array_key_exists('fields', $data)){
 			$form->fill($data['fields']);
 		}
 		$form->submit();
-		$dashboard->getWidget('Screenshot Widget');
-		$dashboard->save();
-		$this->page->waitUntilReady();
 		$widget = $dashboard->query('class:dashbrd-grid-iterator-container')->waitUntilVisible()->one();
 		$this->assertScreenshot($widget, $data['screenshot_id']);
 		$dashboard->edit();
