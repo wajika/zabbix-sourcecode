@@ -262,19 +262,20 @@ class testGraphPrototypeWidget extends CWebTest {
 		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::SCREENSHOT_DASHBOARD_ID);
 		$dashboard = CDashboardElement::find()->one();
 		$form = $dashboard->edit()->addWidget()->asForm();
-		$form->fill([
-						'Name' => 'Screenshot Widget',
-						'Type' => 'Graph prototype',
-						'Graph prototype' => [
-							'values' => ['testFormGraphPrototype1'],
-							'context' => ['Group' => 'Zabbix servers', 'Host' => 'Simple form test host']
-						]
-					]);
+		$widget = [
+			'Name' => 'Screenshot Widget',
+			'Type' => 'Graph prototype',
+			'Graph prototype' => [
+				'values' => ['testFormGraphPrototype1'],
+				'context' => ['Group' => 'Zabbix servers', 'Host' => 'Simple form test host']
+			]
+		];
+		$form->fill($widget);
 		if (array_key_exists('fields', $data)){
 			$form->fill($data['fields']);
 		}
 		$form->submit();
-		$dashboard->getWidget('Screenshot Widget');
+		$dashboard->getWidget($widget['Name']);
 		$dashboard->save();
 		$screenshot_area = $this->query('class:dashbrd-grid-container')->one();
 		$this->assertScreenshot($screenshot_area, $data['screenshot_id']);
