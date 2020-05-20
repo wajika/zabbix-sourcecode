@@ -167,8 +167,9 @@ class CDashboardElement extends CElement {
 	 * @return boolean
 	 */
 	public function deleteWidget($name) {
-		$this->query('xpath:.//div[contains(@class, "dashbrd-grid-widget-head")]/h4[text()="'.$name.
-				'"]/../../..//button[@title="Delete"]')->one()->click()->waitUntilNotVisible();
+		$this->query('xpath:.//div[contains(@class, "dashbrd-grid-widget-head") or'
+			. ' contains(@class, "dashbrd-grid-iterator-head")]/h4[text()="'.$name.
+				'"]/../../..//button[@title="Delete"]')->one()->click(true)->waitUntilNotVisible();
 
 		return $this;
 	}
