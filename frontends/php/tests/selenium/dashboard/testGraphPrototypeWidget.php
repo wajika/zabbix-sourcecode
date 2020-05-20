@@ -248,7 +248,11 @@ class testGraphPrototypeWidget extends CWebTest {
 		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::SCREENSHOT_DASHBOARD_ID);
 		$dashboard = CDashboardElement::find()->one();
 		$form = $dashboard->edit()->addWidget()->asForm();
-		$form->fill(['Type' => 'Graph prototype']);
+		if ($form->getField('Type')->getText() !== 'Graph prototype') {
+			$form->fill(['Type' => 'Graph prototype']);
+			$form->waitUntilReloaded();
+		}
+		$this->page->removeFocus();
 		$dialog = $this->query('id:overlay_dialogue')->one();
 		$this->assertScreenshot($dialog);
 	}
@@ -264,12 +268,15 @@ class testGraphPrototypeWidget extends CWebTest {
 		$form = $dashboard->edit()->addWidget()->asForm();
 		$widget = [
 			'Name' => 'Screenshot Widget',
-			'Type' => 'Graph prototype',
 			'Graph prototype' => [
 				'values' => ['testFormGraphPrototype1'],
 				'context' => ['Group' => 'Zabbix servers', 'Host' => 'Simple form test host']
 			]
 		];
+		if ($form->getField('Type')->getText() !== 'Graph prototype') {
+			$form->fill(['Type' => 'Graph prototype']);
+			$form->waitUntilReloaded();
+		}
 		$form->fill($widget);
 		if (array_key_exists('fields', $data)){
 			$form->fill($data['fields']);
