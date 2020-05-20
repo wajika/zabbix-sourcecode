@@ -179,14 +179,14 @@ class testGraphPrototypeWidget extends CWebTest {
 	}
 
 	/**
-	 * Test for checking Graph prototype edit pressing Cancel button.
+	 * Test for checking Graph prototype widget edit pressing Cancel button.
 	 */
 	public function testGraphPrototypeWidget_Cancel() {
 		$this->checkWidgetSimpleActions('Cancel');
 	}
 
 	/**
-	 * Test for checking Graph prototype edit pressing Cancel button.
+	 * Test for checking delete of Graph prototype widget.
 	 */
 	public function testGraphPrototypeWidget_Delete() {
 		$name = 'Graph prototype widget for delete';
