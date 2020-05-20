@@ -185,6 +185,46 @@ class testGraphPrototypeWidget extends CWebTest {
 		$this->checkWidgetSimpleActions('Cancel');
 	}
 
+	/**
+	 * Test for checking Graph prototype edit pressing Cancel button.
+	 */
+	public function testGraphPrototypeWidget_Delete() {
+		$name = 'Graph prototype widget for delete';
+
+		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::DASHBOARD_ID);
+		$dashboard = CDashboardElement::find()->one();
+		$widget = $dashboard->edit()->getWidget($name);
+		$this->assertEquals(true, $widget->isEditable());
+		$dashboard->deleteWidget($name);
+
+		$dashboard->save();
+		$this->page->waitUntilReady();
+		$message = CMessageElement::find()->waitUntilPresent()->one();
+		$this->assertTrue($message->isGood());
+		$this->assertEquals('Dashboard updated', $message->getTitle());
+
+		// Check that widget is not present on dashboard and in DB.
+		$this->assertTrue(!$dashboard->getWidget($name, false)->isValid());
+		$sql = 'SELECT * FROM widget_field wf LEFT JOIN widget w ON w.widgetid=wf.widgetid'.
+				' WHERE w.name='.zbx_dbstr($name);
+		$this->assertEquals(0, CDBHelper::getCount($sql));
+	}
+
+	/**
+	 * Test for comparing widgets form screenshot.
+	 */
+	public function testGraphPrototypeWidget_FormScreenshot() {
+		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::SCREENSHOT_DASHBOARD_ID);
+		$dashboard = CDashboardElement::find()->one();
+		$form = $dashboard->edit()->addWidget()->asForm();
+		if ($form->getField('Type')->getText() !== 'Graph prototype') {
+			$form->fill(['Type' => 'Graph prototype']);
+			$form->waitUntilReloaded();
+		}
+		$this->page->removeFocus();
+		$dialog = $this->query('id:overlay_dialogue')->one();
+		$this->assertScreenshot($dialog);
+	}
 
 	public static function getWidgetScreenshotData() {
 		return [
@@ -235,31 +275,24 @@ class testGraphPrototypeWidget extends CWebTest {
 						'Columns' => '16',
 						'Rows' => '3'
 					],
-					'screenshot_id' => '16x3'
+					'screenshot_id' => 'stub16x3'
+				]
+			],
+			[
+				[
+					'fields' => [
+						'Columns' => '17',
+						'Rows' => '2'
+					],
+					'screenshot_id' => 'stub17x2'
 				]
 			]
 		];
 	}
 
 	/**
-	 * Test for comparing widgets form screenshot.
-	 */
-	public function testGraphPrototypeWidget_FormScreenshot() {
-		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::SCREENSHOT_DASHBOARD_ID);
-		$dashboard = CDashboardElement::find()->one();
-		$form = $dashboard->edit()->addWidget()->asForm();
-		if ($form->getField('Type')->getText() !== 'Graph prototype') {
-			$form->fill(['Type' => 'Graph prototype']);
-			$form->waitUntilReloaded();
-		}
-		$this->page->removeFocus();
-		$dialog = $this->query('id:overlay_dialogue')->one();
-		$this->assertScreenshot($dialog);
-	}
-
-	/**
 	 * Test for comparing widgets grid screenshots.
-	 *
+	 * @backup widget
 	 * @dataProvider getWidgetScreenshotData
 	 */
 	public function testGraphPrototypeWidget_GridScreenshots($data) {
@@ -286,10 +319,6 @@ class testGraphPrototypeWidget extends CWebTest {
 		$dashboard->save();
 		$screenshot_area = $this->query('class:dashbrd-grid-container')->one();
 		$this->assertScreenshot($screenshot_area, $data['screenshot_id']);
-		$dashboard->edit();
-		$this->query('class:btn-widget-delete')->one()->click(true);
-		$dashboard->save();
-		$this->page->waitUntilReady();
 	}
 
 	public function checkGraphPrototypeWidget($data, $new_widget_count, $update = false) {
