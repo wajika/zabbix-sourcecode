@@ -222,6 +222,7 @@ class testGraphPrototypeWidget extends CWebTest {
 			$form->waitUntilReloaded();
 		}
 		$this->page->removeFocus();
+		sleep(1);
 		$dialog = $this->query('id:overlay_dialogue')->one();
 		$this->assertScreenshot($dialog);
 	}
