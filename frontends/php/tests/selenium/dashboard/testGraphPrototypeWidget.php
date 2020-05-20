@@ -40,7 +40,7 @@ class testGraphPrototypeWidget extends CWebTest {
 	const DASHBOARD_ID = 105;
 	const SCREENSHOT_DASHBOARD_ID = 106;
 
-	private static $previous_widget_name = 'Graph prototype for update';
+	private static $previous_widget_name = 'Graph prototype widget for update';
 
 	public static function getWidgetData() {
 		return [
@@ -347,7 +347,7 @@ class testGraphPrototypeWidget extends CWebTest {
 				$type = CTestArrayHelper::get($data['fields'], 'Source') === 'Simple graph prototype'
 					? 'Item prototype' : 'Graph prototype';
 
-				$default_header = $update ? 'Graph prototype for update'
+				$default_header = $update ? self::$previous_widget_name
 					: $data['fields'][$type]['context']['Host'].': '.$data['fields'][$type]['values'][0];
 
 				$header = CTestArrayHelper::get($data['fields'], 'Name', $default_header);
@@ -377,7 +377,7 @@ class testGraphPrototypeWidget extends CWebTest {
 				if($update){
 					self::$previous_widget_name = array_key_exists('Name', $data['fields'])
 						? $data['fields']['Name']
-						: 'Graph prototype for update';
+						: 'Graph prototype widget for update';
 				}
 				break;
 			case TEST_BAD:
