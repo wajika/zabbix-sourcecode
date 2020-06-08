@@ -53,7 +53,7 @@ class testGraphPrototypeWidget extends CWebTest {
 					],
 					'Graph prototype' => [
 						'values' => 'testFormGraphPrototype1',
-						'context' => ['Group' => 'Zabbix servers', 'Host' => 'Simple form test host']
+						'context' => ['groupid' => 'Zabbix servers', 'hostid' => 'Simple form test host']
 					]
 				]
 			],
@@ -66,7 +66,7 @@ class testGraphPrototypeWidget extends CWebTest {
 					],
 					'Item prototype' => [
 						'values' => 'testFormItemPrototype1',
-						'context' => ['Group' => 'Zabbix servers', 'Host' => 'Simple form test host']
+						'context' => ['groupid' => 'Zabbix servers', 'hostid' => 'Simple form test host']
 					],
 					'show_header' => false
 				]
@@ -308,7 +308,7 @@ class testGraphPrototypeWidget extends CWebTest {
 			'Name' => 'Screenshot Widget',
 			'Graph prototype' => [
 				'values' => ['testFormGraphPrototype1'],
-				'context' => ['Group' => 'Zabbix servers', 'Host' => 'Simple form test host']
+				'context' => ['groupid' => 'Zabbix servers', 'hostid' => 'Simple form test host']
 			]
 		];
 		if ($form->getField('Type')->getText() !== 'Graph prototype') {
@@ -346,11 +346,10 @@ class testGraphPrototypeWidget extends CWebTest {
 			$field = $form->getField($type);
 
 			if (is_array($data[$type])){
-				// TODO Change this to MODE_SELECT.
-				$field->setFillMode(CMultiselectElement::MODE_TYPE)->fill($data[$type]);
+				$field->setFillMode(CMultiselectElement::MODE_SELECT)->fill($data[$type]);
 			}
 			else {
-				$field->overwrite($data[$type]);
+				$field->fill($data[$type]);
 			}
 		}
 		else {
@@ -364,7 +363,7 @@ class testGraphPrototypeWidget extends CWebTest {
 				// Make sure that the widget is present before saving the dashboard.
 				if (!array_key_exists('Name', $data['fields'])) {
 					$default_header = $update ? self::$previous_widget_name
-							: $data[$type]['context']['Host'].': '.$data[$type]['values'];
+							: $data[$type]['context']['hostid'].': '.$data[$type]['values'];
 					$data['fields']['Name'] = $default_header;
 				}
 				$dashboard->getWidget($data['fields']['Name']);
