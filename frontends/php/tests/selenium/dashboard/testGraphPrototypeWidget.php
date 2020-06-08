@@ -165,14 +165,28 @@ class testGraphPrototypeWidget extends CWebTest {
 	 * Test for checking Graph prototype widget update without any changes.
 	 */
 	public function testGraphPrototypeWidget_SimpleUpdate() {
-		$this->checkWidgetSimpleActions('Apply');
+		$this->checkWidgetFormButtons('Apply', true);
 	}
 
 	/**
-	 * Test for checking Graph prototype widget edit pressing Cancel button.
+	 * Test for checking Graph prototype creation cancelling.
 	 */
-	public function testGraphPrototypeWidget_Cancel() {
-		$this->checkWidgetSimpleActions('Cancel');
+	public function testGraphPrototypeWidget_CancelCreate() {
+		$this->checkWidgetFormButtons('Cancel', false, true);
+	}
+
+	/**
+	 * Test for checking Graph prototype cancelling form changes.
+	 */
+	public function testGraphPrototypeWidget_CancelChanges() {
+		$this->checkWidgetFormButtons('Cancel', true, true);
+	}
+
+	/**
+	 * Test for checking Graph prototype widget cancelling without making any changes.
+	 */
+	public function testGraphPrototypeWidget_CancelNoChanges() {
+		$this->checkWidgetFormButtons('Cancel', true);
 	}
 
 	/**
@@ -395,19 +409,51 @@ class testGraphPrototypeWidget extends CWebTest {
 		}
 	}
 
-	public function checkWidgetSimpleActions($action) {
+	public function checkWidgetFormButtons($action, $update = false, $changes = false) {
 		$initial_values = CDBHelper::getHash($this->sql);
 		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::DASHBOARD_ID);
 		$dashboard = CDashboardElement::find()->one();
-		$dashboard->getWidget(self::$previous_widget_name)->edit();
+
+		$form = $update
+			? $dashboard->getWidget(self::$previous_widget_name)->edit()
+			: $dashboard->edit()->addWidget()->asForm();
+
+		if ($update) {
+			$original_values = $form->getFields()->asValues();
+		}
+
 		$dialog = $this->query('id:overlay_dialogue')->one();
+
+		if ($changes) {
+			$form->fill([
+						'Type' => 'Graph prototype',
+						'Name' => 'Name for Cancelling',
+						'Refresh interval' => 'No refresh',
+						'Source' => 'Simple graph prototype',
+						'Item prototype' => 'testFormItemPrototype2',
+						'Show legend' => false,
+						'Dynamic item' => true,
+						'Columns' => '3',
+						'Rows' => '2'
+				]);
+		}
+
 		$dialog->query('button:'.$action)->one()->click();
 		$this->page->waitUntilReady();
 
-		$dashboard->getWidget(self::$previous_widget_name);
+		if ($update) {
+			$dashboard->getWidget(self::$previous_widget_name);
+		}
+
 		$dashboard->save();
 		// Check that Dashboard has been saved and that there are no changes made to the widgets.
 		$this->checkDashboardUpdateMessage();
+
+		if ($update) {
+			$new_values = $dashboard->getWidget(self::$previous_widget_name)->edit()->getFields()->asValues();
+			$this->assertEquals($original_values, $new_values);
+		}
+
 		$this->assertEquals($initial_values, CDBHelper::getHash($this->sql));
 	}
 
