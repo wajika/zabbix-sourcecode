@@ -58,10 +58,10 @@ class CDashboardElement extends CElement {
 	 * @return CElementCollection
 	 */
 	public function getWidgets() {
-		return $this->query('xpath:.//div[@class="dashbrd-grid-widget" or'
-			. ' @class="dashbrd-grid-iterator" or'
-			. ' contains(@class, "dashbrd-grid-widget-hidden-header") or'
-			. ' contains(@class, "dashbrd-grid-iterator-hidden-header")]')->asWidget()->all();
+		return $this->query('xpath:.//div[@class="dashbrd-grid-widget" or'.
+			' @class="dashbrd-grid-iterator" or'.
+			' contains(@class, "dashbrd-grid-widget-hidden-header") or'.
+			' contains(@class, "dashbrd-grid-iterator-hidden-header")]')->asWidget()->all();
 	}
 
 	/**
@@ -73,8 +73,8 @@ class CDashboardElement extends CElement {
 	 * @return CWidgetElement|CNullElement
 	 */
 	public function getWidget($name, $should_exist = true) {
-		$query = $this->query('xpath:.//div[contains(@class, "dashbrd-grid-widget-head") or '.
-			'contains(@class, "dashbrd-grid-iterator-head") ]/h4[text()='.
+		$query = $this->query('xpath:.//div[contains(@class, "dashbrd-grid-widget-head") or'.
+			' contains(@class, "dashbrd-grid-iterator-head") ]/h4[text()='.
 			CXPathHelper::escapeQuotes($name).']/../../..');
 
 		if ($should_exist) {
@@ -167,9 +167,9 @@ class CDashboardElement extends CElement {
 	 * @return boolean
 	 */
 	public function deleteWidget($name) {
-		$this->query('xpath:.//div[contains(@class, "dashbrd-grid-widget-head") or'
-			. ' contains(@class, "dashbrd-grid-iterator-head")]/h4[text()="'.$name.
-				'"]/../../..//button[@title="Delete"]')->one()->click(true)->waitUntilNotVisible();
+		$this->query('xpath:.//div[contains(@class, "dashbrd-grid-widget-head") or'.
+			' contains(@class, "dashbrd-grid-iterator-head")]/h4[text()="'.$name.
+			'"]/../../..//button[@title="Delete"]')->one()->click(true)->waitUntilNotVisible();
 
 		return $this;
 	}
