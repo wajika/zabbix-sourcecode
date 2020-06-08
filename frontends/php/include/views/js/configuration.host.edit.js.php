@@ -85,15 +85,11 @@
 			allHostInterfaces = {};
 
 		function renderHostInterfaceRow(hostInterface) {
-			var iface = jQuery.extend({}, hostInterface, {
-					locked: Number(hostInterface.locked),
-					items: Number(hostInterface.items)
-				}),
-				domAttrs = getDomElementsAttrsForInterface(iface),
+			var domAttrs = getDomElementsAttrsForInterface(hostInterface),
 				domId = getDomIdForRowInsert(hostInterface.type),
 				domRow;
 
-			jQuery(domId).before(rowTemplate.evaluate({iface: iface, attrs: domAttrs}));
+			jQuery(domId).before(rowTemplate.evaluate({iface: hostInterface, attrs: domAttrs}));
 
 			domRow = jQuery('#hostInterfaceRow_' + hostInterface.interfaceid);
 
@@ -104,7 +100,7 @@
 			jQuery('#interfaces_' + hostInterface.interfaceid + '_useip_' + hostInterface.useip).prop('checked', true)
 				.trigger('click');
 
-			if (iface.locked) {
+			if (hostInterface.locked > 0) {
 				addNotDraggableIcon(domRow);
 			}
 			else {
@@ -216,7 +212,7 @@
 				disabled: ''
 			};
 
-			if (hostInterface.items) {
+			if (hostInterface.items > 0) {
 				attrs.disabled = 'disabled="disabled"';
 			}
 
