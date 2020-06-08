@@ -157,8 +157,7 @@ class testGraphPrototypeWidget extends CWebTest {
 	 * @dataProvider getWidgetData
 	 */
 	public function testGraphPrototypeWidget_Create($data) {
-		$new_widget_count = 1;
-		$this->checkGraphPrototypeWidget($data, $new_widget_count);
+		$this->checkGraphPrototypeWidget($data);
 	}
 
 	/**
@@ -167,9 +166,8 @@ class testGraphPrototypeWidget extends CWebTest {
 	 * @dataProvider getWidgetData
 	 */
 	public function testGraphPrototypeWidget_Update($data) {
-		$new_widget_count = 0;
 		$update = true;
-		$this->checkGraphPrototypeWidget($data, $new_widget_count, $update);
+		$this->checkGraphPrototypeWidget($data, $update);
 	}
 
 	/**
@@ -323,13 +321,13 @@ class testGraphPrototypeWidget extends CWebTest {
 		$this->assertScreenshot($screenshot_area, $data['screenshot_id']);
 	}
 
-	public function checkGraphPrototypeWidget($data, $new_widget_count, $update = false) {
+	public function checkGraphPrototypeWidget($data, $update = false) {
 		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::DASHBOARD_ID);
 		$dashboard = CDashboardElement::find()->one();
 		$old_widget_count = $dashboard->getWidgets()->count();
 
 		$form = $update
-			? $dashboard->getWidget(self::$previous_widget_name)->edit()->asForm()
+			? $dashboard->getWidget(self::$previous_widget_name)->edit()
 			: $dashboard->edit()->addWidget()->asForm();
 
 		if (array_key_exists('show_header', $data)) {
@@ -357,10 +355,11 @@ class testGraphPrototypeWidget extends CWebTest {
 
 				// Check that Dashboard has been saved and that widget has been added.
 				$this->checkDashboardUpdateMessage();
-				$this->assertEquals($old_widget_count + $new_widget_count, $dashboard->getWidgets()->count());
+				$count = $update ? $old_widget_count : $old_widget_count + 1;
+				$this->assertEquals($count, $dashboard->getWidgets()->count());
 				// Verify widget content
 				$widget = $dashboard->getWidget($header);
-				$this->assertTrue($widget->query('class:dashbrd-grid-iterator-content')->one()->isPresent());
+				$this->assertTrue($widget->getContent()->isValid());
 
 				// Compare placeholders count in data and created widget.
 				$expected_placeholders_count =
@@ -371,14 +370,12 @@ class testGraphPrototypeWidget extends CWebTest {
 				$this->assertEquals($expected_placeholders_count, $placeholders_count);
 				// Check Dynamic item setting on Dashboard.
 				if (CTestArrayHelper::get($data['fields'], 'Dynamic item')){
-					$this->assertTrue($dashboard->query('xpath://form[@aria-label="Main filter"]')
-						->one()->isPresent());
+					$this->assertTrue($dashboard->getControls()->query('xpath://form[@aria-label = '.
+						'"Main filter"]')->one()->isPresent());
 				}
 				// Write widget name to variable to use it in next Update test case.
-				if($update){
-					self::$previous_widget_name = array_key_exists('Name', $data['fields'])
-						? $data['fields']['Name']
-						: 'Graph prototype widget for update';
+				if ($update) {
+					self::$previous_widget_name = CTestArrayHelper::get($data, 'fields.Name', 'Graph prototype widget for update');
 				}
 				break;
 			case TEST_BAD:
