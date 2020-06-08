@@ -49,11 +49,11 @@ class testGraphPrototypeWidget extends CWebTest {
 				[
 					'expected' => TEST_GOOD,
 					'fields' => [
-						'Type' => 'Graph prototype',
-						'Graph prototype' => [
-							'values' => ['testFormGraphPrototype1'],
-							'context' => ['Group' => 'Zabbix servers', 'Host' => 'Simple form test host']
-						]
+						'Type' => 'Graph prototype'
+					],
+					'Graph prototype' => [
+						'values' => 'testFormGraphPrototype1',
+						'context' => ['Group' => 'Zabbix servers', 'Host' => 'Simple form test host']
 					]
 				]
 			],
@@ -62,11 +62,11 @@ class testGraphPrototypeWidget extends CWebTest {
 					'expected' => TEST_GOOD,
 					'fields' => [
 						'Type' => 'Graph prototype',
-						'Source' => 'Simple graph prototype',
-						'Item prototype' => [
-							'values' => ['testFormItemPrototype1'],
-							'context' => ['Group' => 'Zabbix servers', 'Host' => 'Simple form test host']
-						]
+						'Source' => 'Simple graph prototype'
+					],
+					'Item prototype' => [
+						'values' => 'testFormItemPrototype1',
+						'context' => ['Group' => 'Zabbix servers', 'Host' => 'Simple form test host']
 					],
 					'show_header' => false
 				]
@@ -79,15 +79,12 @@ class testGraphPrototypeWidget extends CWebTest {
 						'Name' => 'Graph prototype widget with all possible fields filled',
 						'Refresh interval' => 'No refresh',
 						'Source' => 'Simple graph prototype',
-						'Item prototype' => [
-							'values' => ['testFormItemPrototype2'],
-							'context' => ['Group' => 'Zabbix servers', 'Host' => 'Simple form test host']
-						],
 						'Show legend' => true,
 						'Dynamic item' => true,
 						'Columns' => '3',
 						'Rows' => '2'
-					]
+					],
+					'Item prototype' => 'testFormItemPrototype2'
 				]
 			],
 			[
@@ -95,7 +92,7 @@ class testGraphPrototypeWidget extends CWebTest {
 					'expected' => TEST_BAD,
 					'fields' => [
 						'Type' => 'Graph prototype',
-						'Source' => 'Graph prototype',
+						'Source' => 'Graph prototype'
 					],
 					'error' => ['Invalid parameter "Graph prototype": cannot be empty.']
 				]
@@ -116,13 +113,10 @@ class testGraphPrototypeWidget extends CWebTest {
 					'fields' => [
 						'Type' => 'Graph prototype',
 						'Source' => 'Graph prototype',
-						'Graph prototype' => [
-							'values' => ['testFormGraphPrototype1'],
-							'context' => ['Group' => 'Zabbix servers', 'Host' => 'Simple form test host']
-						],
 						'Columns' => '0',
 						'Rows' => '0'
 					],
+					'Graph prototype' => 'testFormGraphPrototype1',
 					'error' => [
 						'Invalid parameter "Columns": value must be one of 1-24.',
 						'Invalid parameter "Rows": value must be one of 1-16.'
@@ -135,13 +129,10 @@ class testGraphPrototypeWidget extends CWebTest {
 					'fields' => [
 						'Type' => 'Graph prototype',
 						'Source' => 'Graph prototype',
-						'Graph prototype' => [
-							'values' => ['testFormGraphPrototype1'],
-							'context' => ['Group' => 'Zabbix servers', 'Host' => 'Simple form test host']
-						],
 						'Columns' => '25',
 						'Rows' => '17'
 					],
+					'Graph prototype' => 'testFormGraphPrototype1',
 					'error' => [
 						'Invalid parameter "Columns": value must be one of 1-24.',
 						'Invalid parameter "Rows": value must be one of 1-16.'
@@ -334,23 +325,35 @@ class testGraphPrototypeWidget extends CWebTest {
 			$form->query('xpath:.//input[@id="show_header"]')->asCheckbox()->one()->fill($data['show_header']);
 		}
 		$form->fill($data['fields']);
-		if (!array_key_exists('Graph prototype', $data['fields']) &&
-			!array_key_exists('Item prototype', $data['fields'])) {
+
+		if (array_key_exists('Graph prototype', $data) || array_key_exists('Item prototype', $data)){
+			$type = CTestArrayHelper::get($data['fields'], 'Source') === 'Simple graph prototype'
+						? 'Item prototype' : 'Graph prototype';
+			$field = $form->getField($type);
+
+			if (is_array($data[$type])){
+				// TODO Change this to MODE_SELECT.
+				$field->setFillMode(CMultiselectElement::MODE_TYPE)->fill($data[$type]);
+			}
+			else {
+				$field->overwrite($data[$type]);
+			}
+		}
+		else {
 			$form->query('xpath:.//div[@id="graphid" | @id="itemid"]')->asMultiselect()->one()->clear();
 		}
+
 		$form->submit();
 
 		switch ($data['expected']) {
 			case TEST_GOOD:
 				// Make sure that the widget is present before saving the dashboard.
-				$type = CTestArrayHelper::get($data['fields'], 'Source') === 'Simple graph prototype'
-					? 'Item prototype' : 'Graph prototype';
-
-				$default_header = $update ? self::$previous_widget_name
-					: $data['fields'][$type]['context']['Host'].': '.$data['fields'][$type]['values'][0];
-
-				$header = CTestArrayHelper::get($data['fields'], 'Name', $default_header);
-				$dashboard->getWidget($header);
+				if (!array_key_exists('Name', $data['fields'])) {
+					$default_header = $update ? self::$previous_widget_name
+							: $data[$type]['context']['Host'].': '.$data[$type]['values'];
+					$data['fields']['Name'] = $default_header;
+				}
+				$dashboard->getWidget($data['fields']['Name']);
 				$dashboard->save();
 
 				// Check that Dashboard has been saved and that widget has been added.
@@ -358,7 +361,7 @@ class testGraphPrototypeWidget extends CWebTest {
 				$count = $update ? $old_widget_count : $old_widget_count + 1;
 				$this->assertEquals($count, $dashboard->getWidgets()->count());
 				// Verify widget content
-				$widget = $dashboard->getWidget($header);
+				$widget = $dashboard->getWidget($data['fields']['Name']);
 				$this->assertTrue($widget->getContent()->isValid());
 
 				// Compare placeholders count in data and created widget.
