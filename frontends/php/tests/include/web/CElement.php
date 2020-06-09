@@ -513,7 +513,6 @@ class CElement extends CBaseElement implements IWaitable {
 		}
 
 		return $this;
-
 	}
 
 	/**

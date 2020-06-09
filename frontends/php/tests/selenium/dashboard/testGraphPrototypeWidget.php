@@ -61,6 +61,7 @@ class testGraphPrototypeWidget extends CWebTest {
 				[
 					'expected' => TEST_GOOD,
 					'fields' => [
+						'Name' => 'Simple graph prototype'.microtime(),
 						'Type' => 'Graph prototype',
 						'Source' => 'Simple graph prototype'
 					],
@@ -76,7 +77,7 @@ class testGraphPrototypeWidget extends CWebTest {
 					'expected' => TEST_GOOD,
 					'fields' => [
 						'Type' => 'Graph prototype',
-						'Name' => 'Graph prototype widget with all possible fields filled',
+						'Name' => 'Graph prototype widget with all possible fields filled'.microtime(),
 						'Refresh interval' => 'No refresh',
 						'Source' => 'Simple graph prototype',
 						'Show legend' => true,
@@ -157,8 +158,7 @@ class testGraphPrototypeWidget extends CWebTest {
 	 * @dataProvider getWidgetData
 	 */
 	public function testGraphPrototypeWidget_Update($data) {
-		$update = true;
-		$this->checkGraphPrototypeWidget($data, $update);
+		$this->checkGraphPrototypeWidget($data, true);
 	}
 
 	/**
@@ -306,10 +306,7 @@ class testGraphPrototypeWidget extends CWebTest {
 		$form = $dashboard->edit()->addWidget()->asForm();
 		$widget = [
 			'Name' => 'Screenshot Widget',
-			'Graph prototype' => [
-				'values' => ['testFormGraphPrototype1'],
-				'context' => ['groupid' => 'Zabbix servers', 'hostid' => 'Simple form test host']
-			]
+			'Graph prototype' => 'testFormGraphPrototype1'
 		];
 		if ($form->getField('Type')->getText() !== 'Graph prototype') {
 			$form->fill(['Type' => 'Graph prototype']);
@@ -326,7 +323,7 @@ class testGraphPrototypeWidget extends CWebTest {
 		$this->assertScreenshot($screenshot_area, $data['screenshot_id']);
 	}
 
-	public function checkGraphPrototypeWidget($data, $update = false) {
+	private function checkGraphPrototypeWidget($data, $update = false) {
 		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::DASHBOARD_ID);
 		$dashboard = CDashboardElement::find()->one();
 		$old_widget_count = $dashboard->getWidgets()->count();
@@ -356,10 +353,21 @@ class testGraphPrototypeWidget extends CWebTest {
 			$form->query('xpath:.//div[@id="graphid" | @id="itemid"]')->asMultiselect()->one()->clear();
 		}
 
+		$values = $form->getFields()->asValues();
 		$form->submit();
 
 		switch ($data['expected']) {
 			case TEST_GOOD:
+				// Introduce name for finding saved widget in DB.
+				if ($update && array_key_exists('Name', $data['fields'])) {
+					$db_name = $data['fields']['Name'];
+				}
+				elseif ($update && !array_key_exists('Name', $data['fields'])) {
+					$db_name = self::$previous_widget_name;
+				}
+				else {
+					$db_name = '';
+				}
 				// Make sure that the widget is present before saving the dashboard.
 				if (!array_key_exists('Name', $data['fields'])) {
 					$default_header = $update ? self::$previous_widget_name
@@ -373,13 +381,19 @@ class testGraphPrototypeWidget extends CWebTest {
 				$this->checkDashboardUpdateMessage();
 				$count = $update ? $old_widget_count : $old_widget_count + 1;
 				$this->assertEquals($count, $dashboard->getWidgets()->count());
+
+				// Check that widget is saved in DB.
+				$db_count = CDBHelper::getCount('SELECT * FROM widget WHERE dashboardid ='.
+						self::DASHBOARD_ID.' AND  name ='.zbx_dbstr($db_name));
+				$this->assertEquals(1, $db_count);
+
 				// Verify widget content
 				$widget = $dashboard->getWidget($data['fields']['Name']);
 				$this->assertTrue($widget->getContent()->isValid());
 
 				// Compare placeholders count in data and created widget.
 				$expected_placeholders_count =
-					CTestArrayHelper::get($data['fields'], 'Columns') && CTestArrayHelper::get($data['fields'], 'Rows')
+					(CTestArrayHelper::get($data['fields'], 'Columns') && CTestArrayHelper::get($data['fields'], 'Rows'))
 					? $data['fields']['Columns'] * $data['fields']['Rows']
 					: 2;
 				$placeholders_count = $widget->query('class:dashbrd-grid-iterator-placeholder')->count();
@@ -389,6 +403,9 @@ class testGraphPrototypeWidget extends CWebTest {
 					$this->assertTrue($dashboard->getControls()->query('xpath://form[@aria-label = '.
 						'"Main filter"]')->one()->isPresent());
 				}
+				// Check widget form fields and values.
+				$this->assertEquals($values, $widget->edit()->getFields()->asValues());
+
 				// Write widget name to variable to use it in next Update test case.
 				if ($update) {
 					self::$previous_widget_name = CTestArrayHelper::get($data, 'fields.Name', 'Graph prototype widget for update');
@@ -408,7 +425,7 @@ class testGraphPrototypeWidget extends CWebTest {
 		}
 	}
 
-	public function checkWidgetFormButtons($action, $update = false, $changes = false) {
+	private function checkWidgetFormButtons($action, $update = false, $changes = false) {
 		$initial_values = CDBHelper::getHash($this->sql);
 		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::DASHBOARD_ID);
 		$dashboard = CDashboardElement::find()->one();
@@ -437,7 +454,7 @@ class testGraphPrototypeWidget extends CWebTest {
 				]);
 		}
 
-		$dialog->query('button:'.$action)->one()->click();
+		$dialog->query('button', $action)->one()->click();
 		$this->page->waitUntilReady();
 
 		if ($update) {
