@@ -82,6 +82,7 @@ if (hasRequest('add') || hasRequest('update')) {
 
 	if ($result) {
 		unset($_REQUEST['form']);
+		uncheckTableRows();
 	}
 }
 elseif (getRequest('action') === 'valuemap.delete' && hasRequest('valuemapids')) {

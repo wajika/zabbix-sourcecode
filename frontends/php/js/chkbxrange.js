@@ -29,11 +29,24 @@ var chkbxRange = {
 	selectedIds:		{},		// ids of selected objects
 	footerButtons:		{},		// action buttons at the bottom of page
 	sessionStorageName:	null,
+	ss_key_base:		null,	// the beginning of the session storage key name
 
 	init: function() {
-		var path = new Curl();
-		var filename = basename(path.getPath(), '.php');
+		var url = new Curl();
+		var filename = basename(url.getPath(), '.php');
+
 		this.sessionStorageName = 'cb_' + filename + (this.prefix ? '_' + this.prefix : '');
+		this.ss_key_base = 'cb_' + filename;
+
+		if (filename === 'zabbix') {
+			if (this.prefix) {
+				this.ss_key_base += '_' + this.prefix;
+			}
+			else if (url.getArgument('action')) {
+				this.ss_key_base += '_' + url.args.action.split('.')[0];
+			}
+		}
+
 		// Erase old checkboxes.
 		this.chkboxes = {};
 		this.startbox = null;
@@ -314,7 +327,7 @@ var chkbxRange = {
 		for (var i = 0; i < sessionStorage.length; i++) {
 			key_ = sessionStorage.key(i);
 
-			if (key_.substring(0, 3) === 'cb_' && key_ != this.sessionStorageName) {
+			if (key_.indexOf('cb_') > -1 && key_.indexOf(this.ss_key_base) === -1) {
 				sessionStorage.removeItem(key_);
 			}
 		}

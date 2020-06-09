@@ -83,10 +83,15 @@ $form_list
 		(new CDiv((new CLabel(_('At least one update operation or message must exist.')))->setAsteriskMark()))
 	);
 
-$footer_buttons = makeFormFooter(
-	new CSubmitButton(_('Update'), 'action', 'acknowledge.create'),
-	[new CRedirectButton(_('Cancel'), $data['backurl'])]
-);
+$footer_buttons = makeFormFooter(new CSubmitButton(_('Update'), 'action', 'acknowledge.create'), [
+	new CRedirectButton(_('Cancel'),
+		(new CUrl($data['backurl']))
+			->removeArgument('uncheck')
+			->getUrl()
+	)
+]);
+
+zbx_add_post_js('chkbxRange.prefix = '.CJs::encodeJson('problem').';');
 
 (new CWidget())
 	->setTitle(_('Update problem'))
