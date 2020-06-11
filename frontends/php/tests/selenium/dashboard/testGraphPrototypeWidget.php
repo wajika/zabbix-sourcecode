@@ -26,7 +26,7 @@ require_once dirname(__FILE__).'/../../include/CWebTest.php';
  */
 class testGraphPrototypeWidget extends CWebTest {
 
-	/*
+	/**
 	 * SQL query to get widget and widget_field tables to compare hash values, but without widget_fieldid
 	 * because it can change.
 	 */
@@ -165,28 +165,28 @@ class testGraphPrototypeWidget extends CWebTest {
 	 * Test for checking Graph prototype widget update without any changes.
 	 */
 	public function testGraphPrototypeWidget_SimpleUpdate() {
-		$this->checkWidgetFormButtons('Apply', true);
+		$this->checkDataUnchanged('Apply', true);
 	}
 
 	/**
 	 * Test for checking Graph prototype creation cancelling.
 	 */
 	public function testGraphPrototypeWidget_CancelCreate() {
-		$this->checkWidgetFormButtons('Cancel', false, true);
+		$this->checkDataUnchanged('Cancel', false, true);
 	}
 
 	/**
 	 * Test for checking Graph prototype cancelling form changes.
 	 */
 	public function testGraphPrototypeWidget_CancelChanges() {
-		$this->checkWidgetFormButtons('Cancel', true, true);
+		$this->checkDataUnchanged('Cancel', true, true);
 	}
 
 	/**
 	 * Test for checking Graph prototype widget cancelling without making any changes.
 	 */
 	public function testGraphPrototypeWidget_CancelNoChanges() {
-		$this->checkWidgetFormButtons('Cancel', true);
+		$this->checkDataUnchanged('Cancel', true);
 	}
 
 	/**
@@ -425,7 +425,14 @@ class testGraphPrototypeWidget extends CWebTest {
 		}
 	}
 
-	private function checkWidgetFormButtons($action, $update = false, $changes = false) {
+	/**
+	 * Function for checking editing widget form without changes.
+	 *
+	 * @param string $action	name of button tested
+	 * @param boolean $update	is this updating of existing widget
+	 * @param boolean $changes	are the any changes made in widget form
+	 */
+	private function checkDataUnchanged($action, $update = false, $changes = false) {
 		$initial_values = CDBHelper::getHash($this->sql);
 		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::DASHBOARD_ID);
 		$dashboard = CDashboardElement::find()->one();
@@ -442,15 +449,15 @@ class testGraphPrototypeWidget extends CWebTest {
 
 		if ($changes) {
 			$form->fill([
-						'Type' => 'Graph prototype',
-						'Name' => 'Name for Cancelling',
-						'Refresh interval' => 'No refresh',
-						'Source' => 'Simple graph prototype',
-						'Item prototype' => 'testFormItemPrototype2',
-						'Show legend' => false,
-						'Dynamic item' => true,
-						'Columns' => '3',
-						'Rows' => '2'
+					'Type' => 'Graph prototype',
+					'Name' => 'Name for Cancelling',
+					'Refresh interval' => 'No refresh',
+					'Source' => 'Simple graph prototype',
+					'Item prototype' => 'testFormItemPrototype2',
+					'Show legend' => false,
+					'Dynamic item' => true,
+					'Columns' => '3',
+					'Rows' => '2'
 				]);
 		}
 
@@ -473,7 +480,7 @@ class testGraphPrototypeWidget extends CWebTest {
 		$this->assertEquals($initial_values, CDBHelper::getHash($this->sql));
 	}
 
-	/*
+	/**
 	 * Check dashboard update message.
 	 */
 	private function checkDashboardUpdateMessage() {
