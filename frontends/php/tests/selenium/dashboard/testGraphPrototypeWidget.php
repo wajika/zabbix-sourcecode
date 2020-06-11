@@ -61,8 +61,8 @@ class testGraphPrototypeWidget extends CWebTest {
 				[
 					'expected' => TEST_GOOD,
 					'fields' => [
-						'Name' => 'Simple graph prototype'.microtime(),
 						'Type' => 'Graph prototype',
+						'Name' => 'Simple graph prototype'.microtime(),
 						'Source' => 'Simple graph prototype'
 					],
 					'Item prototype' => [
