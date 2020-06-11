@@ -359,7 +359,7 @@ class testGraphPrototypeWidget extends CWebTest {
 		switch ($data['expected']) {
 			case TEST_GOOD:
 				// Introduce name for finding saved widget in DB.
-				if ($update && array_key_exists('Name', $data['fields'])) {
+				if (array_key_exists('Name', $data['fields'])) {
 					$db_name = $data['fields']['Name'];
 				}
 				elseif ($update && !array_key_exists('Name', $data['fields'])) {
