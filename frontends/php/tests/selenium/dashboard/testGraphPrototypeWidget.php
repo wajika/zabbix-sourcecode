@@ -424,7 +424,7 @@ class testGraphPrototypeWidget extends CWebTest {
 	 *
 	 * @param string $action	name of button tested
 	 * @param boolean $update	is this updating of existing widget
-	 * @param boolean $changes	are the any changes made in widget form
+	 * @param boolean $changes	are there any changes made in widget form
 	 */
 	private function checkDataUnchanged($action, $update = false, $changes = false) {
 		$initial_values = CDBHelper::getHash($this->sql);
