@@ -359,15 +359,9 @@ class testGraphPrototypeWidget extends CWebTest {
 		switch ($data['expected']) {
 			case TEST_GOOD:
 				// Introduce name for finding saved widget in DB.
-				if (array_key_exists('Name', $data['fields'])) {
-					$db_name = $data['fields']['Name'];
-				}
-				elseif ($update && !array_key_exists('Name', $data['fields'])) {
-					$db_name = self::$previous_widget_name;
-				}
-				else {
-					$db_name = '';
-				}
+				$default_dbname = $update ? self::$previous_widget_name : '';
+				$db_name = CTestArrayHelper::get($data, 'fields.Name', $default_dbname);
+
 				// Make sure that the widget is present before saving the dashboard.
 				if (!array_key_exists('Name', $data['fields'])) {
 					$default_header = $update ? self::$previous_widget_name
