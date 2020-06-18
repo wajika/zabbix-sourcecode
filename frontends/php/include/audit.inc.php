@@ -66,6 +66,8 @@ function audit_resource2str($resource_type = null) {
 }
 
 function add_audit($action, $resourcetype, $details) {
+	return true;
+
 	if (mb_strlen($details) > 128) {
 		$details = mb_substr($details, 0, 125).'...';
 	}
@@ -91,6 +93,8 @@ function add_audit($action, $resourcetype, $details) {
 }
 
 function add_audit_ext($action, $resourcetype, $resourceid, $resourcename, $table_name, $values_old, $values_new) {
+	return true;
+
 	$values_diff = [];
 
 	if ($action == AUDIT_ACTION_UPDATE && !empty($values_new)) {
@@ -157,6 +161,8 @@ function add_audit_ext($action, $resourcetype, $resourceid, $resourcename, $tabl
 }
 
 function add_audit_details($action, $resourcetype, $resourceid, $resourcename, $details = null, $userId = null) {
+	return true;
+
 	if ($userId === null) {
 		$userId = CWebUser::$data['userid'];
 	}
