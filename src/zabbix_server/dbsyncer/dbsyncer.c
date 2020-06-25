@@ -33,6 +33,8 @@ extern unsigned char	process_type, program_type;
 extern int		server_num, process_num;
 static sigset_t		orig_mask;
 
+volatile sig_atomic_t	zbx_hc_clear_all = 0;
+
 /******************************************************************************
  *                                                                            *
  * Function: block_signals                                                    *
@@ -68,6 +70,13 @@ static	void	unblock_signals(void)
 		zabbix_log(LOG_LEVEL_WARNING,"cannot restore sigprocmask");
 }
 
+static void	zbx_dbsyncer_sigusr_handler(int flags)
+{
+	if (ZBX_RTC_HISTORY_CACHE_CLEAR == ZBX_RTC_GET_MSG(flags))
+	{
+		zbx_hc_clear_all = 1;
+	}
+}
 /******************************************************************************
  *                                                                            *
  * Function: main_dbsyncer_loop                                               *
@@ -104,6 +113,8 @@ ZBX_THREAD_ENTRY(dbsyncer_thread, args)
 	last_stat_time = time(NULL);
 
 	zbx_strcpy_alloc(&stats, &stats_alloc, &stats_offset, "started");
+
+	zbx_set_sigusr_handler(zbx_dbsyncer_sigusr_handler);
 
 	/* database APIs might not handle signals correctly and hang, block signals to avoid hanging */
 	block_signals();

@@ -57,6 +57,9 @@ static size_t		sql_alloc = 64 * ZBX_KIBIBYTE;
 
 extern unsigned char	program_type;
 
+/* flag set by signal to clear history cache */
+extern volatile sig_atomic_t	zbx_hc_clear_all;
+
 #define ZBX_IDS_SIZE	9
 
 #define ZBX_HC_ITEMS_INIT_SIZE	1000
@@ -165,6 +168,7 @@ static void	hc_free_item_values(ZBX_DC_HISTORY *history, int history_num);
 static void	hc_queue_item(zbx_hc_item_t *item);
 static int	hc_queue_elem_compare_func(const void *d1, const void *d2);
 static int	hc_queue_get_size(void);
+static void	hc_queue_clear(void);
 
 /******************************************************************************
  *                                                                            *
@@ -2831,7 +2835,16 @@ static void	sync_server_history(int *values_num, int *triggers_num, int *more)
 		*more = ZBX_SYNC_DONE;
 
 		LOCK_CACHE;
-		hc_pop_items(&history_items);		/* select and take items out of history cache */
+
+		if (0 != zbx_hc_clear_all)
+		{
+			hc_queue_clear();
+			zbx_hc_clear_all = 0;
+		}
+		else
+
+			hc_pop_items(&history_items);		/* select and take items out of history cache */
+
 		UNLOCK_CACHE;
 
 		if (0 != history_items.values_num)
@@ -2951,6 +2964,12 @@ static void	sync_server_history(int *values_num, int *triggers_num, int *more)
 			LOCK_CACHE;
 			hc_push_items(&history_items);	/* return items to history cache */
 			cache->history_num -= history_num;
+
+			if (0 != zbx_hc_clear_all)
+			{
+				hc_queue_clear();
+				zbx_hc_clear_all = 0;
+			}
 
 			if (0 != hc_queue_get_size())
 			{
@@ -4087,6 +4106,42 @@ void	hc_push_items(zbx_vector_ptr_t *history_items)
 				break;
 		}
 	}
+}
+
+/******************************************************************************
+ *                                                                            *
+ * Function: hc_clear_queue                                                   *
+ *                                                                            *
+ * Purpose: clears history cache queue and removes queued data                *
+ *                                                                            *
+ ******************************************************************************/
+static void	hc_queue_clear(void)
+{
+	zbx_binary_heap_elem_t	*elem;
+	zbx_hc_item_t		*item;
+	zbx_hc_data_t		*data, *data_free;
+	int			i;
+	zbx_uint64_t		history_old = cache->history_num;
+
+	for (i = 0; i < cache->history_queue.elems_num; i++)
+	{
+		elem = &cache->history_queue.elems[i];
+		item = (zbx_hc_item_t *)elem->data;
+
+		for (data = item->tail; data != NULL; )
+		{
+			data_free = data;
+			data = data->next;
+			hc_free_data(data_free);
+			cache->history_num--;
+		}
+
+		zbx_hashset_remove_direct(&cache->history_items, item);
+	}
+	zbx_binary_heap_clear(&cache->history_queue);
+
+	zabbix_log(LOG_LEVEL_WARNING, "history cache cleared, removed " ZBX_FS_UI64 " values",
+			history_old - cache->history_num);
 }
 
 /******************************************************************************

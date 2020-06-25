@@ -227,6 +227,9 @@ static void	user1_signal_handler(int sig, siginfo_t *siginfo, void *context)
 		case ZBX_RTC_HOUSEKEEPER_EXECUTE:
 			zbx_signal_process_by_type(ZBX_PROCESS_TYPE_HOUSEKEEPER, 1, flags);
 			break;
+		case ZBX_RTC_HISTORY_CACHE_CLEAR:
+			zbx_signal_process_by_type(ZBX_PROCESS_TYPE_HISTSYNCER, 0, flags);
+			break;
 		case ZBX_RTC_LOG_LEVEL_INCREASE:
 		case ZBX_RTC_LOG_LEVEL_DECREASE:
 			if ((ZBX_RTC_LOG_SCOPE_FLAG | ZBX_RTC_LOG_SCOPE_PID) == ZBX_RTC_GET_SCOPE(flags))

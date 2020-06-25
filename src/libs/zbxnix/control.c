@@ -154,6 +154,13 @@ int	parse_rtc_options(const char *opt, unsigned char program_type, int *message)
 		scope = 0;
 		data = 0;
 	}
+	else if (0 != (program_type & ZBX_PROGRAM_TYPE_SERVER) &&
+			0 == strcmp(opt, ZBX_HISTORY_CACHE_CLEAR))
+	{
+		command = ZBX_RTC_HISTORY_CACHE_CLEAR;
+		scope = 0;
+		data = 0;
+	}
 	else
 	{
 		zbx_error("invalid runtime control option: %s", opt);

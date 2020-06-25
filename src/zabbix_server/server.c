@@ -99,6 +99,7 @@ const char	*help_message[] = {
 	"",
 	"    Runtime control options:",
 	"      " ZBX_CONFIG_CACHE_RELOAD "        Reload configuration cache",
+	"      " ZBX_HISTORY_CACHE_CLEAR "        Clear history cache",
 	"      " ZBX_HOUSEKEEPER_EXECUTE "        Execute the housekeeper",
 	"      " ZBX_LOG_LEVEL_INCREASE "=target  Increase log level, affects all processes if",
 	"                                 target is not specified",
