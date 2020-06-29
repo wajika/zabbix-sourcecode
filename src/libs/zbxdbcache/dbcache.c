@@ -2777,7 +2777,7 @@ static int	hc_queue_try_clear()
 		{
 			int	i;
 
-			/* heck if the rest of syncers have been paused */
+			/* check if the rest of syncers have been paused */
 			for (i = 1; i < CONFIG_HISTSYNCER_FORKS; i++)
 			{
 				if (ZBX_HC_CONTROL_PAUSED != cache->control[i])
@@ -4177,7 +4177,7 @@ static void	hc_queue_clear(void)
 	zbx_hashset_iter_reset(&cache->history_items, &iter);
 	while (NULL != (item = (zbx_hc_item_t *)zbx_hashset_iter_next(&iter)))
 	{
-		for (data = item->tail; data != NULL; )
+		for (data = item->tail; data != NULL;)
 		{
 			data_free = data;
 			data = data->next;
