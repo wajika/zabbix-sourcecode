@@ -4187,7 +4187,7 @@ static void	hc_queue_clear(void)
 	zbx_hashset_clear(&cache->history_items);
 	zbx_binary_heap_clear(&cache->history_queue);
 
-	zabbix_log(LOG_LEVEL_WARNING, "history cache cleared, removed " ZBX_FS_UI64 " values", cache->history_num);
+	zabbix_log(LOG_LEVEL_WARNING, "history cache cleared, removed:%d values", cache->history_num);
 	cache->history_num = 0;
 }
 
