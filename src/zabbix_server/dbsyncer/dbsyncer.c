@@ -72,10 +72,8 @@ static	void	unblock_signals(void)
 
 static void	zbx_dbsyncer_sigusr_handler(int flags)
 {
-	if (ZBX_RTC_HISTORY_CACHE_CLEAR == ZBX_RTC_GET_MSG(flags))
-	{
+	if (ZBX_RTC_HISTORY_CACHE_CLEAR == ZBX_RTC_GET_MSG(flags) && 1 == process_num)
 		zbx_hc_clear_all = 1;
-	}
 }
 /******************************************************************************
  *                                                                            *
