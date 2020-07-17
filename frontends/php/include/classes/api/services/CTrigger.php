@@ -119,7 +119,7 @@ class CTrigger extends CTriggerGeneral {
 
 		// editable + PERMISSION CHECK
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
-			$permission = $options['editable'] ? PERM_READ_WRITE : PERM_READ;
+			$permission = $options['editable'] ? [PERM_DENY, PERM_READ] : [PERM_DENY];
 			$userGroups = getUserGroupsByUserId(self::$userData['userid']);
 
 			$sqlParts['where'][] = 'NOT EXISTS ('.
@@ -131,10 +131,7 @@ class CTrigger extends CTriggerGeneral {
 				' WHERE t.triggerid=f.triggerid '.
 					' AND f.itemid=i.itemid'.
 					' AND i.hostid=hgg.hostid'.
-				' GROUP BY i.hostid'.
-				' HAVING MAX(permission)<'.zbx_dbstr($permission).
-					' OR MIN(permission) IS NULL'.
-					' OR MIN(permission)='.PERM_DENY.
+					' AND ('.dbConditionInt('r.permission', $permission).' OR r.permission is NULL)'.
 			')';
 		}
 
