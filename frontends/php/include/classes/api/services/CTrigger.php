@@ -124,11 +124,11 @@ class CTrigger extends CTriggerGeneral {
 
 			$sqlParts['where'][] = 'NOT EXISTS ('.
 				'SELECT NULL'.
-				' FROM functions f,items i,hosts_groups hgg'.
+				' FROM functions f,items i,hosts_groups hgg,hosts h'.
 					' LEFT JOIN rights r'.
 						' ON r.id=hgg.groupid'.
 							' AND '.dbConditionInt('r.groupid', $userGroups).
-				' WHERE t.triggerid=f.triggerid '.
+				' WHERE t.triggerid=f.triggerid AND h.hostid=i.itemid'.
 					' AND f.itemid=i.itemid'.
 					' AND i.hostid=hgg.hostid'.
 					' AND ('.dbConditionInt('r.permission', $permission).' OR r.permission is NULL)'.
