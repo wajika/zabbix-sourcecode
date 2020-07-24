@@ -122,7 +122,7 @@ class CTrigger extends CTriggerGeneral {
 			$permission = $options['editable'] ? PERM_READ_WRITE : PERM_READ;
 			$userGroups = getUserGroupsByUserId(self::$userData['userid']);
 
-			if ($options['editable'])
+			if (1 || $options['editable'])
 			{
 				$test = ' HAVING MAX(permission)<'.zbx_dbstr($permission).
 				' OR MIN(permission) IS NULL'.
