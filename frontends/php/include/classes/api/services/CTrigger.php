@@ -119,19 +119,30 @@ class CTrigger extends CTriggerGeneral {
 
 		// editable + PERMISSION CHECK
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
-			$permission = $options['editable'] ? [PERM_DENY, PERM_READ] : [PERM_DENY];
+			$permission = $options['editable'] ? PERM_READ_WRITE : PERM_READ;
 			$userGroups = getUserGroupsByUserId(self::$userData['userid']);
+
+			if ($options['editable'])
+			{
+				$test = ' HAVING MAX(permission)<'.zbx_dbstr($permission).
+				' OR MIN(permission) IS NULL'.
+				' OR MIN(permission)='.PERM_DENY;
+			}
+			else
+			{
+				$test = ' AND ('.dbConditionInt('r.permission', [PERM_DENY, PERM_READ]).' OR r.permission is NULL)';
+			}
 
 			$sqlParts['where'][] = 'NOT EXISTS ('.
 				'SELECT NULL'.
-				' FROM functions f,items i,hosts_groups hgg,hosts h'.
+				' FROM functions f,items i,hosts_groups hgg'.
 					' LEFT JOIN rights r'.
 						' ON r.id=hgg.groupid'.
 							' AND '.dbConditionInt('r.groupid', $userGroups).
-				' WHERE t.triggerid=f.triggerid AND h.hostid=i.itemid'.
+				' WHERE t.triggerid=f.triggerid '.
 					' AND f.itemid=i.itemid'.
 					' AND i.hostid=hgg.hostid'.
-					' AND ('.dbConditionInt('r.permission', $permission).' OR r.permission is NULL)'.
+					$test.
 			')';
 		}
 
