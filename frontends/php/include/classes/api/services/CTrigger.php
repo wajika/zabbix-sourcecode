@@ -124,13 +124,14 @@ class CTrigger extends CTriggerGeneral {
 
 			if (1 || $options['editable'])
 			{
-				$test = ' HAVING MAX(permission)<'.zbx_dbstr($permission).
-				' OR MIN(permission) IS NULL'.
-				' OR MIN(permission)='.PERM_DENY;
+				$test = ' GROUP BY i.hostid'.
+				' HAVING MAX(permission)<'.zbx_dbstr($permission).
+					' OR MIN(permission) IS NULL'.
+					' OR MIN(permission)='.PERM_DENY;
 			}
 			else
 			{
-				$test = ' AND ('.dbConditionInt('r.permission', [PERM_DENY, PERM_READ]).' OR r.permission is NULL)';
+				$test = ' AND ('.dbConditionInt('r.permission', [PERM_DENY]).' OR r.permission is NULL)';
 			}
 
 			$sqlParts['where'][] = 'NOT EXISTS ('.
