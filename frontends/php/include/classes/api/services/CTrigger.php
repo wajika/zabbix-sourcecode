@@ -119,23 +119,53 @@ class CTrigger extends CTriggerGeneral {
 
 		// editable + PERMISSION CHECK
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
-			$permission = $options['editable'] ? PERM_READ_WRITE : PERM_READ;
+//			$permission = $options['editable'] ? PERM_READ_WRITE : PERM_READ;
+			$permission = $options['editable'] ? [PERM_READ_WRITE] : [PERM_READ, PERM_READ_WRITE];
 			$userGroups = getUserGroupsByUserId(self::$userData['userid']);
+
+//			$sqlParts['where'][] = 'NOT EXISTS ('.
+//				'SELECT NULL'.
+//				' FROM functions f,items i,hosts_groups hgg'.
+//					' LEFT JOIN rights r'.
+//						' ON r.id=hgg.groupid'.
+//							' AND '.dbConditionInt('r.groupid', $userGroups).
+//				' WHERE t.triggerid=f.triggerid '.
+//					' AND f.itemid=i.itemid'.
+//					' AND i.hostid=hgg.hostid'.
+//				' GROUP BY i.hostid'.
+//				' HAVING MAX(permission)<'.zbx_dbstr($permission).
+//					' OR MIN(permission) IS NULL'.
+//					' OR MIN(permission)='.PERM_DENY.
+//			')';
+
 
 			$sqlParts['where'][] = 'NOT EXISTS ('.
 				'SELECT NULL'.
-				' FROM functions f,items i,hosts_groups hgg'.
+				' FROM functions f'.
+					' INNER JOIN items i'.
+						' ON f.itemid=i.itemid'.
+					' INNER JOIN hosts_groups hgg'.
+						' ON i.hostid=hgg.hostid'.
 					' LEFT JOIN rights r'.
 						' ON r.id=hgg.groupid'.
 							' AND '.dbConditionInt('r.groupid', $userGroups).
-				' WHERE t.triggerid=f.triggerid '.
-					' AND f.itemid=i.itemid'.
-					' AND i.hostid=hgg.hostid'.
-				' GROUP BY i.hostid'.
-				' HAVING MAX(permission)<'.zbx_dbstr($permission).
-					' OR MIN(permission) IS NULL'.
-					' OR MIN(permission)='.PERM_DENY.
+				' WHERE t.triggerid=f.triggerid'.
+					' AND COALESCE(r.permission,0)=0'.
 			')';
+			$sqlParts['where'][] = 'EXISTS ('.
+				'SELECT NULL'.
+				' FROM functions f'.
+					' INNER JOIN items i'.
+						' ON f.itemid=i.itemid'.
+					' INNER JOIN hosts_groups hgg'.
+						' ON i.hostid=hgg.hostid'.
+					' LEFT JOIN rights r'.
+						' ON r.id = hgg.groupid'.
+							' AND '.dbConditionInt('r.groupid', $userGroups).
+				' WHERE t.triggerid=f.triggerid'.
+					' AND '.dbConditionInt('COALESCE(r.permission,0)', $permission).
+			')';
+
 		}
 
 		// groupids
