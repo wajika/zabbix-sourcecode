@@ -131,7 +131,7 @@ class CTrigger extends CTriggerGeneral {
 			}
 			else
 			{
-				$test = ' AND ('.dbConditionInt('r.permission', [PERM_DENY]).' OR r.permission is NULL)';
+				$test = ' AND ('.dbConditionInt('r.permission', [0,1]).' OR r.permission is NULL)';
 			}
 
 			$sqlParts['where'][] = 'NOT EXISTS ('.
