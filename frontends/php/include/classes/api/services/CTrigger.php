@@ -131,18 +131,18 @@ class CTrigger extends CTriggerGeneral {
 			}
 			else
 			{
-				$test = ' AND ('.dbConditionInt('r.permission', [0,1]).' OR r.permission is NULL)';
+				$test = ' AND ('.dbConditionInt('r.permission', [0,1]).' OR r.permission is NULL or i.hostid is NULL)';
 			}
 
 			$sqlParts['where'][] = 'NOT EXISTS ('.
 				'SELECT NULL'.
-				' FROM functions f,items i,hosts_groups hgg'.
+				' FROM functions f,items i'.
+				' LEFT JOIN hosts_groups hgg ON i.hostid=hgg.hostid'.
 					' LEFT JOIN rights r'.
 						' ON r.id=hgg.groupid'.
 							' AND '.dbConditionInt('r.groupid', $userGroups).
 				' WHERE t.triggerid=f.triggerid '.
 					' AND f.itemid=i.itemid'.
-					' AND i.hostid=hgg.hostid'.
 					$test.
 			')';
 		}
