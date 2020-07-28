@@ -911,6 +911,7 @@ function getItemFormData(array $item = [], array $options = []) {
 		$data['item'] = $item;
 		$data['hostid'] = !empty($data['hostid']) ? $data['hostid'] : $data['item']['hostid'];
 		$data['limited'] = ($data['item']['templateid'] != 0);
+		$data['interfaceid'] = $item['interfaceid'];
 
 		// discovery rule
 		if ($data['is_discovery_rule']) {
@@ -1516,6 +1517,7 @@ function getTriggerMassupdateFormData() {
 		'visible' => getRequest('visible', []),
 		'dependencies' => getRequest('dependencies', []),
 		'tags' => getRequest('tags', []),
+		'mass_update_tags' => getRequest('mass_update_tags', ZBX_ACTION_ADD),
 		'manual_close' => getRequest('manual_close', ZBX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED),
 		'massupdate' => getRequest('massupdate', 1),
 		'parent_discoveryid' => getRequest('parent_discoveryid'),
