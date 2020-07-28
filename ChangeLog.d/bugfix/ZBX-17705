@@ -1,0 +1,1 @@
+..F....... [ZBX-17705] fixed incorrect order of solved problems notifications in case when user's message timeout exceeds OK triggers displaying interval (vmaksimovs)

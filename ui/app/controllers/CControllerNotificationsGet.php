@@ -99,18 +99,33 @@ class CControllerNotificationsGet extends CController {
 		$events = API::Problem()->get($options);
 
 		// Select latest status for already known events that are no longer available in problems table.
-		$resolved_events = $this->settings['show_recovered']
+		$resolved_events_ids = $this->settings['show_recovered']
 			? array_diff(array_keys($this->known_eventids), array_keys($events))
 			: [];
 
-		if ($resolved_events) {
-			$events += API::Event()->get([
+		if ($resolved_events_ids) {
+			$resolved_events = API::Event()->get([
 				'output' => ['eventid', 'r_eventid', 'clock', 'severity'],
-				'eventids' => $resolved_events,
+				'eventids' => $resolved_events_ids,
 				'sortfield' => 'clock',
 				'sortorder' => ZBX_SORT_DOWN,
 				'preservekeys' => true
 			]);
+
+			$r_clocks = API::Event()->get([
+				'output' => ['clock'],
+				'eventids' => array_column($resolved_events, 'r_eventid'),
+				'sortfield' => 'clock',
+				'sortorder' => ZBX_SORT_DOWN,
+				'preservekeys' => true
+			]);
+
+			foreach ($resolved_events as &$resolved_event) {
+				$resolved_event['r_clock'] = $r_clocks[$resolved_event['r_eventid']]['clock'];
+			}
+			unset($resolved_event);
+
+			$events += $resolved_events;
 		}
 
 		// Append selected events to notifications array.
@@ -133,7 +148,7 @@ class CControllerNotificationsGet extends CController {
 					 */
 				}
 				// Filter by problem start time, because that is not done by API if show_recovered is enabled.
-				elseif ($event['clock'] < $this->time_from && !in_array($eventid, $resolved_events)) {
+				elseif ($event['clock'] < $this->time_from && !in_array($eventid, $resolved_events_ids)) {
 					continue;
 				}
 			}
