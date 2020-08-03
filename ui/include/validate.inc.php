@@ -473,10 +473,6 @@ function validateTimeSelectorPeriod($from, $to) {
 	}
 }
 
-function validatePortNumberOrMacro($port) {
-	return (validatePortNumber($port) || validateUserMacro($port));
-}
-
 function validatePortNumber($port) {
 	return validateNumber($port, ZBX_MIN_PORT_NUMBER, ZBX_MAX_PORT_NUMBER);
 }
@@ -495,10 +491,6 @@ function validateNumber($value, $min = null, $max = null) {
 	}
 
 	return true;
-}
-
-function validateUserMacro($value) {
-	return ((new CUserMacroParser())->parse($value) == CParser::PARSE_SUCCESS);
 }
 
 /**

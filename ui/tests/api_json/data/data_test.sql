@@ -1395,3 +1395,9 @@ INSERT INTO functions (functionid, triggerid, itemid, name, parameter) VALUES (5
 INSERT INTO functions (functionid, triggerid, itemid, name, parameter) VALUES (50231, 50171, 50115, 'last', '');
 
 -- trigger permissions: END
+
+-- hostinterface
+INSERT INTO hosts (hostid, host, name, status, description) VALUES (72300, 'API Host to test hostinterfaces', 'API Host to test hostinterfaces', 0, '');
+INSERT INTO hstgrp (groupid, name, internal) VALUES (139003, 'API group for hostinterface tests', 0);
+INSERT INTO hosts_groups (hostgroupid, hostid, groupid) VALUES (139204, 72300, 139003);
+INSERT INTO interface (interfaceid, hostid, main, type, useip, ip, dns, port) values (99134, 72300, 1, 4, 1, '127.0.0.1', '', '12345');

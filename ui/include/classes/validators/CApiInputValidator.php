@@ -171,6 +171,9 @@ class CApiInputValidator {
 
 			case API_URL:
 				return self::validateUrl($rule, $data, $path, $error);
+
+			case API_PORT:
+				return self::validatePort($rule, $data, $path, $error);
 		}
 
 		// This message can be untranslated because warn about incorrect validation rules at a development stage.
@@ -219,6 +222,7 @@ class CApiInputValidator {
 			case API_HTTP_POST:
 			case API_VARIABLE_NAME:
 			case API_URL:
+			case API_PORT:
 				return true;
 
 			case API_OBJECT:
@@ -1795,6 +1799,56 @@ class CApiInputValidator {
 		if ($data !== '' && CHtmlUrlValidator::validate($data, $options) === false) {
 			$error = _s('Invalid parameter "%1$s": %2$s.', $path, _('unacceptable URL'));
 			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Port number validator.
+	 *
+	 * @param array  $rule
+	 * @param int    $rule['flags']  (optional) API_ALLOW_NULL, API_ALLOW_USER_MACRO, API_ALLOW_LLD_MACRO
+	 * @param mixed  $data
+	 * @param string $path
+	 * @param string $error
+	 *
+	 * @return bool
+	 */
+	private static function validatePort($rule, &$data, $path, &$error) {
+		$flags = array_key_exists('flags', $rule) ? $rule['flags'] : 0x00;
+
+		if (($flags & API_ALLOW_NULL) && $data === null) {
+			return true;
+		}
+
+		if (!is_int($data) && !is_string($data)) {
+			$data = (string) $data;
+		}
+
+		if (($flags & API_NOT_EMPTY) && $data === '') {
+			$error = _s('Invalid parameter "%1$s": %2$s.', $path, _('cannot be empty'));
+			return false;
+		}
+
+		if (($flags & (API_ALLOW_USER_MACRO | API_ALLOW_LLD_MACRO)) && $data[0] === '{') {
+			return true;
+		}
+
+		if (!self::validateInt32([], $data, $path, $error)) {
+			return false;
+		}
+
+		if ($data < ZBX_MIN_PORT_NUMBER || $data > ZBX_MAX_PORT_NUMBER) {
+			$error = _s(
+				'Incorrect value "%1$s" for "%2$s" field: must be between %3$s and %4$s.', $data, $path,
+				ZBX_MIN_PORT_NUMBER, ZBX_MAX_PORT_NUMBER
+			);
+			return false;
+		}
+
+		if (!is_int($data)) {
+			$data = (int) $data;
 		}
 
 		return true;

@@ -243,136 +243,167 @@ class CHostInterface extends CApiService {
 	 *
 	 * @param array  $interfaces
 	 * @param string $method
+	 *
+	 * @throws APIException
 	 */
-	public function checkInput(array &$interfaces, $method) {
-		$update = ($method == 'update');
+	protected function checkInput(array &$interfaces, string $method, string $obj_path = '/') {
+		$update = ($method === 'update');
 
-		// permissions
+		$api_input_rules = ['type' => API_OBJECT, 'flags' => API_NORMALIZE, 'fields' => [
+			'interfaceid' =>		['type' => API_ID, 'flags' => API_REQUIRED],
+			'dns' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
+			'hostid' => 			['type' => API_ID, 'flags' => $update ? API_ALLOW_NULL : API_REQUIRED],
+			'ip' => 				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
+			'main' => 				['type' => API_INT32, 'flags' => $update ? API_ALLOW_NULL : API_REQUIRED, 'in' => implode(',', [INTERFACE_SECONDARY, INTERFACE_PRIMARY])],
+			'port' =>				['type' => API_PORT, 'flags' => API_NOT_EMPTY | API_ALLOW_USER_MACRO | API_ALLOW_LLD_MACRO],
+			'type' =>				['type' => API_INT32, 'flags' => $update ? API_ALLOW_NULL : API_REQUIRED, 'in' => implode(',', [INTERFACE_TYPE_AGENT, INTERFACE_TYPE_SNMP, INTERFACE_TYPE_IPMI, INTERFACE_TYPE_JMX])],
+			'useip' => 				['type' => API_INT32, 'flags' => $update ? API_ALLOW_NULL : API_REQUIRED, 'in' => implode(',', [INTERFACE_USE_DNS, INTERFACE_USE_IP])],
+			'details' =>			['type' => API_OBJECT, 'flags' => API_ALLOW_NULL, 'fields' => [
+				'version' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_V1, SNMP_V2C, SNMP_V3]), 'default' => SNMP_V2C],
+				'bulk' =>				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_BULK_DISABLED, SNMP_BULK_ENABLED]), 'default' => SNMP_BULK_ENABLED],
+				'community' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
+				'securityname' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
+				'securitylevel' =>		['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV]), 'default' => ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV],
+				'authpassphrase' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
+				'privpassphrase' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
+				'authprotocol' =>		['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_AUTHPROTOCOL_MD5, ITEM_AUTHPROTOCOL_SHA]), 'default' => ITEM_AUTHPROTOCOL_MD5],
+				'privprotocol' =>		['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_PRIVPROTOCOL_DES, ITEM_PRIVPROTOCOL_AES]), 'default' => ITEM_PRIVPROTOCOL_DES],
+				'contextname' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => '']
+			]]
+		]];
+
 		if ($update) {
-			$interfaceDBfields = ['interfaceid' => null];
-			$dbInterfaces = $this->get([
-				'output' => API_OUTPUT_EXTEND,
-				'interfaceids' => zbx_objectValues($interfaces, 'interfaceid'),
-				'editable' => true,
-				'preservekeys' => true
-			]);
+			unset($api_input_rules['fields']['dns']['default'], $api_input_rules['fields']['ip']['default']);
 		}
 		else {
-			$interfaceDBfields = [
-				'hostid' => null,
-				'ip' => null,
-				'dns' => null,
-				'useip' => null,
-				'port' => null,
-				'main' => null
-			];
+			$api_input_rules['fields']['port']['flags'] |= API_REQUIRED;
+
+			unset($api_input_rules['fields']['interfaceid']);
 		}
 
-		$dbHosts = API::Host()->get([
+		foreach ($interfaces as $index => &$interface) {
+			if (!$update) {
+				unset($interface['interfaceid']);
+			}
+			unset($interface['items'], $interface['locked'], $interface['isNew']);
+
+			$path = _s($obj_path, $index);
+			if (!CApiInputValidator::validate($api_input_rules, $interface, $path, $error)) {
+				self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			}
+		}
+		unset($interface);
+
+		// permissions
+		$db_interfaces = $update
+			? $this->get([
+				'output' => API_OUTPUT_EXTEND,
+				'interfaceids' => array_column($interfaces, 'interfaceid'),
+				'editable' => true,
+				'preservekeys' => true
+			])
+			: [];
+
+		$db_hosts = API::Host()->get([
 			'output' => ['host'],
-			'hostids' => zbx_objectValues($interfaces, 'hostid'),
+			'hostids' => array_column($interfaces, 'hostid'),
 			'editable' => true,
 			'preservekeys' => true
 		]);
 
-		$dbProxies = API::Proxy()->get([
+		$db_proxies = API::Proxy()->get([
 			'output' => ['host'],
-			'proxyids' => zbx_objectValues($interfaces, 'hostid'),
+			'proxyids' => array_column($interfaces, 'hostid'),
 			'editable' => true,
 			'preservekeys' => true
 		]);
 
 		$check_have_items = [];
 		foreach ($interfaces as &$interface) {
-			if (!check_db_fields($interfaceDBfields, $interface)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
-			}
-
 			if ($update) {
-				if (!isset($dbInterfaces[$interface['interfaceid']])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+				if (!array_key_exists($interface['interfaceid'], $db_interfaces)) {
+					self::exception(ZBX_API_ERROR_PARAMETERS,
+						_('No permissions to referred object or it does not exist!')
+					);
 				}
 
-				$dbInterface = $dbInterfaces[$interface['interfaceid']];
-				if (isset($interface['hostid']) && bccomp($dbInterface['hostid'], $interface['hostid']) != 0) {
+				$db_interface = $db_interfaces[$interface['interfaceid']];
+
+				if (array_key_exists('hostid', $interface)
+						&& bccomp($db_interface['hostid'], $interface['hostid']) != 0) {
 					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Cannot switch host for interface.'));
 				}
 
-				if (array_key_exists('type', $interface) && $interface['type'] != $dbInterface['type']) {
+				$interface['hostid'] = $db_interface['hostid'];
+
+				if (array_key_exists('type', $interface) && $interface['type'] != $db_interface['type']) {
 					$check_have_items[] = $interface['interfaceid'];
 				}
 
-				$interface['hostid'] = $dbInterface['hostid'];
-
-				// we check all fields on "updated" interface
-				$updInterface = $interface;
-				$interface = zbx_array_merge($dbInterface, $interface);
+				// Check all fields on "updated" interface.
+				$upd_interface = $interface;
+				$interface = array_merge($db_interface, $interface);
 			}
 			else {
-				if (!isset($dbHosts[$interface['hostid']]) && !isset($dbProxies[$interface['hostid']])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+				if (!array_key_exists($interface['hostid'], $db_hosts)
+						&& !array_key_exists($interface['hostid'], $db_proxies)) {
+					self::exception(ZBX_API_ERROR_PARAMETERS,
+						_('No permissions to referred object or it does not exist!')
+					);
 				}
 
-				if (isset($dbProxies[$interface['hostid']])) {
+				if (array_key_exists($interface['hostid'], $db_proxies)) {
 					$interface['type'] = INTERFACE_TYPE_UNKNOWN;
-				}
-				elseif (!isset($interface['type'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 			}
 
-			if (zbx_empty($interface['ip']) && zbx_empty($interface['dns'])) {
+			if (array_key_exists('ip', $interface) && $interface['ip'] === ''
+					&& array_key_exists('dns', $interface) && $interface['dns'] === '') {
 				self::exception(ZBX_API_ERROR_PARAMETERS, _('IP and DNS cannot be empty for host interface.'));
 			}
 
-			if ($interface['useip'] == INTERFACE_USE_IP && zbx_empty($interface['ip'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Interface with DNS "%1$s" cannot have empty IP address.', $interface['dns']));
+			if ($interface['useip'] == INTERFACE_USE_IP && $interface['ip'] === '') {
+				self::exception(ZBX_API_ERROR_PARAMETERS,
+					_s('Interface with DNS "%1$s" cannot have empty IP address.', $interface['dns'])
+				);
 			}
 
-			if ($interface['useip'] == INTERFACE_USE_DNS && zbx_empty($interface['dns'])) {
-				if ($dbHosts && !empty($dbHosts[$interface['hostid']]['host'])) {
+			if ($interface['useip'] == INTERFACE_USE_DNS && $interface['dns'] === '') {
+				if ($db_hosts && !empty($db_hosts[$interface['hostid']]['host'])) {
 					self::exception(ZBX_API_ERROR_PARAMETERS,
 						_s('Interface with IP "%1$s" cannot have empty DNS name while having "Use DNS" property on "%2$s".',
 							$interface['ip'],
-							$dbHosts[$interface['hostid']]['host']
+							$db_hosts[$interface['hostid']]['host']
 					));
 				}
-				elseif ($dbProxies && !empty($dbProxies[$interface['hostid']]['host'])) {
+				elseif ($db_proxies && !empty($db_proxies[$interface['hostid']]['host'])) {
 					self::exception(ZBX_API_ERROR_PARAMETERS,
 						_s('Interface with IP "%1$s" cannot have empty DNS name while having "Use DNS" property on "%2$s".',
 							$interface['ip'],
-							$dbProxies[$interface['hostid']]['host']
+							$db_proxies[$interface['hostid']]['host']
 					));
 				}
 				else {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Interface with IP "%1$s" cannot have empty DNS name.', $interface['ip']));
+					self::exception(ZBX_API_ERROR_PARAMETERS,
+						_s('Interface with IP "%1$s" cannot have empty DNS name.', $interface['ip'])
+					);
 				}
 			}
 
-			if (isset($interface['dns'])) {
-				$this->checkDns($interface);
-			}
-			if (isset($interface['ip'])) {
-				$this->checkIp($interface);
-			}
-			if (isset($interface['port']) || $method == 'create') {
-				$this->checkPort($interface);
-			}
+			$this->checkDns($interface);
+			$this->checkIp($interface);
 
 			if ($update) {
-				$interface = $updInterface;
+				$interface = $upd_interface;
 			}
 		}
 		unset($interface);
 
-		// check if any of the affected hosts are discovered
-		if ($update) {
-			$interfaces = $this->extendObjects('interface', $interfaces, ['hostid']);
-
-			if ($check_have_items) {
-				$this->checkIfInterfaceHasItems($check_have_items);
-			}
+		if ($update && $check_have_items) {
+			$this->checkIfInterfaceHasItems($check_have_items);
 		}
+
+		// Check if any of the affected hosts are discovered.
 		$this->checkValidator(zbx_objectValues($interfaces, 'hostid'), new CHostNormalValidator([
 			'message' => _('Cannot update interface for discovered host "%1$s".')
 		]));
@@ -699,8 +730,6 @@ class CHostInterface extends CApiService {
 		if (isset($host['interfaces']) && !is_null($host['interfaces'])) {
 			$host['interfaces'] = zbx_toArray($host['interfaces']);
 
-			$this->checkHostInterfaces($host['interfaces'], $host['hostid']);
-
 			$interfaces_delete = DB::select('interface', [
 				'output' => [],
 				'filter' => ['hostid' => $host['hostid']],
@@ -723,7 +752,7 @@ class CHostInterface extends CApiService {
 			}
 
 			if ($interfaces_update) {
-				$this->checkInput($interfaces_update, 'update');
+				$this->checkInput($interfaces_update, 'update', '/interfaces/%1$d');
 
 				$this->updateInterfaces($interfaces_update);
 
@@ -731,7 +760,7 @@ class CHostInterface extends CApiService {
 			}
 
 			if ($interfaces_add) {
-				$this->checkInput($interfaces_add, 'create');
+				$this->checkInput($interfaces_add, 'create', '/interfaces/%1$d');
 				$interfaceids = DB::insert('interface', $interfaces_add);
 
 				$this->checkSnmpInput($interfaces_add);
@@ -814,24 +843,6 @@ class CHostInterface extends CApiService {
 	}
 
 	/**
-	 * Validates the "port" field.
-	 *
-	 * @throws APIException if the field is empty or invalid.
-	 *
-	 * @param array $interface
-	 */
-	protected function checkPort(array $interface) {
-		if (!isset($interface['port']) || zbx_empty($interface['port'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Port cannot be empty for host interface.'));
-		}
-		elseif (!validatePortNumberOrMacro($interface['port'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
-				_s('Incorrect interface port "%1$s" provided.', $interface['port'])
-			);
-		}
-	}
-
-	/**
 	 * Checks if the current user has access to the given hosts. Assumes the "hostid" field is valid.
 	 *
 	 * @throws APIException if the user doesn't have write permissions for the given hosts
@@ -854,34 +865,6 @@ class CHostInterface extends CApiService {
 				);
 			}
 		}
-	}
-
-	private function checkHostInterfaces(array $interfaces, $hostid) {
-		$interfacesWithMissingData = [];
-
-		foreach ($interfaces as $interface) {
-			if (!isset($interface['type'], $interface['main'])) {
-				$interfacesWithMissingData[] = $interface['interfaceid'];
-			}
-		}
-
-		if ($interfacesWithMissingData) {
-			$dbInterfaces = API::HostInterface()->get([
-				'interfaceids' => $interfacesWithMissingData,
-				'output' => ['main', 'type'],
-				'preservekeys' => true,
-				'nopermissions' => true
-			]);
-		}
-
-		foreach ($interfaces as $id => $interface) {
-			if (isset($interface['interfaceid']) && isset($dbInterfaces[$interface['interfaceid']])) {
-				$interfaces[$id] = array_merge($interface, $dbInterfaces[$interface['interfaceid']]);
-			}
-			$interfaces[$id]['hostid'] = $hostid;
-		}
-
-		$this->checkMainInterfaces($interfaces);
 	}
 
 	private function checkMainInterfacesOnCreate(array $interfaces) {
