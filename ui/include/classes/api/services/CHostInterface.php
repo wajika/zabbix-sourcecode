@@ -273,6 +273,16 @@ class CHostInterface extends CApiService {
 		foreach ($interfaces as $index => &$interface) {
 			unset($interface['items'], $interface['locked'], $interface['isNew']);
 
+			$interface = array_filter($interface, function ($v) {
+				return !is_null($v);
+			});
+
+			if (array_key_exists('details', $interface)) {
+				$interface['details'] = array_filter($interface['details'], function ($v) {
+					return !is_null($v);
+				});
+			}
+
 			$path = _s($obj_path, $index);
 			if (!CApiInputValidator::validate($api_input_rules, $interface, $path, $error)) {
 				self::exception(ZBX_API_ERROR_PARAMETERS, $error);
@@ -407,6 +417,16 @@ class CHostInterface extends CApiService {
 
 		foreach ($interfaces as $index => &$interface) {
 			unset($interface['items'], $interface['locked'], $interface['isNew']);
+
+			$interface = array_filter($interface, function ($v) {
+				return !is_null($v);
+			});
+
+			if (array_key_exists('details', $interface)) {
+				$interface['details'] = array_filter($interface['details'], function ($v) {
+					return !is_null($v);
+				});
+			}
 
 			$path = _s($obj_path, $index);
 			if (!CApiInputValidator::validate($api_input_rules, $interface, $path, $error)) {
