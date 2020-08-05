@@ -144,7 +144,7 @@
 
 						$dropdown_btn
 							.removeClass()
-							.addClass(['btn-alt', 'btn-dropdown-toggle', (macro_type == <?= ZBX_MACRO_TYPE_SECRET ?>)
+							.addClass(['btn-alt', 'btn-toggle-chevron', (macro_type == <?= ZBX_MACRO_TYPE_SECRET ?>)
 								? '<?= ZBX_STYLE_ICON_SECRET_TEXT ?>'
 								: '<?= ZBX_STYLE_ICON_TEXT ?>'
 							].join(' '));

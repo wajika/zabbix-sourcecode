@@ -1,7 +1,7 @@
 $menu-main-icons-opacity: .75 !default;
 
-$menu-main-arrow-bg-position: -606px -434px !default;
-$menu-main-arrow-hover-bg-position: -606px -434px !default;
+$menu-main-arrow-color: #FFFFFF !default;
+$menu-main-arrow-hover-color: #FFFFFF !default;
 
 $menu-main-icons: (
 		dashboard: -540px -664px,
@@ -107,12 +107,15 @@ $menu-main-icons: (
 				&::after {
 					content: '';
 					position: absolute;
-					top: 19px;
-					right: 14px;
-					width: 6px;
-					height: 4px;
-					background: url($sprite-path) no-repeat $menu-main-arrow-bg-position;
-					transform: rotate(0deg);
+					right: 15px;
+					top: calc(50% - 1px);
+					width: 3px;
+					height: 3px;
+					border-top: 1px solid $menu-main-arrow-color;
+					border-right: 1px solid $menu-main-arrow-color;
+					transform: rotate(135deg) translate(-1px,1px);
+					transition: transform .3s;
+
 					@if $menu-main-icons-opacity < 1 {
 						opacity: $menu-main-icons-opacity;
 					}
@@ -126,8 +129,6 @@ $menu-main-icons: (
 				&:hover,
 				&:focus {
 					&::after {
-						background-position: $menu-main-arrow-hover-bg-position;
-
 						@if $menu-main-icons-opacity < 1 {
 							opacity: 1;
 						}
@@ -138,8 +139,7 @@ $menu-main-icons: (
 			&.is-expanded {
 				& > a {
 					&::after {
-						background-position: $menu-main-arrow-hover-bg-position;
-						transform: rotate(-180deg);
+						transform: rotate(315deg) translate(-1px,1px);
 					}
 
 					@if $menu-main-icons-opacity < 1 {
