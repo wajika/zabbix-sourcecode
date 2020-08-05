@@ -253,7 +253,7 @@ class CHostInterface extends CApiService {
 			'hostid' => 			['type' => API_ID, 'flags' => API_ALLOW_NULL],
 			'ip' => 				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL],
 			'main' => 				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [INTERFACE_SECONDARY, INTERFACE_PRIMARY])],
-			'port' =>				['type' => API_PORT, 'flags' => API_NOT_EMPTY | API_ALLOW_USER_MACRO | API_ALLOW_LLD_MACRO],
+			'port' =>				['type' => API_PORT, 'flags' => API_NOT_EMPTY | API_ALLOW_USER_MACRO],
 			'type' =>				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [INTERFACE_TYPE_AGENT, INTERFACE_TYPE_SNMP, INTERFACE_TYPE_IPMI, INTERFACE_TYPE_JMX])],
 			'useip' => 				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [INTERFACE_USE_DNS, INTERFACE_USE_IP])],
 			'details' =>			['type' => API_OBJECT, 'flags' => API_ALLOW_NULL, 'fields' => [
@@ -388,7 +388,7 @@ class CHostInterface extends CApiService {
 			'hostid' => 			['type' => API_ID, 'flags' => API_REQUIRED],
 			'ip' => 				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
 			'main' => 				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [INTERFACE_SECONDARY, INTERFACE_PRIMARY])],
-			'port' =>				['type' => API_PORT, 'flags' => API_REQUIRED | API_NOT_EMPTY | API_ALLOW_USER_MACRO | API_ALLOW_LLD_MACRO],
+			'port' =>				['type' => API_PORT, 'flags' => API_REQUIRED | API_NOT_EMPTY | API_ALLOW_USER_MACRO],
 			'type' =>				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [INTERFACE_TYPE_AGENT, INTERFACE_TYPE_SNMP, INTERFACE_TYPE_IPMI, INTERFACE_TYPE_JMX, INTERFACE_TYPE_UNKNOWN])],
 			'useip' => 				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [INTERFACE_USE_DNS, INTERFACE_USE_IP])],
 			'details' =>			['type' => API_OBJECT, 'flags' => API_ALLOW_NULL, 'fields' => [

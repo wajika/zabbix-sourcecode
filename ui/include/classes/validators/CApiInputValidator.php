@@ -1808,7 +1808,7 @@ class CApiInputValidator {
 	 * Port number validator.
 	 *
 	 * @param array  $rule
-	 * @param int    $rule['flags']  (optional) API_ALLOW_NULL, API_ALLOW_USER_MACRO, API_ALLOW_LLD_MACRO
+	 * @param int    $rule['flags']  (optional) API_ALLOW_NULL, API_NOT_EMPTY, API_ALLOW_USER_MACRO
 	 * @param mixed  $data
 	 * @param string $path
 	 * @param string $error
@@ -1831,8 +1831,12 @@ class CApiInputValidator {
 			return false;
 		}
 
-		if (($flags & (API_ALLOW_USER_MACRO | API_ALLOW_LLD_MACRO)) && $data[0] === '{') {
-			return true;
+		if ($flags & API_ALLOW_USER_MACRO) {
+			$user_macro_parser = new CUserMacroParser();
+
+			if ($user_macro_parser->parse($data) == CParser::PARSE_SUCCESS) {
+				return true;
+			}
 		}
 
 		if (!self::validateInt32([], $data, $path, $error)) {
