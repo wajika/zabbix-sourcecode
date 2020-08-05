@@ -1823,8 +1823,11 @@ class CApiInputValidator {
 		}
 
 		if (!is_int($data) && !is_string($data)) {
-			$data = (string) $data;
+			$error = _s('Invalid parameter "%1$s": %2$s.', $path, _('a number is expected'));
+			return false;
 		}
+
+		$data = (string) $data;
 
 		if (($flags & API_NOT_EMPTY) && $data === '') {
 			$error = _s('Invalid parameter "%1$s": %2$s.', $path, _('cannot be empty'));
