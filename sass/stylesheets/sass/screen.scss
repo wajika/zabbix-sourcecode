@@ -6972,7 +6972,7 @@ table.preprocessing-test-results {
 			}
 		}
 
-		&.btn-dropdown-toggle {
+		&.btn-toggle-chevron {
 			border-color: $form-border-focus-color;
 			border-top-left-radius: 0;
 			border-bottom-left-radius: 0;
@@ -7098,6 +7098,27 @@ table.preprocessing-test-results {
 		transition: transform .3s;
 	}
 
+	&[class*='icon-'] {
+		padding-left: 22px;
+
+		&::before {
+			position: absolute;
+			top: 0;
+			left: 0;
+			display: block;
+			width: 22px;
+			height: 22px;
+			content: '';
+		}
+
+		&::after {
+			right: 5px;
+			top: calc(50% - 1px);
+			width: 3px;
+			height: 3px;
+		}
+	}
+
 	&[disabled] {
 		&::after {
 			border-top-color: $btn-disabled-font-color;
@@ -7120,67 +7141,6 @@ table.preprocessing-test-results {
 			&::after {
 				border-top-color:  $btn-font-color;
 				border-right-color: $btn-font-color;
-			}
-		}
-	}
-}
-
-.btn-dropdown-toggle {
-	white-space: nowrap;
-	overflow: hidden;
-	text-indent: -200px;
-
-	&[class*='icon-'] {
-		padding-left: 22px;
-
-		&::before {
-			position: absolute;
-			top: 0;
-			left: 0;
-			display: block;
-			width: 22px;
-			height: 22px;
-			content: '';
-		}
-
-		&::after {
-			top: 6px;
-			right: 2px;
-		}
-	}
-
-	&::after {
-		position: absolute;
-		top: 7px;
-		right: 6px;
-		width: 10px;
-		height: 10px;
-		content: '';
-		background: url($sprite-path) no-repeat -547px -431px;
-	}
-
-	&:enabled {
-		&:hover,
-		&:focus,
-		&:active {
-			&::after {
-				background-position: -604px -431px;
-			}
-		}
-	}
-
-	&[aria-expanded="true"] {
-		@include btn-hover-active($btn-font-color, $btn-bg-color);
-
-		&::after {
-			background: url($sprite-path) no-repeat -604px -503px;
-		}
-
-		&:hover,
-		&:focus,
-		&:active {
-			&::after {
-				background: url($sprite-path) no-repeat -604px -503px;
 			}
 		}
 	}

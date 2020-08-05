@@ -53,7 +53,7 @@ class CButtonDropdown extends CButton {
 
 		$this->setId(uniqid('btn-dropdown-'));
 		$this->addClass(ZBX_STYLE_BTN_ALT);
-		$this->addClass(ZBX_STYLE_BTN_TOGGLE);
+		$this->addClass(ZBX_STYLE_BTN_TOGGLE_CHEVRON);
 		$this->dropdown_items = $items;
 
 		if ($value !== null) {
@@ -75,7 +75,7 @@ class CButtonDropdown extends CButton {
 					'type' => 'dropdown',
 					'data' => [
 						'items' => $this->dropdown_items,
-						'toggle_class' => ZBX_STYLE_BTN_TOGGLE
+						'toggle_class' => ZBX_STYLE_BTN_TOGGLE_CHEVRON
 					]
 				]))
 			->addItem((new CInput('hidden', $name, $this->getAttribute('value')))

@@ -61,6 +61,8 @@ $menu-main-submenu-selected-color: #000000;
 $menu-main-submenu-selected-bg-color: #f3f3f3;
 $menu-main-submenu-selected-border-color: #949494;
 
+$menu-main-arrow-hover-color: #000000;
+
 $menu-main-icons-opacity: 1;
 
 $menu-user-color: #cedae1;
@@ -235,7 +237,8 @@ $multiselect-selected-bg-color: #777777;
 			}
 
 			&::after {
-				background-position-x: -579px;
+				border-top-color: $menu-main-arrow-hover-color;
+				border-right-color: $menu-main-arrow-hover-color;
 			}
 		}
 	}
