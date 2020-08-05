@@ -229,6 +229,7 @@ class CProxy extends CApiService {
 			// create interface
 			if ($proxy['status'] == HOST_STATUS_PROXY_PASSIVE) {
 				$proxy['interface']['hostid'] = $proxyids[$key];
+				$proxy['interface']['type'] = INTERFACE_TYPE_UNKNOWN;
 
 				if (!API::HostInterface()->create($proxy['interface'])) {
 					self::exception(ZBX_API_ERROR_INTERNAL, _('Proxy interface creation failed.'));
@@ -360,7 +361,7 @@ class CProxy extends CApiService {
 
 				$result = isset($proxy['interface']['interfaceid'])
 					? API::HostInterface()->update($proxy['interface'])
-					: API::HostInterface()->create($proxy['interface']);
+					: API::HostInterface()->create($proxy['interface'] + ['type' => INTERFACE_TYPE_UNKNOWN]);
 
 				if (!$result) {
 					self::exception(ZBX_API_ERROR_INTERNAL, _('Proxy interface update failed.'));
