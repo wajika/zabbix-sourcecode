@@ -249,9 +249,9 @@ class CHostInterface extends CApiService {
 	protected function checkInputOnUpdate(array &$interfaces, string $obj_path = '/') {
 		$api_input_rules = ['type' => API_OBJECT, 'flags' => API_NORMALIZE, 'fields' => [
 			'interfaceid' =>		['type' => API_ID, 'flags' => API_REQUIRED],
-			'dns' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL],
+			'dns' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => 255],
 			'hostid' => 			['type' => API_ID, 'flags' => API_ALLOW_NULL],
-			'ip' => 				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL],
+			'ip' => 				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => 64],
 			'main' => 				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [INTERFACE_SECONDARY, INTERFACE_PRIMARY])],
 			'port' =>				['type' => API_PORT, 'flags' => API_NOT_EMPTY | API_ALLOW_USER_MACRO],
 			'type' =>				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [INTERFACE_TYPE_AGENT, INTERFACE_TYPE_SNMP, INTERFACE_TYPE_IPMI, INTERFACE_TYPE_JMX])],
@@ -259,14 +259,14 @@ class CHostInterface extends CApiService {
 			'details' =>			['type' => API_OBJECT, 'flags' => API_ALLOW_NULL, 'fields' => [
 				'version' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_V1, SNMP_V2C, SNMP_V3]), 'default' => SNMP_V2C],
 				'bulk' =>				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_BULK_DISABLED, SNMP_BULK_ENABLED]), 'default' => SNMP_BULK_ENABLED],
-				'community' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
-				'securityname' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
+				'community' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => 64, 'default' => ''],
+				'securityname' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => 64, 'default' => ''],
 				'securitylevel' =>		['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV]), 'default' => ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV],
-				'authpassphrase' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
-				'privpassphrase' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
+				'authpassphrase' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => 64, 'default' => ''],
+				'privpassphrase' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => 64, 'default' => ''],
 				'authprotocol' =>		['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_AUTHPROTOCOL_MD5, ITEM_AUTHPROTOCOL_SHA]), 'default' => ITEM_AUTHPROTOCOL_MD5],
 				'privprotocol' =>		['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_PRIVPROTOCOL_DES, ITEM_PRIVPROTOCOL_AES]), 'default' => ITEM_PRIVPROTOCOL_DES],
-				'contextname' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => '']
+				'contextname' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => 255, 'default' => '']
 			]]
 		]];
 
@@ -394,9 +394,9 @@ class CHostInterface extends CApiService {
 	 */
 	protected function checkInputOnCreate(array &$interfaces, string $obj_path = '/') {
 		$api_input_rules = ['type' => API_OBJECT, 'flags' => API_NORMALIZE, 'fields' => [
-			'dns' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
+			'dns' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => 255, 'default' => ''],
 			'hostid' => 			['type' => API_ID, 'flags' => API_REQUIRED],
-			'ip' => 				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
+			'ip' => 				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => 64, 'default' => ''],
 			'main' => 				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [INTERFACE_SECONDARY, INTERFACE_PRIMARY])],
 			'port' =>				['type' => API_PORT, 'flags' => API_REQUIRED | API_NOT_EMPTY | API_ALLOW_USER_MACRO],
 			'type' =>				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [INTERFACE_TYPE_AGENT, INTERFACE_TYPE_SNMP, INTERFACE_TYPE_IPMI, INTERFACE_TYPE_JMX, INTERFACE_TYPE_UNKNOWN])],
@@ -404,14 +404,14 @@ class CHostInterface extends CApiService {
 			'details' =>			['type' => API_OBJECT, 'flags' => API_ALLOW_NULL, 'fields' => [
 				'version' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_V1, SNMP_V2C, SNMP_V3]), 'default' => SNMP_V2C],
 				'bulk' =>				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_BULK_DISABLED, SNMP_BULK_ENABLED]), 'default' => SNMP_BULK_ENABLED],
-				'community' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
-				'securityname' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
+				'community' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => 64, 'default' => ''],
+				'securityname' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => 64, 'default' => ''],
 				'securitylevel' =>		['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV]), 'default' => ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV],
-				'authpassphrase' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
-				'privpassphrase' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => ''],
+				'authpassphrase' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => 64, 'default' => ''],
+				'privpassphrase' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => 64, 'default' => ''],
 				'authprotocol' =>		['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_AUTHPROTOCOL_MD5, ITEM_AUTHPROTOCOL_SHA]), 'default' => ITEM_AUTHPROTOCOL_MD5],
 				'privprotocol' =>		['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_PRIVPROTOCOL_DES, ITEM_PRIVPROTOCOL_AES]), 'default' => ITEM_PRIVPROTOCOL_DES],
-				'contextname' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'default' => '']
+				'contextname' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => 255, 'default' => '']
 			]]
 		]];
 
