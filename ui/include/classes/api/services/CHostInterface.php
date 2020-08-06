@@ -270,6 +270,12 @@ class CHostInterface extends CApiService {
 			]]
 		]];
 
+		if (!$interfaces) {
+			self::exception(ZBX_API_ERROR_PARAMETERS,
+				_s('Invalid parameter "%1$s": %2$s.', $obj_path, _('cannot be empty'))
+			);
+		}
+
 		foreach ($interfaces as $index => &$interface) {
 			unset($interface['items'], $interface['locked'], $interface['isNew']);
 
@@ -414,6 +420,12 @@ class CHostInterface extends CApiService {
 				'contextname' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => 255, 'default' => '']
 			]]
 		]];
+
+		if (!$interfaces) {
+			self::exception(ZBX_API_ERROR_PARAMETERS,
+				_s('Invalid parameter "%1$s": %2$s.', $obj_path, _('cannot be empty'))
+			);
+		}
 
 		foreach ($interfaces as $index => &$interface) {
 			unset($interface['items'], $interface['locked'], $interface['isNew']);
