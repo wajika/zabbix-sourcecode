@@ -915,14 +915,16 @@ class CHost extends CHostGeneral {
 	 */
 	public function massAdd(array $data) {
 		$hosts = isset($data['hosts']) ? zbx_toArray($data['hosts']) : [];
-		$hostIds = zbx_objectValues($hosts, 'hostid');
+		$hostids = zbx_objectValues($hosts, 'hostid');
 
-		$this->checkPermissions($hostIds, _('You do not have permission to perform this operation.'));
+		$this->checkPermissions($hostids, _('You do not have permission to perform this operation.'));
 
 		// add new interfaces
 		if (!empty($data['interfaces'])) {
 			API::HostInterface()->massAdd([
-				'hosts' => $data['hosts'],
+				'hosts' => array_map(function($hostid): array {
+					return ['hostid' => $hostid];
+				}, $hostids),
 				'interfaces' => zbx_toArray($data['interfaces'])
 			]);
 		}

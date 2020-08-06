@@ -246,7 +246,7 @@ class CHostInterface extends CApiService {
 	 *
 	 * @throws APIException
 	 */
-	protected function checkInputOnUpdate(array &$interfaces, string $obj_path = '/') {
+	protected function validateUpdate(array &$interfaces, string $obj_path = '/') {
 		$api_input_rules = ['type' => API_OBJECT, 'flags' => API_NORMALIZE, 'fields' => [
 			'interfaceid' =>		['type' => API_ID, 'flags' => API_REQUIRED],
 			'dns' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface', 'dns')],
@@ -256,17 +256,19 @@ class CHostInterface extends CApiService {
 			'port' =>				['type' => API_PORT, 'flags' => API_NOT_EMPTY | API_ALLOW_USER_MACRO],
 			'type' =>				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [INTERFACE_TYPE_AGENT, INTERFACE_TYPE_SNMP, INTERFACE_TYPE_IPMI, INTERFACE_TYPE_JMX])],
 			'useip' => 				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [INTERFACE_USE_DNS, INTERFACE_USE_IP])],
-			'details' =>			['type' => API_OBJECT, 'flags' => API_ALLOW_NULL, 'fields' => [
-				'version' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_V1, SNMP_V2C, SNMP_V3]), 'default' => DB::getDefault('interface_snmp', 'version')],
-				'bulk' =>				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_BULK_DISABLED, SNMP_BULK_ENABLED]), 'default' => DB::getDefault('interface_snmp', 'bulk')],
-				'community' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'community'), 'default' => DB::getDefault('interface_snmp', 'community')],
-				'securityname' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'securityname'), 'default' => DB::getDefault('interface_snmp', 'securityname')],
-				'securitylevel' =>		['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV]), 'default' => DB::getDefault('interface_snmp', 'securitylevel')],
-				'authpassphrase' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'authpassphrase'), 'default' => DB::getDefault('interface_snmp', 'authpassphrase')],
-				'privpassphrase' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'privpassphrase'), 'default' => DB::getDefault('interface_snmp', 'privpassphrase')],
-				'authprotocol' =>		['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_AUTHPROTOCOL_MD5, ITEM_AUTHPROTOCOL_SHA]), 'default' => DB::getDefault('interface_snmp', 'authprotocol')],
-				'privprotocol' =>		['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_PRIVPROTOCOL_DES, ITEM_PRIVPROTOCOL_AES]), 'default' => DB::getDefault('interface_snmp', 'privprotocol')],
-				'contextname' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'contextname'), 'default' => DB::getDefault('interface_snmp', 'contextname')]
+			'details' =>			['type' => API_MULTIPLE, 'rules' => [
+										['if' => ['field' => 'type', 'in' => implode(',', [INTERFACE_TYPE_SNMP])], 'type' => API_OBJECT, 'flags' => API_REQUIRED, 'fields' => [
+				'version' =>				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_V1, SNMP_V2C, SNMP_V3]), 'default' => DB::getDefault('interface_snmp', 'version')],
+				'bulk' =>					['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_BULK_DISABLED, SNMP_BULK_ENABLED]), 'default' => DB::getDefault('interface_snmp', 'bulk')],
+				'community' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'community'), 'default' => DB::getDefault('interface_snmp', 'community')],
+				'securityname' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'securityname'), 'default' => DB::getDefault('interface_snmp', 'securityname')],
+				'securitylevel' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV]), 'default' => DB::getDefault('interface_snmp', 'securitylevel')],
+				'authpassphrase' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'authpassphrase'), 'default' => DB::getDefault('interface_snmp', 'authpassphrase')],
+				'privpassphrase' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'privpassphrase'), 'default' => DB::getDefault('interface_snmp', 'privpassphrase')],
+				'authprotocol' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_AUTHPROTOCOL_MD5, ITEM_AUTHPROTOCOL_SHA]), 'default' => DB::getDefault('interface_snmp', 'authprotocol')],
+				'privprotocol' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_PRIVPROTOCOL_DES, ITEM_PRIVPROTOCOL_AES]), 'default' => DB::getDefault('interface_snmp', 'privprotocol')],
+				'contextname' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'contextname'), 'default' => DB::getDefault('interface_snmp', 'contextname')]
+										]]
 			]]
 		]];
 
@@ -390,6 +392,36 @@ class CHostInterface extends CApiService {
 		]));
 	}
 
+	protected static function getInputValidatorOnCreateRules(): array {
+		return ['type' => API_OBJECT, 'flags' => API_NORMALIZE, 'fields' => [
+			'dns' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface', 'dns'), 'default' => DB::getDefault('interface', 'dns')],
+			'ip' => 				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface', 'ip'), 'default' => DB::getDefault('interface', 'ip')],
+			'main' => 				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [INTERFACE_SECONDARY, INTERFACE_PRIMARY])],
+			'port' =>				['type' => API_PORT, 'flags' => API_REQUIRED | API_NOT_EMPTY | API_ALLOW_USER_MACRO],
+			'type' =>				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [INTERFACE_TYPE_UNKNOWN, INTERFACE_TYPE_AGENT, INTERFACE_TYPE_SNMP, INTERFACE_TYPE_IPMI, INTERFACE_TYPE_JMX])],
+			'useip' => 				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [INTERFACE_USE_DNS, INTERFACE_USE_IP])],
+			'details' =>			['type' => API_MULTIPLE, 'rules' => [
+										['if' => ['field' => 'type', 'in' => implode(',', [INTERFACE_TYPE_SNMP])], 'type' => API_OBJECT, 'flags' => API_REQUIRED, 'fields' => [
+				'version' =>				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_V1, SNMP_V2C, SNMP_V3]), 'default' => DB::getDefault('interface_snmp', 'version')],
+				'bulk' =>					['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_BULK_DISABLED, SNMP_BULK_ENABLED]), 'default' => DB::getDefault('interface_snmp', 'bulk')],
+				'community' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'community'), 'default' => DB::getDefault('interface_snmp', 'community')],
+				'securityname' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'securityname'), 'default' => DB::getDefault('interface_snmp', 'securityname')],
+				'securitylevel' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV]), 'default' => DB::getDefault('interface_snmp', 'securitylevel')],
+				'authpassphrase' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'authpassphrase'), 'default' => DB::getDefault('interface_snmp', 'authpassphrase')],
+				'privpassphrase' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'privpassphrase'), 'default' => DB::getDefault('interface_snmp', 'privpassphrase')],
+				'authprotocol' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_AUTHPROTOCOL_MD5, ITEM_AUTHPROTOCOL_SHA]), 'default' => DB::getDefault('interface_snmp', 'authprotocol')],
+				'privprotocol' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_PRIVPROTOCOL_DES, ITEM_PRIVPROTOCOL_AES]), 'default' => DB::getDefault('interface_snmp', 'privprotocol')],
+				'contextname' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'contextname'), 'default' => DB::getDefault('interface_snmp', 'contextname')]
+										]]
+			]],
+
+			// Common interface values not used by API.
+			'items' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL],
+			'locked' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL],
+			'isNew' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL]
+		]];
+	}
+
 	/**
 	 * Check input before create interfaces.
 	 *
@@ -398,28 +430,11 @@ class CHostInterface extends CApiService {
 	 *
 	 * @throws APIException
 	 */
-	protected function checkInputOnCreate(array &$interfaces, string $obj_path = '/') {
-		$api_input_rules = ['type' => API_OBJECT, 'flags' => API_NORMALIZE, 'fields' => [
-			'dns' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface', 'dns'), 'default' => DB::getDefault('interface', 'dns')],
-			'hostid' => 			['type' => API_ID, 'flags' => API_REQUIRED],
-			'ip' => 				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface', 'ip'), 'default' => DB::getDefault('interface', 'ip')],
-			'main' => 				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [INTERFACE_SECONDARY, INTERFACE_PRIMARY])],
-			'port' =>				['type' => API_PORT, 'flags' => API_REQUIRED | API_NOT_EMPTY | API_ALLOW_USER_MACRO],
-			'type' =>				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [INTERFACE_TYPE_AGENT, INTERFACE_TYPE_SNMP, INTERFACE_TYPE_IPMI, INTERFACE_TYPE_JMX, INTERFACE_TYPE_UNKNOWN])],
-			'useip' => 				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [INTERFACE_USE_DNS, INTERFACE_USE_IP])],
-			'details' =>			['type' => API_OBJECT, 'flags' => API_ALLOW_NULL, 'fields' => [
-				'version' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_V1, SNMP_V2C, SNMP_V3]), 'default' => DB::getDefault('interface_snmp', 'version')],
-				'bulk' =>				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_BULK_DISABLED, SNMP_BULK_ENABLED]), 'default' => DB::getDefault('interface_snmp', 'bulk')],
-				'community' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'community'), 'default' => DB::getDefault('interface_snmp', 'community')],
-				'securityname' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'securityname'), 'default' => DB::getDefault('interface_snmp', 'securityname')],
-				'securitylevel' =>		['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV]), 'default' => DB::getDefault('interface_snmp', 'securitylevel')],
-				'authpassphrase' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'authpassphrase'), 'default' => DB::getDefault('interface_snmp', 'authpassphrase')],
-				'privpassphrase' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'privpassphrase'), 'default' => DB::getDefault('interface_snmp', 'privpassphrase')],
-				'authprotocol' =>		['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_AUTHPROTOCOL_MD5, ITEM_AUTHPROTOCOL_SHA]), 'default' => DB::getDefault('interface_snmp', 'authprotocol')],
-				'privprotocol' =>		['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_PRIVPROTOCOL_DES, ITEM_PRIVPROTOCOL_AES]), 'default' => DB::getDefault('interface_snmp', 'privprotocol')],
-				'contextname' =>		['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'contextname'), 'default' => DB::getDefault('interface_snmp', 'contextname')]
-			]]
-		]];
+	protected function validateCreate(array &$interfaces, string $obj_path = '/') {
+		$api_input_rules = self::getInputValidatorOnCreateRules();
+		$api_input_rules['fields'] += [
+			'hostid' => ['type' => API_ID, 'flags' => API_REQUIRED]
+		];
 
 		if (!$interfaces) {
 			self::exception(ZBX_API_ERROR_PARAMETERS,
@@ -428,8 +443,6 @@ class CHostInterface extends CApiService {
 		}
 
 		foreach ($interfaces as $index => &$interface) {
-			unset($interface['items'], $interface['locked'], $interface['isNew']);
-
 			$interface = array_filter($interface, function ($v) {
 				return !is_null($v);
 			});
@@ -618,13 +631,23 @@ class CHostInterface extends CApiService {
 	 *
 	 * @return array
 	 */
-	public function create(array $interfaces) {
+	public function create(array $interfaces): array {
 		$interfaces = zbx_toArray($interfaces);
 
-		$this->checkInputOnCreate($interfaces);
+		$this->validateCreate($interfaces);
 		$this->checkMainInterfacesOnCreate($interfaces);
 
+		$interfaceids = $this->createReal($interfaces);
+
+		return ['interfaceids' => $interfaceids];
+	}
+
+	protected function createReal(array $interfaces): array {
 		$interfaceids = DB::insert('interface', $interfaces);
+
+		if (!is_array($interfaceids)) {
+			return [];
+		}
 
 		$snmp_interfaces = [];
 		foreach ($interfaceids as $key => $id) {
@@ -635,10 +658,10 @@ class CHostInterface extends CApiService {
 
 		$this->createSnmpInterfaceDetails($snmp_interfaces);
 
-		return ['interfaceids' => $interfaceids];
+		return $interfaceids;
 	}
 
-	protected function updateInterfaces(array $interfaces): bool {
+	protected function updateReal(array $interfaces): bool {
 		$data = [];
 
 		foreach ($interfaces as $interface) {
@@ -649,6 +672,8 @@ class CHostInterface extends CApiService {
 		}
 
 		DB::update('interface', $data);
+
+		$this->updateInterfaceDetails($interfaces);
 
 		return true;
 	}
@@ -700,12 +725,10 @@ class CHostInterface extends CApiService {
 	public function update(array $interfaces) {
 		$interfaces = zbx_toArray($interfaces);
 
-		$this->checkInputOnUpdate($interfaces);
+		$this->validateUpdate($interfaces);
 		$this->checkMainInterfacesOnUpdate($interfaces);
 
-		$this->updateInterfaces($interfaces);
-
-		$this->updateInterfaceDetails($interfaces);
+		$this->updateReal($interfaces);
 
 		return ['interfaceids' => array_column($interfaces, 'interfaceid')];
 	}
@@ -744,23 +767,39 @@ class CHostInterface extends CApiService {
 		return ['interfaceids' => $interfaceids];
 	}
 
-	public function massAdd(array $data) {
-		$interfaces = zbx_toArray($data['interfaces']);
-		$hosts = zbx_toArray($data['hosts']);
+	/**
+	 * Process 'hostprototype.massadd' API request.
+	 *
+	 * @param array $data
+	 * @param array $data['hosts']         list of hosts on which interfaces will be created.
+	 * @param array $data['interfaces']    list of interfaces to create.
+	 *
+	 * @return array
+	 */
+	public function massAdd(array $data): array {
+		$api_input_rules = ['type' => API_OBJECT, 'flags' => API_NORMALIZE, 'fields' => [
+			'hosts' =>			['type' => API_OBJECTS, 'flags' => API_REQUIRED | API_NOT_EMPTY | API_NORMALIZE, 'fields' => [
+				'hostid' =>			['type' => API_ID, 'flags' => API_REQUIRED]
+			]],
+			'interfaces' =>			['type' => API_OBJECTS, 'flags' => API_REQUIRED | API_NORMALIZE] + self::getInputValidatorOnCreateRules()
+		]];
 
-		$insertData = [];
-		foreach ($interfaces as $interface) {
-			foreach ($hosts as $host) {
-				$newInterface = $interface;
-				$newInterface['hostid'] = $host['hostid'];
-
-				$insertData[] = $newInterface;
-			}
+		if (!CApiInputValidator::validate($api_input_rules, $data, '/', $error)) {
+			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
 		}
 
-		$interfaceIds = $this->create($insertData);
+		foreach ($data['interfaces'] as &$interface) {
+			unset($interface['items'], $interface['locked'], $interface['isNew']);
 
-		return ['interfaceids' => $interfaceIds];
+			foreach ($data['hosts'] as $host) {
+				$interface['hostid'] = $host['hostid'];
+			}
+		}
+		unset($interface);
+
+		$interfaceids = $this->createReal($data['interfaces']);
+
+		return ['interfaceids' => $interfaceids];
 	}
 
 	protected function validateMassRemove(array $data) {
@@ -869,25 +908,15 @@ class CHostInterface extends CApiService {
 			}
 
 			if ($interfaces_update) {
-				$this->checkInputOnUpdate($interfaces_update, '/interfaces/%1$d');
+				$this->validateUpdate($interfaces_update, '/interfaces/%1$d');
 
-				$this->updateInterfaces($interfaces_update);
-
-				$this->updateInterfaceDetails($interfaces_update);
+				$this->updateReal($interfaces_update);
 			}
 
 			if ($interfaces_add) {
-				$this->checkInputOnCreate($interfaces_add, '/interfaces/%1$d');
-				$interfaceids = DB::insert('interface', $interfaces_add);
+				$this->validateCreate($interfaces_add, '/interfaces/%1$d');
 
-				$snmp_interfaces = [];
-				foreach ($interfaceids as $key => $id) {
-					if ($interfaces_add[$key]['type'] == INTERFACE_TYPE_SNMP) {
-						$snmp_interfaces[] = ['interfaceid' => $id] + $interfaces_add[$key]['details'];
-					}
-				}
-
-				$this->createSnmpInterfaceDetails($snmp_interfaces);
+				$interfaceids = $this->createReal($interfaces_add);
 
 				foreach ($host['interfaces'] as &$interface) {
 					if (!array_key_exists('interfaceid', $interface)) {
