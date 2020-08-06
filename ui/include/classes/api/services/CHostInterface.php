@@ -400,9 +400,9 @@ class CHostInterface extends CApiService {
 	 */
 	protected function checkInputOnCreate(array &$interfaces, string $obj_path = '/') {
 		$api_input_rules = ['type' => API_OBJECT, 'flags' => API_NORMALIZE, 'fields' => [
-			'dns' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface', 'dns'), 'default' => DB::getDefault('widget_field', 'dns')],
+			'dns' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface', 'dns'), 'default' => DB::getDefault('interface', 'dns')],
 			'hostid' => 			['type' => API_ID, 'flags' => API_REQUIRED],
-			'ip' => 				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface', 'ip'), 'default' => DB::getDefault('widget_field', 'ip')],
+			'ip' => 				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface', 'ip'), 'default' => DB::getDefault('interface', 'ip')],
 			'main' => 				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [INTERFACE_SECONDARY, INTERFACE_PRIMARY])],
 			'port' =>				['type' => API_PORT, 'flags' => API_REQUIRED | API_NOT_EMPTY | API_ALLOW_USER_MACRO],
 			'type' =>				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [INTERFACE_TYPE_AGENT, INTERFACE_TYPE_SNMP, INTERFACE_TYPE_IPMI, INTERFACE_TYPE_JMX, INTERFACE_TYPE_UNKNOWN])],
