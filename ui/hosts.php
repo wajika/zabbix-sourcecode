@@ -766,8 +766,11 @@ elseif (hasRequest('add') || hasRequest('update')) {
 					unset($interfaces[$key]['interfaceid']);
 				}
 
-				unset($interfaces[$key]['isNew']);
 				$interfaces[$key]['main'] = 0;
+
+				unset($interfaces[$key]['isNew']);
+				unset($interfaces[$key]['items']);
+				unset($interfaces[$key]['locked']);
 			}
 
 			$mainInterfaces = getRequest('mainInterfaces', []);

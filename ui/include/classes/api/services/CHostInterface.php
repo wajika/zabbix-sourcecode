@@ -279,8 +279,6 @@ class CHostInterface extends CApiService {
 		}
 
 		foreach ($interfaces as $index => &$interface) {
-			unset($interface['items'], $interface['locked'], $interface['isNew']);
-
 			$interface = array_filter($interface, function ($v) {
 				return ($v !== null);
 			});
@@ -413,12 +411,7 @@ class CHostInterface extends CApiService {
 				'privprotocol' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_PRIVPROTOCOL_DES, ITEM_PRIVPROTOCOL_AES]), 'default' => DB::getDefault('interface_snmp', 'privprotocol')],
 				'contextname' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'contextname'), 'default' => DB::getDefault('interface_snmp', 'contextname')]
 										]]
-			]],
-
-			// Common interface values not used by API.
-			'items' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL],
-			'locked' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL],
-			'isNew' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL]
+			]]
 		]];
 	}
 
@@ -789,8 +782,6 @@ class CHostInterface extends CApiService {
 		}
 
 		foreach ($data['interfaces'] as &$interface) {
-			unset($interface['items'], $interface['locked'], $interface['isNew']);
-
 			foreach ($data['hosts'] as $host) {
 				$interface['hostid'] = $host['hostid'];
 			}
