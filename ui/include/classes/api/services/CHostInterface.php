@@ -282,12 +282,12 @@ class CHostInterface extends CApiService {
 			unset($interface['items'], $interface['locked'], $interface['isNew']);
 
 			$interface = array_filter($interface, function ($v) {
-				return !is_null($v);
+				return ($v !== null);
 			});
 
 			if (array_key_exists('details', $interface)) {
 				$interface['details'] = array_filter($interface['details'], function ($v) {
-					return !is_null($v);
+					return ($v !== null);
 				});
 			}
 
