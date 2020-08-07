@@ -395,7 +395,7 @@ class CHostInterface extends CApiService {
 	protected static function getInputValidatorOnCreateRules(): array {
 		return ['type' => API_OBJECT, 'flags' => API_NORMALIZE, 'fields' => [
 			'dns' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface', 'dns'), 'default' => DB::getDefault('interface', 'dns')],
-			'ip' => 				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface', 'ip'), 'default' => DB::getDefault('interface', 'ip')],
+			'ip' => 				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface', 'ip'), 'default' => ''],
 			'main' => 				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [INTERFACE_SECONDARY, INTERFACE_PRIMARY])],
 			'port' =>				['type' => API_PORT, 'flags' => API_REQUIRED | API_NOT_EMPTY | API_ALLOW_USER_MACRO],
 			'type' =>				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [INTERFACE_TYPE_UNKNOWN, INTERFACE_TYPE_AGENT, INTERFACE_TYPE_SNMP, INTERFACE_TYPE_IPMI, INTERFACE_TYPE_JMX])],
