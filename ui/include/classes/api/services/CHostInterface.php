@@ -781,6 +781,8 @@ class CHostInterface extends CApiService {
 			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
 		}
 
+		$this->checkHostPermissions(array_column($data['hosts'], 'hostid'));
+
 		foreach ($data['interfaces'] as &$interface) {
 			foreach ($data['hosts'] as $host) {
 				$interface['hostid'] = $host['hostid'];
