@@ -283,10 +283,17 @@ class CHostInterface extends CApiService {
 				return ($v !== null);
 			});
 
-			if (array_key_exists('details', $interface)) {
+			if (array_key_exists('details', $interface) && !array_key_exists('type', $interface)) {
+				$interface['type'] = INTERFACE_TYPE_SNMP;
+			}
+
+			if (array_key_exists('details', $interface) && is_array($interface['details'])) {
 				$interface['details'] = array_filter($interface['details'], function ($v) {
 					return ($v !== null);
 				});
+			}
+			else {
+				unset($interface['details']);
 			}
 
 			$path = _s($obj_path, $index);
@@ -437,13 +444,16 @@ class CHostInterface extends CApiService {
 
 		foreach ($interfaces as $index => &$interface) {
 			$interface = array_filter($interface, function ($v) {
-				return !is_null($v);
+				return ($v !== null);
 			});
 
-			if (array_key_exists('details', $interface)) {
+			if (array_key_exists('details', $interface) && is_array($interface['details'])) {
 				$interface['details'] = array_filter($interface['details'], function ($v) {
-					return !is_null($v);
+					return ($v !== null);
 				});
+			}
+			else {
+				unset($interface['details']);
 			}
 
 			$path = _s($obj_path, $index);
