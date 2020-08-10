@@ -246,7 +246,7 @@ class CHostInterface extends CApiService {
 	 *
 	 * @throws APIException
 	 */
-	protected function validateUpdate(array &$interfaces, string $obj_path = '/') {
+	protected function validateUpdate(array &$interfaces, string $obj_path = '') {
 		$api_input_rules = ['type' => API_OBJECT, 'flags' => API_NORMALIZE, 'fields' => [
 			'interfaceid' =>		['type' => API_ID, 'flags' => API_REQUIRED],
 			'dns' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface', 'dns')],
@@ -274,7 +274,7 @@ class CHostInterface extends CApiService {
 
 		if (!$interfaces) {
 			self::exception(ZBX_API_ERROR_PARAMETERS,
-				_s('Invalid parameter "%1$s": %2$s.', $obj_path, _('cannot be empty'))
+				_s('Invalid parameter "%1$s": %2$s.', ($path === '' ? '/' : $path), _('cannot be empty'))
 			);
 		}
 
@@ -296,8 +296,8 @@ class CHostInterface extends CApiService {
 				unset($interface['details']);
 			}
 
-			$path = _s($obj_path, $index);
-			if (!CApiInputValidator::validate($api_input_rules, $interface, $path, $error)) {
+			$path = _s($obj_path, $index + 1);
+			if (!CApiInputValidator::validate($api_input_rules, $interface, ($path === '' ? '/' : $path), $error)) {
 				self::exception(ZBX_API_ERROR_PARAMETERS, $error);
 			}
 		}
@@ -341,6 +341,16 @@ class CHostInterface extends CApiService {
 
 			if (array_key_exists('type', $interface) && $interface['type'] != $db_interface['type']) {
 				$check_have_items[] = $interface['interfaceid'];
+			}
+
+			if (!array_key_exists('type', $interface)) {
+				$interface['type'] = $db_interface['type'];
+			}
+
+			if ($interface['type'] == INTERFACE_TYPE_SNMP) {
+				$interface['details'] = array_key_exists('details', $interface)
+					? $interface['details'] + $db_interface['details']
+					: $db_interface['details'];
 			}
 
 			// Check all fields on "updated" interface.
@@ -387,6 +397,8 @@ class CHostInterface extends CApiService {
 		}
 		unset($interface);
 
+		$this->validateSnmpDetails($interfaces, $obj_path);
+
 		if ($check_have_items) {
 			$this->checkIfInterfaceHasItems($check_have_items);
 		}
@@ -430,7 +442,7 @@ class CHostInterface extends CApiService {
 	 *
 	 * @throws APIException
 	 */
-	protected function validateCreate(array &$interfaces, string $obj_path = '/') {
+	protected function validateCreate(array &$interfaces, string $obj_path = '') {
 		$api_input_rules = self::getInputValidatorOnCreateRules();
 		$api_input_rules['fields'] += [
 			'hostid' => ['type' => API_ID, 'flags' => API_REQUIRED]
@@ -438,7 +450,7 @@ class CHostInterface extends CApiService {
 
 		if (!$interfaces) {
 			self::exception(ZBX_API_ERROR_PARAMETERS,
-				_s('Invalid parameter "%1$s": %2$s.', $obj_path, _('cannot be empty'))
+				_s('Invalid parameter "%1$s": %2$s.', ($obj_path === '' ? '/' : $obj_path), _('cannot be empty'))
 			);
 		}
 
@@ -456,8 +468,8 @@ class CHostInterface extends CApiService {
 				unset($interface['details']);
 			}
 
-			$path = _s($obj_path, $index);
-			if (!CApiInputValidator::validate($api_input_rules, $interface, $path, $error)) {
+			$path = _s($obj_path, $index + 1);
+			if (!CApiInputValidator::validate($api_input_rules, $interface, ($path === '' ? '/' : $path), $error)) {
 				self::exception(ZBX_API_ERROR_PARAMETERS, $error);
 			}
 		}
@@ -533,7 +545,7 @@ class CHostInterface extends CApiService {
 		}
 		unset($interface);
 
-		$this->checkSnmpInput($interfaces);
+		$this->validateSnmpDetails($interfaces, $obj_path);
 
 		// Check if any of the affected hosts are discovered.
 		$this->checkValidator(array_keys($interfaces, 'hostid'), new CHostNormalValidator([
@@ -548,27 +560,23 @@ class CHostInterface extends CApiService {
 	 *
 	 * @throws APIException
 	 */
-	protected function checkSnmpInput(array $interfaces) {
-		foreach ($interfaces as $interface) {
+	protected function validateSnmpDetails(array $interfaces, string $obj_path) {
+		foreach ($interfaces as $index => $interface) {
 			if (!array_key_exists('type', $interface) || $interface['type'] != INTERFACE_TYPE_SNMP) {
 				continue;
 			}
 
+			$path = _s($obj_path, $index + 1);
+
 			if (!array_key_exists('details', $interface)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(ZBX_API_ERROR_PARAMETERS,
+					_s('Invalid parameter "%1$s": %2$s.', ($path === '' ? '/' : $path),
+						_s('the parameter "%1$s" is missing', 'details')
+					)
+				);
 			}
 
-			$this->checkSnmpVersion($interface);
-
-			$this->checkSnmpCommunity($interface);
-
-			$this->checkSnmpBulk($interface);
-
-			$this->checkSnmpSecurityLevel($interface);
-
-			$this->checkSnmpAuthProtocol($interface);
-
-			$this->checkSnmpPrivProtocol($interface);
+			$this->checkSnmpCommunity($interface, $path);
 		}
 	}
 
@@ -682,35 +690,17 @@ class CHostInterface extends CApiService {
 	}
 
 	protected function updateInterfaceDetails(array $interfaces): bool {
-		$db_interfaces = $this->get([
-			'output' => ['type', 'details'],
-			'interfaceids' => array_column($interfaces, 'interfaceid'),
-			'preservekeys' => true
-		]);
 		DB::delete('interface_snmp', ['interfaceid' => array_column($interfaces, 'interfaceid')]);
 
 		$snmp_interfaces = [];
 		foreach ($interfaces as $interface) {
-			$interfaceid = $interface['interfaceid'];
-
-			// Check new interface type or, if interface type not present, check type from db.
-			if ((!array_key_exists('type', $interface) && $db_interfaces[$interfaceid]['type'] != INTERFACE_TYPE_SNMP)
-					|| (array_key_exists('type', $interface) && $interface['type'] != INTERFACE_TYPE_SNMP)) {
+			if ($interface['type'] != INTERFACE_TYPE_SNMP) {
 				continue;
 			}
-			else {
-				// Type is required for SNMP validation.
-				$interface['type'] = INTERFACE_TYPE_SNMP;
-			}
 
-			// Merge details with db values or set only vaules from db.
-			$interface['details'] = array_key_exists('details', $interface)
-				? $interface['details'] + $db_interfaces[$interfaceid]['details']
-				: $db_interfaces[$interfaceid]['details'];
-
-			$this->checkSnmpInput([$interface]);
-
-			$snmp_interfaces[] = ['interfaceid' => $interfaceid] + $interface['details'];
+			$snmp_interfaces[] = [
+				'interfaceid' => $interface['interfaceid']
+			] + $interface['details'];
 		}
 
 		$this->createSnmpInterfaceDetails($snmp_interfaces);
@@ -787,7 +777,7 @@ class CHostInterface extends CApiService {
 			'interfaces' =>			['type' => API_OBJECTS, 'flags' => API_REQUIRED | API_NOT_EMPTY | API_NORMALIZE] + self::getInputValidatorOnCreateRules()
 		]];
 
-		if (!CApiInputValidator::validate($api_input_rules, $data, '/', $error)) {
+		if (!CApiInputValidator::validate($api_input_rules, $data, '', $error)) {
 			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
 		}
 
@@ -1152,102 +1142,27 @@ class CHostInterface extends CApiService {
 	}
 
 	/**
-	 * Check if SNMP version is valid. Valid versions: SNMP_V1, SNMP_V2C, SNMP_V3.
-	 *
-	 * @param array $interface
-	 *
-	 * @throws APIException if "version" value is incorrect.
-	 */
-	protected function checkSnmpVersion(array $interface) {
-		if (!array_key_exists('version', $interface['details'])
-				|| !in_array($interface['details']['version'], [SNMP_V1, SNMP_V2C, SNMP_V3])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
-		}
-	}
-
-	/**
 	 * Check SNMP community. For SNMPv1 and SNMPv2c it required.
 	 *
 	 * @param array $interface
 	 *
 	 * @throws APIException if "community" value is incorrect.
 	 */
-	protected function checkSnmpCommunity(array $interface) {
-		if (($interface['details']['version'] == SNMP_V1 || $interface['details']['version'] == SNMP_V2C)
-				&& (!array_key_exists('community', $interface['details'])
-					|| $interface['details']['community'] === '')) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+	protected function checkSnmpCommunity(array $interface, string $path) {
+		if ($interface['details']['version'] != SNMP_V1 && $interface['details']['version'] != SNMP_V2C) {
+			return;
 		}
-	}
 
-	/**
-	 * Validates SNMP interface "bulk" field.
-	 *
-	 * @param array $interface
-	 *
-	 * @throws APIException if "bulk" value is incorrect.
-	 */
-	protected function checkSnmpBulk(array $interface) {
-		if ($interface['type'] !== null && (($interface['type'] != INTERFACE_TYPE_SNMP
-					&& isset($interface['details']['bulk']) && $interface['details']['bulk'] != SNMP_BULK_ENABLED)
-					|| ($interface['type'] == INTERFACE_TYPE_SNMP && isset($interface['details']['bulk'])
-						&& (zbx_empty($interface['details']['bulk'])
-							|| ($interface['details']['bulk'] != SNMP_BULK_DISABLED
-							&& $interface['details']['bulk'] != SNMP_BULK_ENABLED))))) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect bulk value for interface.'));
+		if (!array_key_exists('community', $interface['details'])) {
+			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Invalid parameter "%1$s": %2$s.', $path.'/details',
+					_s('the parameter "%1$s" is missing', 'community')
+				)
+			);
 		}
-	}
-
-	/**
-	 * Check SNMP Security level field.
-	 *
-	 * @param array $interface
-	 * @param array $interface['details']
-	 * @param array $interface['details']['version']        SNMP version
-	 * @param array $interface['details']['securitylevel']  SNMP security level
-	 *
-	 * @throws APIException if "securitylevel" value is incorrect.
-	 */
-	protected function checkSnmpSecurityLevel(array $interface) {
-		if ($interface['details']['version'] == SNMP_V3 && (array_key_exists('securitylevel', $interface['details'])
-					&& !in_array($interface['details']['securitylevel'], [ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV,
-						ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV]))) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
-		}
-	}
-
-	/**
-	 * Check SNMP authentication  protocol.
-	 *
-	 * @param array $interface
-	 * @param array $interface['details']
-	 * @param array $interface['details']['version']       SNMP version
-	 * @param array $interface['details']['authprotocol']  SNMP authentication protocol
-	 *
-	 * @throws APIException if "authprotocol" value is incorrect.
-	 */
-	protected function checkSnmpAuthProtocol(array $interface) {
-		if ($interface['details']['version'] == SNMP_V3 && (array_key_exists('authprotocol', $interface['details'])
-					&& !in_array($interface['details']['authprotocol'], [ITEM_AUTHPROTOCOL_MD5,
-						ITEM_AUTHPROTOCOL_SHA]))) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
-		}
-	}
-
-	/**
-	 * Check SNMP Privacy protocol.
-	 *
-	 * @param array $interface
-	 * @param array $interface['details']
-	 * @param array $interface['details']['version']       SNMP version
-	 * @param array $interface['details']['privprotocol']  SNMP privacy protocol
-	 *
-	 * @throws APIException if "privprotocol" value is incorrect.
-	 */
-	protected function checkSnmpPrivProtocol(array $interface) {
-		if ($interface['details']['version'] == SNMP_V3 && (array_key_exists('privprotocol', $interface['details'])
-				&& !in_array($interface['details']['privprotocol'], [ITEM_PRIVPROTOCOL_DES, ITEM_PRIVPROTOCOL_AES]))) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,  _('Incorrect arguments passed to function.'));
+		elseif ($interface['details']['community'] === '') {
+			self::exception(ZBX_API_ERROR_PARAMETERS,
+				_s('Incorrect value for field "%1$s": %2$s.', $path.'/details/community', _('cannot be empty'))
+			);
 		}
 	}
 

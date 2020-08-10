@@ -155,7 +155,7 @@ class testHostInterface extends CAPITest {
 					'type' => '2',
 					'useip' => '1'
 				],
-				'expected_error' => 'Incorrect arguments passed to function.'
+				'expected_error' => 'Invalid parameter "/": the parameter "details" is missing.'
 			],
 			[
 				'interface' => [
