@@ -774,7 +774,7 @@ class CHostInterface extends CApiService {
 			'hosts' =>			['type' => API_OBJECTS, 'flags' => API_REQUIRED | API_NOT_EMPTY | API_NORMALIZE, 'fields' => [
 				'hostid' =>			['type' => API_ID, 'flags' => API_REQUIRED]
 			]],
-			'interfaces' =>			['type' => API_OBJECTS, 'flags' => API_REQUIRED | API_NORMALIZE] + self::getInputValidatorOnCreateRules()
+			'interfaces' =>			['type' => API_OBJECTS, 'flags' => API_REQUIRED | API_NOT_EMPTY | API_NORMALIZE] + self::getInputValidatorOnCreateRules()
 		]];
 
 		if (!CApiInputValidator::validate($api_input_rules, $data, '/', $error)) {
