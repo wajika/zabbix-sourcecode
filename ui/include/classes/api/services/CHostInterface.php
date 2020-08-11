@@ -296,7 +296,7 @@ class CHostInterface extends CApiService {
 				unset($interface['details']);
 			}
 
-			$path = _s($obj_path, $index + 1);
+			$path = sprintf($obj_path, $index + 1);
 			if (!CApiInputValidator::validate($api_input_rules, $interface, ($path === '' ? '/' : $path), $error)) {
 				self::exception(ZBX_API_ERROR_PARAMETERS, $error);
 			}
@@ -469,7 +469,7 @@ class CHostInterface extends CApiService {
 				unset($interface['details']);
 			}
 
-			$path = _s($obj_path, $index + 1);
+			$path = sprintf($obj_path, $index + 1);
 			if (!CApiInputValidator::validate($api_input_rules, $interface, ($path === '' ? '/' : $path), $error)) {
 				self::exception(ZBX_API_ERROR_PARAMETERS, $error);
 			}
@@ -567,7 +567,7 @@ class CHostInterface extends CApiService {
 				continue;
 			}
 
-			$path = _s($obj_path, $index + 1);
+			$path = sprintf($obj_path, $index + 1);
 
 			if (!array_key_exists('details', $interface)) {
 				self::exception(ZBX_API_ERROR_PARAMETERS,
