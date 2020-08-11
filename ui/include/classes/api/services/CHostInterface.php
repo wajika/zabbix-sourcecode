@@ -258,23 +258,23 @@ class CHostInterface extends CApiService {
 			'useip' => 				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [INTERFACE_USE_DNS, INTERFACE_USE_IP])],
 			'details' =>			['type' => API_MULTIPLE, 'rules' => [
 										['if' => ['field' => 'type', 'in' => implode(',', [INTERFACE_TYPE_SNMP])], 'type' => API_OBJECT, 'flags' => API_REQUIRED, 'fields' => [
-				'version' =>				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_V1, SNMP_V2C, SNMP_V3]), 'default' => DB::getDefault('interface_snmp', 'version')],
-				'bulk' =>					['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_BULK_DISABLED, SNMP_BULK_ENABLED]), 'default' => DB::getDefault('interface_snmp', 'bulk')],
-				'community' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'community'), 'default' => DB::getDefault('interface_snmp', 'community')],
-				'securityname' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'securityname'), 'default' => DB::getDefault('interface_snmp', 'securityname')],
-				'securitylevel' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV]), 'default' => DB::getDefault('interface_snmp', 'securitylevel')],
-				'authpassphrase' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'authpassphrase'), 'default' => DB::getDefault('interface_snmp', 'authpassphrase')],
-				'privpassphrase' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'privpassphrase'), 'default' => DB::getDefault('interface_snmp', 'privpassphrase')],
-				'authprotocol' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_AUTHPROTOCOL_MD5, ITEM_AUTHPROTOCOL_SHA]), 'default' => DB::getDefault('interface_snmp', 'authprotocol')],
-				'privprotocol' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_PRIVPROTOCOL_DES, ITEM_PRIVPROTOCOL_AES]), 'default' => DB::getDefault('interface_snmp', 'privprotocol')],
-				'contextname' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'contextname'), 'default' => DB::getDefault('interface_snmp', 'contextname')]
+				'version' =>				['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_V1, SNMP_V2C, SNMP_V3])],
+				'bulk' =>					['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [SNMP_BULK_DISABLED, SNMP_BULK_ENABLED])],
+				'community' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'community')],
+				'securityname' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'securityname')],
+				'securitylevel' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV])],
+				'authpassphrase' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'authpassphrase')],
+				'privpassphrase' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'privpassphrase')],
+				'authprotocol' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_AUTHPROTOCOL_MD5, ITEM_AUTHPROTOCOL_SHA])],
+				'privprotocol' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_PRIVPROTOCOL_DES, ITEM_PRIVPROTOCOL_AES])],
+				'contextname' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'contextname')]
 										]]
 			]]
 		]];
 
 		if (!$interfaces) {
 			self::exception(ZBX_API_ERROR_PARAMETERS,
-				_s('Invalid parameter "%1$s": %2$s.', ($path === '' ? '/' : $path), _('cannot be empty'))
+				_s('Invalid parameter "%1$s": %2$s.', ($obj_path === '' ? '/' : $obj_path), _('cannot be empty'))
 			);
 		}
 
@@ -429,7 +429,8 @@ class CHostInterface extends CApiService {
 				'authprotocol' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_AUTHPROTOCOL_MD5, ITEM_AUTHPROTOCOL_SHA]), 'default' => DB::getDefault('interface_snmp', 'authprotocol')],
 				'privprotocol' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_PRIVPROTOCOL_DES, ITEM_PRIVPROTOCOL_AES]), 'default' => DB::getDefault('interface_snmp', 'privprotocol')],
 				'contextname' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'contextname'), 'default' => DB::getDefault('interface_snmp', 'contextname')]
-										]]
+										]],
+										['if' => ['field' => 'type', 'in' => implode(',', [INTERFACE_TYPE_AGENT, INTERFACE_TYPE_IPMI, INTERFACE_TYPE_JMX])], 'type' => API_OBJECT, 'flags' => API_ALLOW_NULL, 'fields' => [], 'default' => null]
 			]]
 		]];
 	}
