@@ -734,15 +734,10 @@ class testPageHostGraph extends CLegacyWebTest {
 	}
 
 	private function openPageHostGraphs($host) {
-		if ($host !== 'all') {
-			$row = DBfetch(DBselect('SELECT hostid FROM hosts where host='.zbx_dbstr($host)));
-			$hostid = $row['hostid'];
-		}
-		else {
-			$hostid = 0;
-		}
+		$hostid = ($host !== 'all') ? CDBHelper::getValue('SELECT hostid FROM hosts where host='.zbx_dbstr($host)) : 0;
 
-		$this->zbxTestLogin('graphs.php?filter_hostids%5B%5D='.$hostid.'&filter_set=1');
+		$this->zbxTestLogin('graphs.php?filter_set=1&filter_hostids%5B%5D='.$hostid);
+
 		return $hostid;
 	}
 
@@ -752,36 +747,30 @@ class testPageHostGraph extends CLegacyWebTest {
 	 * @param array $data	test case data from data provider
 	 */
 	private function selectGraph($data) {
-		$this->openPageHostGraphs($data['host']);
+		$hostid = $this->openPageHostGraphs($data['host']);
 
 		if ($data['graph'] === 'all') {
 			$this->zbxTestCheckboxSelect('all_graphs');
 			return;
 		}
 
-		foreach ($data['graph'] as $graph) {
-			$result = DBselect('SELECT graphid'.
-					' FROM graphs'.
-					' WHERE name='. zbx_dbstr($graph).
-					' AND graphid IN ('.
-						'SELECT graphid'.
-						' FROM graphs_items'.
-						' WHERE itemid IN ('.
-							'SELECT itemid'.
-							' FROM items'.
-							' WHERE hostid IN ('.
-								'SELECT hostid'.
-								' FROM hosts'.
-								' WHERE name='. zbx_dbstr($data['host']).
-							')'.
-						')'.
-					')'.
-					' ORDER BY name'
-			);
+		$result = DBselect(
+			'SELECT graphid'.
+			' FROM graphs'.
+			' WHERE '.dbConditionString('name', $data['graph']).
+			' AND graphid IN ('.
+				'SELECT graphid'.
+				' FROM graphs_items'.
+				' WHERE itemid IN ('.
+					'SELECT itemid'.
+					' FROM items'.
+					' WHERE hostid='.$hostid.
+				')'.
+			')'
+		);
 
-			while ($row = DBfetch($result)) {
-				$this->zbxTestCheckboxSelect('group_graphid_'.$row['graphid']);
-			}
+		while ($row = DBfetch($result)) {
+			$this->zbxTestCheckboxSelect('group_graphid_'.$row['graphid']);
 		}
 	}
 }
