@@ -74,7 +74,7 @@ class testPageHostGraph extends CLegacyWebTest {
 			'host_discovery.php?filter_set=1&filter_hostids%5B0%5D='.$hostid => 'Discovery rules',
 			'httpconf.php?filter_set=1&filter_hostids%5B0%5D='.$hostid => 'Web scenarios',
 		];
-		$count_items = CDBHelper::getCount('SELECT NULL FROM items WHERE hostid='.$hostid);
+		$count_items = CDBHelper::getValue('SELECT COUNT(*) FROM items WHERE hostid='.$hostid);
 		$count_graphs = CDBHelper::getCount($sql);
 
 		foreach ($breadcrumbs as $url => $text) {
@@ -441,19 +441,15 @@ class testPageHostGraph extends CLegacyWebTest {
 				COverlayDialogElement::find()->all()->last()->query('link', $data['group'])->waitUntilVisible()->one()->click();
 				$this->query('id:overlay-bg')->waitUntilNotVisible();
 				foreach ($data['targets'] as $target) {
-					$result = DBselect('SELECT hostid FROM hosts WHERE host='. zbx_dbstr($target));
-					while ($row = DBfetch($result)) {
-						$this->zbxTestCheckboxSelect('item_'.$row['hostid']);
-					}
+					$hostid = CDBHelper::getValue('SELECT hostid FROM hosts WHERE host='.zbx_dbstr($target));
+					$this->zbxTestCheckboxSelect('item_'.$hostid);
 				}
 			}
 			// Select host groups.
 			else {
 				foreach ($data['targets'] as $target) {
-					$result = DBselect('SELECT groupid FROM hstgrp WHERE name='. zbx_dbstr($target));
-					while ($row = DBfetch($result)) {
-						$this->zbxTestCheckboxSelect('item_'.$row['groupid']);
-					}
+					$groupid = CDBHelper::getValue('SELECT groupid FROM hstgrp WHERE name='.zbx_dbstr($target));
+					$this->zbxTestCheckboxSelect('item_'.$groupid);
 				}
 			}
 
@@ -484,15 +480,19 @@ class testPageHostGraph extends CLegacyWebTest {
 				$original = $this->getGraphHash($data, $data['host']);
 				// Get every host from the group.
 				foreach ($data['targets'] as $target) {
-					$group_host = CDBHelper::getAll('SELECT host'.
-							' FROM hosts'.
-							' WHERE hostid IN ('.
-								'SELECT hostid'.
-								' FROM hosts_groups'.
-								' WHERE groupid IN ('.
-									'SELECT groupid'.
-									' FROM hstgrp'.
-									' WHERE name IN ('.zbx_dbstr($target).')))');
+					$group_host = CDBHelper::getAll(
+						'SELECT host'.
+						' FROM hosts'.
+						' WHERE hostid IN ('.
+							'SELECT hostid'.
+							' FROM hosts_groups'.
+							' WHERE groupid IN ('.
+								'SELECT groupid'.
+								' FROM hstgrp'.
+								' WHERE name='.zbx_dbstr($target).
+							')'.
+						')'
+					);
 
 					// Check DB with every host
 					foreach ($group_host as $host) {
@@ -514,23 +514,25 @@ class testPageHostGraph extends CLegacyWebTest {
 		$names = [];
 		// Get graph names in string, if need to copy ALL graphs of the host.
 		if ($data['graph'] === 'all') {
-			$sql = 'SELECT name'.
-					' FROM graphs'.
-					' WHERE graphid IN ('.
-						'SELECT graphid'.
-						' FROM graphs_items'.
-						' WHERE itemid IN'.
-							'(SELECT itemid'.
-							' FROM items'.
-							' WHERE hostid IN'.
-								'(SELECT hostid'.
-								' FROM hosts'.
-								' WHERE host='.zbx_dbstr($data['host']).
-								')'.
-							')'.
-					')';
+			$graphs = CDBHelper::getAll(
+				'SELECT name'.
+				' FROM graphs'.
+				' WHERE graphid IN ('.
+					'SELECT graphid'.
+					' FROM graphs_items'.
+					' WHERE itemid IN ('.
+						'SELECT itemid'.
+						' FROM items'.
+						' WHERE hostid IN ('.
+							'SELECT hostid'.
+							' FROM hosts'.
+							' WHERE host='.zbx_dbstr($data['host']).
+						')'.
+					')'.
+				')'
+			);
 
-			foreach (CDBHelper::getAll($sql) as $graph) {
+			foreach ($graphs as $graph) {
 				$names[] = zbx_dbstr($graph['name']);
 			}
 		}
@@ -551,11 +553,12 @@ class testPageHostGraph extends CLegacyWebTest {
 		});
 
 		// Select graphs by hostid or templateid.
-		$sql = 'SELECT name, width, height, yaxismin, yaxismax, templateid, show_work_period, show_triggers,'.
-				' graphtype, show_legend, show_3d, percent_left, percent_right, ymin_type, ymax_type,flags,'.
+		return CDBHelper::getHash(
+			'SELECT name, width, height, yaxismin, yaxismax, templateid, show_work_period, show_triggers,'.
+				' graphtype, show_legend, show_3d, percent_left, percent_right, ymin_type, ymax_type, flags,'.
 				' ymin_itemid, ymax_itemid'.
-				' FROM graphs'.
-				' WHERE name IN ('.implode(',', $names).')'.
+			' FROM graphs'.
+			' WHERE name IN ('.implode(',', $names).')'.
 				' AND graphid IN ('.
 					'SELECT graphid'.
 					' FROM graphs_items'.
@@ -569,9 +572,8 @@ class testPageHostGraph extends CLegacyWebTest {
 						')'.
 					')'.
 				')'.
-				' ORDER BY name';
-
-		return CDBHelper::getHash($sql);
+			' ORDER BY name'
+		);
 	}
 
 	public static function getDeleteData() {
