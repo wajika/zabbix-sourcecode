@@ -237,6 +237,8 @@ void	set_result_meta(AGENT_RESULT *result, zbx_uint64_t lastlogsize, int mtime);
 zbx_uint64_t	get_kstat_numeric_value(const kstat_named_t *kn);
 #endif
 
+void	set_user_parameter_paths(char **paths);
+
 /* external system functions */
 
 int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result);

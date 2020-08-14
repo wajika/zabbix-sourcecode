@@ -47,6 +47,21 @@ static int	ONLY_ACTIVE(AGENT_REQUEST *request, AGENT_RESULT *result);
 static int	SYSTEM_RUN(AGENT_REQUEST *request, AGENT_RESULT *result);
 static int	SYSTEM_RUN_LOCAL(AGENT_REQUEST *request, AGENT_RESULT *result);
 
+char	**user_parameter_paths = NULL;
+
+void	set_user_parameter_paths(char **paths)
+{
+	char	**p;
+
+	if (NULL != user_parameter_paths)
+		zbx_strarr_free(user_parameter_paths);
+
+	zbx_strarr_init(&user_parameter_paths);
+
+	for (p = paths; NULL != *p; p++)
+		zbx_strarr_add(&user_parameter_paths, *p);
+}
+
 ZBX_METRIC	parameters_common_local[] =
 /*	KEY			FLAG		FUNCTION		TEST PARAMETERS */
 {
@@ -106,7 +121,11 @@ static int	ONLY_ACTIVE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 int	EXECUTE_USER_PARAMETER(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	char	*command;
+	char		*command;
+	char		**p, *full_command;
+	size_t		full_command_len, offset;
+	zbx_stat_t	status;
+	int		ret;
 
 	if (1 != request->nparam)
 	{
@@ -115,6 +134,62 @@ int	EXECUTE_USER_PARAMETER(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 
 	command = get_rparam(request, 0);
+
+	if (NULL != user_parameter_paths)
+	{
+		for (p = user_parameter_paths; NULL != *p; p++)
+		{
+			if ('\0' == (*p)[0])
+				continue;
+
+			full_command = NULL;
+			full_command_len = offset = 0;
+
+			zbx_snprintf_alloc(&full_command, &full_command_len, &offset,
+					"%s/%s", *p, command);
+
+			/* temporarily extract a substring containing just the command name, without arguments */
+			for (offset = 0;;offset++)
+			{
+				if ('\0' == full_command[offset])
+				{
+					offset = 0;
+					break;
+				}
+
+				if (' ' == full_command[offset] || '\t' == full_command[offset])
+				{
+					full_command[offset] = '\0';
+					break;
+				}
+			}
+
+			/* check if command exists and is a regular file */
+			if (0 > zbx_stat(full_command, &status))
+			{
+				zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot stat '%s' (%s)",
+						__func__, full_command, strerror(errno));
+				zbx_free(full_command);
+				continue;
+			}
+
+			if (S_IFREG != (status.st_mode & S_IFMT))
+			{
+				zabbix_log(LOG_LEVEL_DEBUG, "%s() '%s' is not a regular file",
+						__func__, full_command);
+				zbx_free(full_command);
+				continue;
+			}
+
+			/* restore command arguments */
+			if (0 != offset)
+				full_command[offset] = ' ';
+
+			ret = EXECUTE_STR(full_command, result);
+			zbx_free(full_command);
+			return ret;
+		}
+	}
 
 	return EXECUTE_STR(command, result);
 }

@@ -25,6 +25,7 @@ import (
 	"strings"
 	"time"
 	"unicode"
+	"os"
 
 	"zabbix.com/pkg/itemutil"
 	"zabbix.com/pkg/plugin"
@@ -41,6 +42,7 @@ type UserParameterPlugin struct {
 	plugin.Base
 	parameters           map[string]*parameterInfo
 	unsafeUserParameters int
+	scriptLocations      []string
 }
 
 var userParameter UserParameterPlugin
@@ -101,9 +103,38 @@ func (p *UserParameterPlugin) Export(key string, params []string, ctx plugin.Con
 		return nil, err
 	}
 
+	full_cmd := ""
+
+	for i := 0; i < len(p.scriptLocations) + 1; i++ {
+		if i < len(p.scriptLocations) {
+			if p.scriptLocations[i] == "" {
+				continue
+			}
+
+			full_cmd = p.scriptLocations[i] + "/" + s
+			base_cmd := ""
+
+			for j := 0; j < len(full_cmd) && full_cmd[j] != ' ' && full_cmd[j] != '\t'; j++ {
+				base_cmd += string(full_cmd[j])
+			}
+
+			if f, err := os.Stat(base_cmd); err != nil {
+				p.Debugf("cannot stat '%s' (%s)", base_cmd, err)
+			} else {
+				if f.IsDir() {
+					p.Debugf("'%s' is not a regular file", base_cmd)
+				} else {
+					break
+				}
+			}
+		} else {
+			full_cmd = s;
+		}
+	}
+
 	p.Debugf("executing command:'%s'", s)
 
-	stdoutStderr, err := zbxcmd.Execute(s, time.Second*time.Duration(Options.Timeout))
+	stdoutStderr, err := zbxcmd.Execute(full_cmd, time.Second*time.Duration(Options.Timeout))
 	if err != nil {
 		return nil, err
 	}
@@ -113,9 +144,10 @@ func (p *UserParameterPlugin) Export(key string, params []string, ctx plugin.Con
 	return stdoutStderr, nil
 }
 
-func InitUserParameterPlugin(userParameterConfig []string, unsafeUserParameters int) error {
+func InitUserParameterPlugin(userParameterConfig []string, unsafeUserParameters int, scriptLocations []string) error {
 	userParameter.parameters = make(map[string]*parameterInfo)
 	userParameter.unsafeUserParameters = unsafeUserParameters
+	userParameter.scriptLocations = scriptLocations
 
 	for i := 0; i < len(userParameterConfig); i++ {
 		s := strings.SplitN(userParameterConfig[i], ",", 2)
