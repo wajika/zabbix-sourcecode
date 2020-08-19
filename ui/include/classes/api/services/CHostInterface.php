@@ -477,6 +477,18 @@ class CHostInterface extends CApiService {
 		}
 		unset($interface);
 
+		$this->validateContextOnCreate($interfaces, $obj_path);
+	}
+
+	/**
+	 * Check input before create interfaces.
+	 *
+	 * @param array  $interfaces
+	 * @param string $obj_path
+	 *
+	 * @throws APIException
+	 */
+	protected function validateContextOnCreate(array &$interfaces, string $obj_path) {
 		// permissions
 		$db_hosts = API::Host()->get([
 			'output' => ['host'],
@@ -791,6 +803,9 @@ class CHostInterface extends CApiService {
 			}
 		}
 		unset($interface);
+
+		$this->validateContextOnCreate($data['interfaces'], '/interfaces/%1$d');
+		$this->checkMainInterfacesOnCreate($data['interfaces']);
 
 		$interfaceids = $this->createReal($data['interfaces']);
 
