@@ -268,7 +268,8 @@ class CHostInterface extends CApiService {
 				'authprotocol' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_AUTHPROTOCOL_MD5, ITEM_AUTHPROTOCOL_SHA])],
 				'privprotocol' =>			['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => implode(',', [ITEM_PRIVPROTOCOL_DES, ITEM_PRIVPROTOCOL_AES])],
 				'contextname' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface_snmp', 'contextname')]
-										]]
+										]],
+										['if' => ['field' => 'type', 'in' => implode(',', [INTERFACE_TYPE_AGENT, INTERFACE_TYPE_IPMI, INTERFACE_TYPE_JMX])], 'type' => API_OBJECT, 'flags' => API_ALLOW_NULL, 'fields' => []]
 			]]
 		]];
 
