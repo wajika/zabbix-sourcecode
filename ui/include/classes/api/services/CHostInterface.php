@@ -28,6 +28,14 @@ class CHostInterface extends CApiService {
 	protected $tableAlias = 'hi';
 	protected $sortColumns = ['interfaceid', 'dns', 'ip'];
 
+	protected $supported_details = [
+		SNMP_V1 => ['version', 'bulk', 'community'],
+		SNMP_V2C => ['version', 'bulk', 'community'],
+		SNMP_V3 => ['version', 'bulk', 'securityname', 'securitylevel', 'authpassphrase',
+			'privpassphrase', 'authprotocol', 'privprotocol', 'contextname'
+		]
+	];
+
 	/**
 	 * Get interface data.
 	 *
@@ -588,6 +596,19 @@ class CHostInterface extends CApiService {
 						_s('the parameter "%1$s" is missing', 'details')
 					)
 				);
+			}
+
+			if (array_key_exists('version', $interface['details'])) {
+				$vers = $interface['details']['version'];
+				$unsupported_details = array_diff(array_keys($interface['details']), $this->supported_details[$vers]);
+
+				foreach ($unsupported_details as $field) {
+					self::exception(ZBX_API_ERROR_PARAMETERS,
+						_s('Invalid parameter "%1$s": %2$s.', $path.'/details',
+							_s('unexpected parameter "%1$s"', $field)
+						)
+					);
+				}
 			}
 
 			$this->checkSnmpCommunity($interface, $path);
