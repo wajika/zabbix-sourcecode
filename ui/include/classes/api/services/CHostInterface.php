@@ -818,17 +818,17 @@ class CHostInterface extends CApiService {
 
 		$this->checkHostPermissions(array_column($data['hosts'], 'hostid'));
 
-		foreach ($data['interfaces'] as &$interface) {
+		$interfaces = [];
+		foreach ($data['interfaces'] as $interface) {
 			foreach ($data['hosts'] as $host) {
-				$interface['hostid'] = $host['hostid'];
+				$interfaces[] = ['hostid' => $host['hostid']] + $interface;
 			}
 		}
-		unset($interface);
 
-		$this->validateContextOnCreate($data['interfaces'], '/interfaces/%1$d');
-		$this->checkMainInterfacesOnCreate($data['interfaces']);
+		$this->validateContextOnCreate($interfaces, '/interfaces/%1$d');
+		$this->checkMainInterfacesOnCreate($interfaces);
 
-		$interfaceids = $this->createReal($data['interfaces']);
+		$interfaceids = $this->createReal($interfaces);
 
 		return ['interfaceids' => $interfaceids];
 	}
