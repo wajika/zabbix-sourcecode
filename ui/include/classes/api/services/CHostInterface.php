@@ -335,7 +335,7 @@ class CHostInterface extends CApiService {
 		]);
 
 		$check_have_items = [];
-		foreach ($interfaces as &$interface) {
+		foreach ($interfaces as $index => &$interface) {
 			if (!array_key_exists($interface['interfaceid'], $db_interfaces)) {
 				self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 			}
@@ -357,6 +357,16 @@ class CHostInterface extends CApiService {
 			}
 
 			if ($interface['type'] == INTERFACE_TYPE_SNMP) {
+				// If type is changed to SNMP, $db_interface['details'] is empty so $interface['details'] is mandatory.
+				if ($interface['type'] != $db_interface['type'] && !array_key_exists('details', $interface)) {
+					$path = sprintf($obj_path, $index + 1);
+					$path = ($path === '') ? '/' : $path;
+
+					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Invalid parameter "%1$s": %2$s.', $path,
+						_s('the parameter "%1$s" is missing', 'details')
+					));
+				}
+
 				$interface['details'] = array_key_exists('details', $interface)
 					? $interface['details'] + $db_interface['details']
 					: $db_interface['details'];
