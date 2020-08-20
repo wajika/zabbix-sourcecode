@@ -162,6 +162,33 @@ function itemGetValueTest(overlay) {
 		value: form_data['value']
 	});
 
+	if (interface && interface['interfaceid'] == <?= INTERFACE_TYPE_SNMP ?> && interface['details']) {
+		var details = {
+			version: interface['details']['version'],
+			bulk: 1
+		};
+
+		switch (interface['details']['version']) {
+			case '<?= SNMP_V1 ?>':
+				// break; is not missing here
+			case '<?= SNMP_V2C ?>':
+				details.community = interface['details']['community'];
+				break;
+			case '<?= SNMP_V3 ?>':
+				details = jQuery.extend(details, {
+					contextname: interface['details']['contextname'],
+					securityname: interface['details']['securityname'],
+					securitylevel: interface['details']['securitylevel'],
+					authprotocol: interface['details']['authprotocol'],
+					authpassphrase: interface['details']['authpassphrase'],
+					privprotocol: interface['details']['privprotocol'],
+					privpassphrase: interface['details']['privpassphrase'],
+				});
+				break;
+		}
+		post_data.interface.details = details;
+	}
+
 	<?php if ($data['show_prev']): ?>
 		post_data['time_change'] = (form_data['upd_prev'] !== '')
 			? parseInt(form_data['upd_last']) - parseInt(form_data['upd_prev'])
@@ -424,6 +451,50 @@ function saveItemTestInputs() {
 	$test_obj.data('test-data', input_values);
 }
 
+/**
+ * Show / hide SNMP interface fields
+ */
+function setSnmpFields() {
+	new CViewSwitcher(`interface_details_version`, 'change',
+		{
+			<?= SNMP_V1 ?>: [`row_snmp_version`, `row_snmp_community`],
+			<?= SNMP_V2C ?>: [`row_snmp_version`, `row_snmp_community`],
+			<?= SNMP_V3 ?>: [
+				`row_snmp_version`,
+				`row_snmpv3_contextname`,
+				`row_snmpv3_securityname`,
+				`row_snmpv3_securitylevel`,
+				`row_snmpv3_authprotocol`,
+				`row_snmpv3_authpassphrase`,
+				`row_snmpv3_privprotocol`,
+				`row_snmpv3_privpassphrase`,
+			]
+		}
+	);
+
+	jQuery(`#interface_details_version`).on('change', function() {
+		jQuery(`#interface_details_securitylevel`).off('change');
+
+		if (jQuery(this).val() == <?= SNMP_V3 ?>) {
+			new CViewSwitcher(`interface_details_securitylevel`, 'change',
+				{
+					<?= ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV ?>: [],
+					<?= ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV ?>: [
+						'row_snmpv3_authprotocol',
+						'row_snmpv3_authpassphrase',
+					],
+					<?= ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV ?>: [
+						'row_snmpv3_authprotocol',
+						'row_snmpv3_authpassphrase',
+						'row_snmpv3_privprotocol',
+						'row_snmpv3_privpassphrase'
+					]
+				}
+			);
+		}
+	}).trigger('change');
+}
+
 jQuery(document).ready(function($) {
 	$('#final-result').hide();
 
@@ -514,4 +585,17 @@ jQuery(document).ready(function($) {
 	<?php endif ?>
 
 	$('#preprocessing-test-form .<?= ZBX_STYLE_TEXTAREA_FLEXIBLE ?>').textareaFlexible();
+
+	$('#snmp_details > li:not(:first-child)').hide();
+
+	$('.interface-btn-toggle').click(function() {
+		$(this).toggleClass('closed opened');
+
+		if ($(this).hasClass('closed')) {
+			$('#snmp_details > li:not(:first-child)').hide();
+		}
+		else {
+			setSnmpFields();
+		}
+	});
 });

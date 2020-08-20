@@ -7325,3 +7325,32 @@ table.preprocessing-test-results {
 		margin-bottom: 10px;
 	}
 }
+
+.interface-btn-toggle-wrapper {
+	height: 30px;
+	line-height: 30px;
+
+	span {
+		display: inline-block;
+		vertical-align: middle;
+		line-height: normal;
+	}
+
+	.interface-btn-toggle {
+		cursor: pointer;
+		display: inline-block;
+		@extend %btn-widget;
+
+		&.closed {
+			@extend .btn-widget-expand;
+		}
+
+		&.opened {
+			@extend .btn-widget-collapse;
+		}
+
+		&.hidden {
+			display: none;
+		}
+	}
+}

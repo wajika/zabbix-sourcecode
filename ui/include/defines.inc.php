@@ -1883,6 +1883,7 @@ define('ZBX_STYLE_HOST_INTERFACE_CELL_PORT', 'interface-cell-port');
 define('ZBX_STYLE_HOST_INTERFACE_CELL_DEFAULT', 'interface-cell-default');
 define('ZBX_STYLE_HOST_INTERFACE_CELL_ACTION', 'interface-cell-action');
 define('ZBX_STYLE_HOST_INTERFACE_BTN_TOGGLE', 'interface-btn-toggle');
+define('ZBX_STYLE_HOST_INTERFACE_BTN_TOGGLE_WRAPPER', 'interface-btn-toggle-wrapper');
 define('ZBX_STYLE_HOST_INTERFACE_BTN_REMOVE', 'interface-btn-remove');
 define('ZBX_STYLE_HOST_INTERFACE_BTN_MAIN_INTERFACE', 'interface-btn-main-interface');
 define('ZBX_STYLE_HOST_INTERFACE_INPUT_EXPAND', 'interface-input-expand');
