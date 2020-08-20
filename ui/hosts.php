@@ -329,6 +329,8 @@ elseif (hasRequest('hostid') && (hasRequest('clone') || hasRequest('full_clone')
 		$interfaceid = 1;
 		foreach ($_REQUEST['interfaces'] as &$interface) {
 			$interface['interfaceid'] = (string) $interfaceid++;
+			$interface['isNew'] = true;
+
 			unset($interface['locked'], $interface['items']);
 		}
 		unset($interface);
