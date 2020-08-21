@@ -10,6 +10,7 @@
 #include "zbxalgo.h"
 #include "log.h"
 #include "zbxipcservice.h"
+#include "comms.h"
 
 #define ZBX_IPC_PATH_MAX	sizeof(((struct sockaddr_un *)0)->sun_path)
 
@@ -1551,7 +1552,7 @@ int	zbx_ipc_service_start(zbx_ipc_service_t *service, const char *service_name, 
 		goto out;
 	}
 
-	if (0 != listen(service->fd, SOMAXCONN))
+	if (0 != listen(service->fd, zbx_get_somaxconn()))
 	{
 		*error = zbx_dsprintf(*error, "Cannot listen socket: %s.", zbx_strerror(errno));
 		goto out;

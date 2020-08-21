@@ -926,6 +926,54 @@ out:
 
 /******************************************************************************
  *                                                                            *
+ * Function: zbx_get_somaxconn                                                *
+ *                                                                            *
+ * Purpose: Attempt to get the runtime value of constant SOMAXCONN. If not    *
+ *          possible then use the value define in header file.                *
+ *                                                                            *
+ * Return value: the value of constant SOMAXCONN                              *
+ *                                                                            *
+ * Comments: The configurable value of SOMAXCONN on BSD based platforms in    *
+ *           runtime can be determined using sysctl(). This values also can   *
+ *           be determined in runtime on platforms with /proc/sys/ file       *
+ *           system like Linux. On other modern platforms the value of        *
+ *           SOMAXCONN is a large number by default.                          *
+ *                                                                            *
+ ******************************************************************************/
+int	zbx_get_somaxconn(void)
+{
+	int	value = SOMAXCONN;
+
+#if defined(HAVE_FUNCTION_SYSCTL_KERN_SOMAXCONN)
+	int	mib[2];
+	size_t	len;
+
+	mib[0] = CTL_KERN;
+	mib[1] = KERN_SOMAXCONN;
+
+	len = sizeof(value);
+	sysctl(mib, 2, &value, &len, NULL, 0)
+
+#elif !defined(_WINDOWS)
+	FILE	*f;
+	char	buf[MAX_STRING_LEN];
+
+	if (NULL != (f = fopen("/proc/sys/net/core/somaxconn", "r")))
+	{
+		while (NULL != fgets(buf, MAX_STRING_LEN, f))
+		{
+			if (1 != sscanf(buf, "%d", &value))
+				value = SOMAXCONN;
+		}
+		zbx_fclose(f);
+	}
+#endif
+
+	return value;
+}
+
+/******************************************************************************
+ *                                                                            *
  * Function: zbx_tcp_listen                                                   *
  *                                                                            *
  * Purpose: create socket for listening                                       *
@@ -1085,7 +1133,7 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 					goto out;
 			}
 
-			if (ZBX_PROTO_ERROR == listen(s->sockets[s->num_socks], SOMAXCONN))
+			if (ZBX_PROTO_ERROR == listen(s->sockets[s->num_socks], zbx_get_somaxconn()))
 			{
 				zbx_set_socket_strerror("listen() for [[%s]:%s] failed: %s",
 						ip ? ip : "-", port, strerror_from_system(zbx_socket_last_error()));
@@ -1246,7 +1294,7 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 			goto out;
 		}
 
-		if (ZBX_PROTO_ERROR == listen(s->sockets[s->num_socks], SOMAXCONN))
+		if (ZBX_PROTO_ERROR == listen(s->sockets[s->num_socks], zbx_get_somaxconn()))
 		{
 			zbx_set_socket_strerror("listen() for [[%s]:%hu] failed: %s",
 					ip ? ip : "-", listen_port, strerror_from_system(zbx_socket_last_error()));

@@ -869,6 +869,33 @@ AC_DEFINE(HAVE_FUNCTION_SYSCTL_KERN_MAXPROC,1,[Define to 1 if 'KERN_MAXPROC' exi
 AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no))
 
+AC_MSG_CHECKING(for function sysctl (KERN_SOMAXCONN))
+AC_TRY_COMPILE(
+[
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif /* HAVE_SYS_TYPES_H */
+
+#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif /* HAVE_SYS_PARAM_H */
+
+#include <sys/sysctl.h>
+],
+[
+	size_t	len;
+	int	mib[2], value;
+
+	mib[0] = CTL_KERN;
+	mib[1] = KERN_SOMAXCONN;
+
+	len = sizeof(value);
+	sysctl(mib, 2, &value, &len, 0, 0);
+],
+AC_DEFINE(HAVE_FUNCTION_SYSCTL_KERN_SOMAXCONN,1,[Define to 1 if 'KERN_SOMAXCONN' exists.])
+AC_MSG_RESULT(yes),
+AC_MSG_RESULT(no))
+
 AC_MSG_CHECKING(for function sysctl (KERN_CPTIME,KERN_CPTIME2))
 AC_TRY_COMPILE(
 [
