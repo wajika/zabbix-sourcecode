@@ -61,6 +61,7 @@
 	<target name="create-saml-configs">
 		<property name="phpunit_simplesaml_baseurl" value="${PHPUNIT_SIMPLESAML_BASEURL}"/>
 		<property name="phpunit_sp_entity_id" value="${PHPUNIT_SP_ENTITY_ID}"/>
+		<property name="url" value="${URL}"/>
 
 		<!-- SAML settings -->
 		<replace file="ui/tests/bootstrap.php" token="'PHPUNIT_SAML_TESTS_ENABLED', false" value="'PHPUNIT_SAML_TESTS_ENABLED', true"/>
@@ -70,6 +71,11 @@
 		<replace file="ui/tests/bootstrap.php" token="{PHPUNIT_SP_ENTITY_ID}" value="${phpunit_sp_entity_id}"/>
 		<!-- Download SAML X509 certificates -->
 		<get src="${phpunit_simplesaml_baseurl}/module.php/saml/idp/certs.php/idp.crt" dest="ui/conf/certs"/>
+
+		<copy overwrite="true" file="${SIMPLESAMLPHP_CFG_FILE}.template" tofile="${SIMPLESAMLPHP_CFG_FILE}"/>
+		<replace file="${SIMPLESAMLPHP_CFG_FILE}" token="{ENTITY_ID}" value="${phpunit_sp_entity_id}"/>
+		<replace file="${SIMPLESAMLPHP_CFG_FILE}" token="{ASSERTION_CONSUMER_SERVICE}" value="${url}/index_sso.php?acs"/>
+		<replace file="${SIMPLESAMLPHP_CFG_FILE}" token="{SINGLE_LOGOUT_SERVICE}" value="${url}/index_sso.php?sls"/>
 	</target>
 
 	<target name="init-integration">
