@@ -51,7 +51,8 @@ char	**user_parameter_paths = NULL;
 
 void	set_user_parameter_paths(char **paths)
 {
-	char	**p;
+	char	**p, *c;
+	int	is_empty, has_qoutes;
 
 	if (NULL != user_parameter_paths)
 		zbx_strarr_free(user_parameter_paths);
@@ -59,7 +60,43 @@ void	set_user_parameter_paths(char **paths)
 	zbx_strarr_init(&user_parameter_paths);
 
 	for (p = paths; NULL != *p; p++)
-		zbx_strarr_add(&user_parameter_paths, *p);
+	{
+		is_empty = 0;
+		has_qoutes = 0;
+
+		if ('\0' == (*p)[0])
+		{
+			is_empty = 1;
+		}
+		else
+		{
+			for (c = *p; '\0' != *c; c++)
+			{
+
+				if ('"' == *c || '\'' == *c)
+				{
+					has_qoutes = 1;
+					break;
+				}
+			}
+		}
+
+		if (is_empty)
+		{
+			zabbix_log(LOG_LEVEL_WARNING,
+					"refusing to add empty UserParameterPath entry");
+		}
+		else if (has_qoutes)
+		{
+			zabbix_log(LOG_LEVEL_WARNING,
+					"cannot add UserParameterPath=%s because it contains quotation marks", *p);
+		}
+		else
+		{
+			zabbix_log(LOG_LEVEL_DEBUG, "adding UserParameterPath=%s", *p);
+			zbx_strarr_add(&user_parameter_paths, *p);
+		}
+	}
 }
 
 ZBX_METRIC	parameters_common_local[] =
@@ -121,11 +158,11 @@ static int	ONLY_ACTIVE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 int	EXECUTE_USER_PARAMETER(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	char		*command;
-	char		**p, *full_command;
-	size_t		full_command_len, offset;
+	char		*command, *command_without_args, *prefixed_command, *command_args, *full_command;
+	char		**p, chr, quote_chr;
+	size_t		offset, command_len;
 	zbx_stat_t	status;
-	int		ret;
+	int		ret, n, i;
 
 	if (1 != request->nparam)
 	{
@@ -135,63 +172,123 @@ int	EXECUTE_USER_PARAMETER(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	command = get_rparam(request, 0);
 
-	if (NULL != user_parameter_paths)
+	/* no user paremeter paths */
+	if (NULL == user_parameter_paths)
+		return EXECUTE_STR(command, result);
+
+	/* process user paremeter paths */
+
+	command_len = strlen(command);
+	command_without_args = zbx_malloc(NULL, command_len);
+	command_args = zbx_malloc(NULL, command_len);
+	quote_chr = 0;
+	n = 0;
+
+	/* extract command part */
+	if ('\'' == command[n] || '"' == command[n])
 	{
+		quote_chr = command[n];
+		n++;
+	}
+
+	i = 0;
+
+	while (n < command_len)
+	{
+		chr = command[n++];
+
+		if (0 == quote_chr)
+		{
+			if (' ' == chr || '\t' == chr)
+				break;
+		}
+		else
+		{
+			if(chr == quote_chr)
+			{
+				quote_chr = 0;
+				break;
+			}
+		}
+
+		command_without_args[i++] = chr;
+	}
+
+	if (0 != quote_chr)
+	{
+		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unterminated user paremeter command quotation!"));
+		ret = SYSINFO_RET_FAIL;
+	}
+	else
+	{
+		command_without_args[i] = '\0';
+
+		/* strip trailing whitespaces */
+		while(n < command_len && ' ' == command[n] || '\t' == command[n])
+			n++;
+
+		/* extract arguments part */
+		i = 0;
+
+		while(n < command_len)
+			command_args[i++] = command[n++];
+
+		command_args[i] = '\0';
+
+		/* try every path */
 		for (p = user_parameter_paths; NULL != *p; p++)
 		{
 			if ('\0' == (*p)[0])
 				continue;
 
-			full_command = NULL;
-			full_command_len = offset = 0;
+			prefixed_command = NULL;
+			command_len = offset = 0;
 
-			zbx_snprintf_alloc(&full_command, &full_command_len, &offset,
-					"%s/%s", *p, command);
-
-			/* temporarily extract a substring containing just the command name, without arguments */
-			for (offset = 0;;offset++)
-			{
-				if ('\0' == full_command[offset])
-				{
-					offset = 0;
-					break;
-				}
-
-				if (' ' == full_command[offset] || '\t' == full_command[offset])
-				{
-					full_command[offset] = '\0';
-					break;
-				}
-			}
+			zbx_snprintf_alloc(&prefixed_command, &command_len, &offset,
+					"%s/%s", *p, command_without_args);
 
 			/* check if command exists and is a regular file */
-			if (0 > zbx_stat(full_command, &status))
+			if (0 > zbx_stat(prefixed_command, &status))
 			{
 				zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot stat '%s' (%s)",
-						__func__, full_command, strerror(errno));
-				zbx_free(full_command);
+						__func__, prefixed_command, strerror(errno));
+				zbx_free(prefixed_command);
 				continue;
 			}
 
 			if (S_IFREG != (status.st_mode & S_IFMT))
 			{
 				zabbix_log(LOG_LEVEL_DEBUG, "%s() '%s' is not a regular file",
-						__func__, full_command);
-				zbx_free(full_command);
+						__func__, prefixed_command);
+				zbx_free(prefixed_command);
 				continue;
 			}
 
-			/* restore command arguments */
-			if (0 != offset)
-				full_command[offset] = ' ';
+			full_command = NULL;
+			command_len = offset = 0;
+
+			if ('\0' == command_args[0])
+			{
+				zbx_snprintf_alloc(&full_command, &command_len, &offset,
+						"\"%s\"", prefixed_command);
+			}
+			else
+			{
+				zbx_snprintf_alloc(&full_command, &command_len, &offset,
+						"\"%s\" %s", prefixed_command, command_args);
+			}
+
+			zbx_free(prefixed_command);
 
 			ret = EXECUTE_STR(full_command, result);
 			zbx_free(full_command);
-			return ret;
+			break;
 		}
 	}
 
-	return EXECUTE_STR(command, result);
+	zbx_free(command_without_args);
+	zbx_free(command_args);
+	return ret;
 }
 
 int	EXECUTE_STR(const char *command, AGENT_RESULT *result)
