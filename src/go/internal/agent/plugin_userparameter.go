@@ -103,7 +103,7 @@ func (p *UserParameterPlugin) Export(key string, params []string, ctx plugin.Con
 		return nil, err
 	}
 
-	full_cmd := ""
+	fullCmd := ""
 
 	for i := 0; i < len(p.scriptLocations) + 1; i++ {
 		if i < len(p.scriptLocations) {
@@ -111,30 +111,30 @@ func (p *UserParameterPlugin) Export(key string, params []string, ctx plugin.Con
 				continue
 			}
 
-			full_cmd = p.scriptLocations[i] + "/" + s
-			base_cmd := ""
+			fullCmd = p.scriptLocations[i] + "/" + s
+			baseCmd := ""
 
-			for j := 0; j < len(full_cmd) && full_cmd[j] != ' ' && full_cmd[j] != '\t'; j++ {
-				base_cmd += string(full_cmd[j])
+			for j := 0; j < len(fullCmd) && fullCmd[j] != ' ' && fullCmd[j] != '\t'; j++ {
+				baseCmd += string(fullCmd[j])
 			}
 
-			if f, err := os.Stat(base_cmd); err != nil {
-				p.Debugf("cannot stat '%s' (%s)", base_cmd, err)
+			if f, err := os.Stat(baseCmd); err != nil {
+				p.Debugf("cannot stat '%s' (%s)", baseCmd, err)
 			} else {
 				if f.IsDir() {
-					p.Debugf("'%s' is not a regular file", base_cmd)
+					p.Debugf("'%s' is not a regular file", baseCmd)
 				} else {
 					break
 				}
 			}
 		} else {
-			full_cmd = s;
+			fullCmd = s;
 		}
 	}
 
 	p.Debugf("executing command:'%s'", s)
 
-	stdoutStderr, err := zbxcmd.Execute(full_cmd, time.Second*time.Duration(Options.Timeout))
+	stdoutStderr, err := zbxcmd.Execute(fullCmd, time.Second*time.Duration(Options.Timeout))
 	if err != nil {
 		return nil, err
 	}
