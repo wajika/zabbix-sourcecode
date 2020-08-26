@@ -287,31 +287,6 @@ class CHostInterface extends CApiService {
 			);
 		}
 
-		foreach ($interfaces as $index => &$interface) {
-			$interface = array_filter($interface, function ($v) {
-				return ($v !== null);
-			});
-
-			if (array_key_exists('details', $interface) && !array_key_exists('type', $interface)) {
-				$interface['type'] = INTERFACE_TYPE_SNMP;
-			}
-
-			if (array_key_exists('details', $interface) && is_array($interface['details'])) {
-				$interface['details'] = array_filter($interface['details'], function ($v) {
-					return ($v !== null);
-				});
-			}
-			else {
-				unset($interface['details']);
-			}
-
-			$path = sprintf($obj_path, $index + 1);
-			if (!CApiInputValidator::validate($api_input_rules, $interface, ($path === '' ? '/' : $path), $error)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, $error);
-			}
-		}
-		unset($interface);
-
 		// permissions
 		$db_interfaces = $this->get([
 			'output' => API_OUTPUT_EXTEND,
@@ -335,6 +310,7 @@ class CHostInterface extends CApiService {
 		]);
 
 		$check_have_items = [];
+
 		foreach ($interfaces as $index => &$interface) {
 			if (!array_key_exists($interface['interfaceid'], $db_interfaces)) {
 				self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
@@ -342,34 +318,69 @@ class CHostInterface extends CApiService {
 
 			$db_interface = $db_interfaces[$interface['interfaceid']];
 
-			if (array_key_exists('hostid', $interface) && bccomp($db_interface['hostid'], $interface['hostid']) != 0) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Cannot switch host for interface.'));
+			$interface = array_filter($interface, function ($v) {
+				return ($v !== null);
+			});
+
+			if (array_key_exists('details', $interface) && is_array($interface['details'])) {
+				$interface['details'] = array_filter($interface['details'], function ($v) {
+					return ($v !== null);
+				});
 			}
-
-			$interface['hostid'] = $db_interface['hostid'];
-
-			if (array_key_exists('type', $interface) && $interface['type'] != $db_interface['type']) {
-				$check_have_items[] = $interface['interfaceid'];
+			else {
+				unset($interface['details']);
 			}
 
 			if (!array_key_exists('type', $interface)) {
 				$interface['type'] = $db_interface['type'];
 			}
 
+			$path = sprintf($obj_path, $index + 1);
+			if (!CApiInputValidator::validate($api_input_rules, $interface, ($path === '' ? '/' : $path), $error)) {
+				self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			}
+
+			if (array_key_exists('hostid', $interface) && bccomp($db_interface['hostid'], $interface['hostid']) != 0) {
+				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Cannot switch host for interface.'));
+			}
+
+			$interface['hostid'] = $db_interface['hostid'];
+
+			if ($interface['type'] != $db_interface['type']) {
+				$check_have_items[] = $interface['interfaceid'];
+			}
+
 			if ($interface['type'] == INTERFACE_TYPE_SNMP) {
 				// If type is changed to SNMP, $db_interface['details'] is empty so $interface['details'] is mandatory.
-				if ($interface['type'] != $db_interface['type'] && !array_key_exists('details', $interface)) {
-					$path = sprintf($obj_path, $index + 1);
-					$path = ($path === '') ? '/' : $path;
+				if ($interface['type'] != $db_interface['type']) {
+					if (!array_key_exists('details', $interface)) {
+						$path = sprintf($obj_path, $index + 1);
+						$path = ($path === '') ? '/' : $path;
 
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Invalid parameter "%1$s": %2$s.', $path,
-						_s('the parameter "%1$s" is missing', 'details')
-					));
+						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Invalid parameter "%1$s": %2$s.', $path,
+							_s('the parameter "%1$s" is missing', 'details')
+						));
+					}
+					elseif (!is_array($interface['details']) || !$interface['details']) {
+						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					}
 				}
 
+				// Fill unspecified details with values in database.
+				$interface['details']['version'] = (array_key_exists('details', $interface)
+						&& array_key_exists('version', $interface['details']))
+					? $interface['details']['version']
+					: $db_interface['details']['version'];
+
+				$db_details = array_intersect_key($db_interface['details'],
+					array_flip($this->supported_details[$interface['details']['version']])
+				);
+
 				$interface['details'] = array_key_exists('details', $interface)
-					? $interface['details'] + $db_interface['details']
-					: $db_interface['details'];
+					? $interface['details'] + $db_details
+					: $db_details;
+
+				$this->checkSnmpCommunity($interface, $path);
 			}
 
 			// Check all fields on "updated" interface.
@@ -415,8 +426,6 @@ class CHostInterface extends CApiService {
 			$interface = $upd_interface;
 		}
 		unset($interface);
-
-		$this->validateSnmpDetails($interfaces, $obj_path);
 
 		if ($check_have_items) {
 			$this->checkIfInterfaceHasItems($check_have_items);
@@ -572,6 +581,13 @@ class CHostInterface extends CApiService {
 				}
 			}
 
+			// This should happen only if user has changed interface type to SNMP and forgoten to specify version.
+			if ($interface['type'] == INTERFACE_TYPE_SNMP) {
+				$interface['details'] = array_intersect_key($interface['details'],
+					array_flip($this->supported_details[$interface['details']['version']])
+				);
+			}
+
 			$this->checkDns($interface);
 			$this->checkIp($interface);
 		}
@@ -592,9 +608,9 @@ class CHostInterface extends CApiService {
 	 *
 	 * @throws APIException
 	 */
-	protected function validateSnmpDetails(array $interfaces, string $obj_path) {
-		foreach ($interfaces as $index => $interface) {
-			if (!array_key_exists('type', $interface) || $interface['type'] != INTERFACE_TYPE_SNMP) {
+	protected function validateSnmpDetails(array &$interfaces, string $obj_path) {
+		foreach ($interfaces as $index => &$interface) {
+			if ($interface['type'] != INTERFACE_TYPE_SNMP) {
 				continue;
 			}
 
@@ -608,21 +624,9 @@ class CHostInterface extends CApiService {
 				);
 			}
 
-			if (array_key_exists('version', $interface['details'])) {
-				$vers = $interface['details']['version'];
-				$unsupported_details = array_diff(array_keys($interface['details']), $this->supported_details[$vers]);
-
-				foreach ($unsupported_details as $field) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
-						_s('Invalid parameter "%1$s": %2$s.', $path.'/details',
-							_s('unexpected parameter "%1$s"', $field)
-						)
-					);
-				}
-			}
-
 			$this->checkSnmpCommunity($interface, $path);
 		}
+		unset($interface);
 	}
 
 	/**
