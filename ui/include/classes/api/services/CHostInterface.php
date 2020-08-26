@@ -367,10 +367,15 @@ class CHostInterface extends CApiService {
 				}
 
 				// Fill unspecified details with values in database.
-				$interface['details']['version'] = (array_key_exists('details', $interface)
-						&& array_key_exists('version', $interface['details']))
-					? $interface['details']['version']
-					: $db_interface['details']['version'];
+				if (array_key_exists('details', $interface) && array_key_exists('version', $interface['details'])) {
+					$interface['details']['version'] = $interface['details']['version'];
+				}
+				elseif (array_key_exists('version', $db_interface['details'])) {
+					$interface['details']['version'] = $db_interface['details']['version'];
+				}
+				else {
+					$interface['details']['version'] = SNMP_V2C;
+				}
 
 				$db_details = array_intersect_key($db_interface['details'],
 					array_flip($this->supported_details[$interface['details']['version']])
