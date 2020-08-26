@@ -103,43 +103,83 @@ func (p *UserParameterPlugin) Export(key string, params []string, ctx plugin.Con
 		return nil, err
 	}
 
-	fullCmd := ""
+	fullCommand := ""
 
-	for i := 0; i < len(p.scriptLocations) + 1; i++ {
-		if i < len(p.scriptLocations) {
+	if len(p.scriptLocations) > 0 {
+		commandWithoutArgs := ""
+
+		n := 0
+		var quoteChr byte = 0
+
+		if '"' == s[n] || '\'' == s[n] {
+			quoteChr = s[n]
+			n++
+		}
+
+		for n < len(s) {
+			chr := s[n]
+			n++
+
+			if 0 == quoteChr {
+				if ' ' == chr || '\t' == chr {
+					break
+				}
+			} else {
+				if chr == quoteChr {
+					quoteChr = 0
+					break
+				}
+			}
+
+			commandWithoutArgs += string(chr)
+		}
+
+		if (0 != quoteChr) {
+			return "", fmt.Errorf("Unterminated user paremeter command quotation!")
+		}
+
+		for s[n] == ' ' || s[n] == '\t' {
+			n++
+		}
+
+		commandArgs := ""
+
+		for n < len(s) {
+			commandArgs += string(s[n])
+			n++
+		}
+
+		for i := 0; i < len(p.scriptLocations); i++ {
 			if p.scriptLocations[i] == "" {
 				continue
 			}
 
-			fullCmd = p.scriptLocations[i] + "/" + s
-			baseCmd := ""
+			prefixedCommand := p.scriptLocations[i] + "/" + commandWithoutArgs;
 
-			for j := 0; j < len(fullCmd) && fullCmd[j] != ' ' && fullCmd[j] != '\t'; j++ {
-				baseCmd += string(fullCmd[j])
+			if f, err := os.Stat(prefixedCommand); err != nil {
+				p.Debugf("cannot stat '%s' (%s)", prefixedCommand, err)
+				continue
+			} else if f.IsDir() {
+				p.Debugf("'%s' is not a regular file", prefixedCommand)
+				continue
 			}
 
-			if f, err := os.Stat(baseCmd); err != nil {
-				p.Debugf("cannot stat '%s' (%s)", baseCmd, err)
-			} else {
-				if f.IsDir() {
-					p.Debugf("'%s' is not a regular file", baseCmd)
-				} else {
-					break
-				}
-			}
-		} else {
-			fullCmd = s;
+			fullCommand = "\"" + prefixedCommand + "\" " + commandArgs;
+
+			break
 		}
+	} else {
+		fullCommand = s;
 	}
 
-	p.Debugf("executing command:'%s'", s)
+	p.Debugf("executing command:'%s'", fullCommand)
 
-	stdoutStderr, err := zbxcmd.Execute(fullCmd, time.Second*time.Duration(Options.Timeout))
+	stdoutStderr, err := zbxcmd.Execute(fullCommand, time.Second*time.Duration(Options.Timeout))
 	if err != nil {
 		return nil, err
 	}
 
-	p.Debugf("command:'%s' length:%d output:'%.20s'", s, len(stdoutStderr), stdoutStderr)
+	p.Debugf("command:'%s' length:%d output:'%.20s'", fullCommand, len(stdoutStderr), stdoutStderr)
 
 	return stdoutStderr, nil
 }
@@ -147,7 +187,7 @@ func (p *UserParameterPlugin) Export(key string, params []string, ctx plugin.Con
 func InitUserParameterPlugin(userParameterConfig []string, unsafeUserParameters int, scriptLocations []string) error {
 	userParameter.parameters = make(map[string]*parameterInfo)
 	userParameter.unsafeUserParameters = unsafeUserParameters
-	userParameter.scriptLocations = scriptLocations
+	userParameter.scriptLocations = []string{};
 
 	for i := 0; i < len(userParameterConfig); i++ {
 		s := strings.SplitN(userParameterConfig[i], ",", 2)
@@ -179,6 +219,20 @@ func InitUserParameterPlugin(userParameterConfig []string, unsafeUserParameters 
 
 		userParameter.parameters[key] = parameter
 		plugin.RegisterMetrics(&userParameter, "UserParameter", key, fmt.Sprintf("User parameter: %s.", s[1]))
+	}
+
+	for i := 0; i < len(scriptLocations); i++ {
+		if scriptLocations[i] == "" {
+			userParameter.Warningf("refusing to add empty UserParameterPath entry")
+			continue
+		}
+
+		if strings.ContainsAny(scriptLocations[i], "\"'") {
+			userParameter.Warningf("cannot add UserParameterPath=%s because it contains quotation marks", scriptLocations[i])
+			continue
+		}
+
+		userParameter.scriptLocations = append(userParameter.scriptLocations, scriptLocations[i])
 	}
 
 	return nil
