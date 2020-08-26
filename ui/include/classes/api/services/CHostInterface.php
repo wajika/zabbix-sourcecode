@@ -847,26 +847,14 @@ class CHostInterface extends CApiService {
 		return ['interfaceids' => $interfaceids];
 	}
 
-	protected function validateMassRemove(array &$data) {
-		$api_input_rules = ['type' => API_OBJECT, 'flags' => API_NORMALIZE, 'fields' => [
-			'hostids' =>		['type' => API_IDS, 'flags' => API_REQUIRED | API_NOT_EMPTY | API_NORMALIZE],
-			'interfaces' =>		['type' => API_OBJECTS, 'flags' => API_REQUIRED |API_NORMALIZE , 'fields' => [
-				'ip' =>				['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface', 'ip'), 'default' => ''],
-				'dns' =>			['type' => API_STRING_UTF8, 'flags' => API_ALLOW_NULL, 'length' => DB::getFieldLength('interface', 'dns'), 'default' => ''],
-				'port' =>			['type' => API_PORT, 'flags' => API_REQUIRED | API_NOT_EMPTY | API_ALLOW_USER_MACRO]
-			]]
-		]];
-
-		if (!CApiInputValidator::validate($api_input_rules, $data, '', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
-		}
-
+	protected function validateMassRemove(array $data) {
+		// check permissions
 		$this->checkHostPermissions($data['hostids']);
 
-		// Check interfaces.
+		// check interfaces
 		foreach ($data['interfaces'] as $interface) {
-			if ($interface['ip'] === '' && $interface['dns'] === '') {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('IP and DNS cannot be empty for host interface.'));
+			if (!isset($interface['dns']) || !isset($interface['ip']) || !isset($interface['port'])) {
+				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 
 			$filter = [
@@ -902,6 +890,9 @@ class CHostInterface extends CApiService {
 	 * @return array
 	 */
 	public function massRemove(array $data) {
+		$data['interfaces'] = zbx_toArray($data['interfaces']);
+		$data['hostids'] = zbx_toArray($data['hostids']);
+
 		$this->validateMassRemove($data);
 
 		$interfaceIds = [];
