@@ -890,8 +890,8 @@ class CHostInterface extends CApiService {
 	 * @return array
 	 */
 	public function massRemove(array $data) {
-		$data['interfaces'] = zbx_toArray($data['interfaces']);
-		$data['hostids'] = zbx_toArray($data['hostids']);
+		$data['interfaces'] = array_key_exists('interfaces', $data) ? zbx_toArray($data['interfaces']) : [];
+		$data['hostids'] = array_key_exists('hostids', $data) ? zbx_toArray($data['hostids']) : [];
 
 		$this->validateMassRemove($data);
 
