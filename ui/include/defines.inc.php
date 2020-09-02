@@ -976,6 +976,7 @@ define('ZBX_EVENT_HISTORY_ALERT',				3);
 define('ZBX_TM_TASK_CLOSE_PROBLEM', 1);
 define('ZBX_TM_TASK_ACKNOWLEDGE',	4);
 define('ZBX_TM_TASK_CHECK_NOW',		6);
+define('ZBX_TM_TASK_DIAGINFO',		7);
 
 define('ZBX_TM_STATUS_NEW',			1);
 define('ZBX_TM_STATUS_INPROGRESS',	2);
@@ -1349,6 +1350,7 @@ define('API_REQUIRED_LLD_MACRO',		0x0100);
 define('API_TIME_UNIT_WITH_YEAR',		0x0200);
 define('API_ALLOW_EVENT_TAGS_MACRO',	0x0400);
 define('API_PRESERVE_KEYS',				0x0800);
+define('API_ALLOW_UNEXPECTED',			0x1000);
 
 // JSON error codes.
 if (!defined('JSON_ERROR_NONE')) {

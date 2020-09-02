@@ -897,10 +897,12 @@ class CApiInputValidator {
 		}
 
 		// unexpected parameter validation
-		foreach ($data as $field_name => $value) {
-			if (!array_key_exists($field_name, $rule['fields'])) {
-				$error = _s('Invalid parameter "%1$s": %2$s.', $path, _s('unexpected parameter "%1$s"', $field_name));
-				return false;
+		if (!($flags & API_ALLOW_UNEXPECTED)) {
+			foreach ($data as $field_name => $value) {
+				if (!array_key_exists($field_name, $rule['fields'])) {
+					$error = _s('Invalid parameter "%1$s": %2$s.', $path, _s('unexpected parameter "%1$s"', $field_name));
+					return false;
+				}
 			}
 		}
 
